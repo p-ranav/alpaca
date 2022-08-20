@@ -405,7 +405,15 @@ namespace detail {
 	to_bytes_from_list_type<false, decayed_value_type>(v, bytes);
       }
       else {
-        to_bytes(v, bytes);
+	// dump all the values
+	// note: no attempted compression for integer types
+	append(v, bytes);
+
+	// note:
+	// if integer compression is requested
+	// call:
+	//    to_bytes(v, bytes);
+	// instead
       }
     }
   }
@@ -443,22 +451,50 @@ struct my_struct {
 
 
 int main() {
-  my_struct s{true, {"Hello world!"}, 5, 3.14, {1, 2, 3, 4, 5},
-	      {{'a', 'b', 'c'}, {'d', 'e', 'f'}},
-	      {{123, 456, 789}, {101112, 131415, 161718}}};
-  std::cout << "Original struct size : " << sizeof(s) << " bytes\n";
+  std::ios_base::fmtflags f(std::cout.flags());
+  
+  // Test 1
+  {
+    my_struct s{true, {"Hello world!"}, 5, 3.14, {1, 2, 3, 4, 5},
+		{{'a', 'b', 'c'}, {'d', 'e', 'f'}},
+		{{123, 456, 789}, {101112, 131415, 161718}}};
+    std::cout << "Original struct size : " << sizeof(s) << " bytes\n";
 
-  std::vector<uint8_t> bytes{};
-  serialize<my_struct>(s, bytes);
+    std::vector<uint8_t> bytes{};
+    serialize<my_struct>(s, bytes);
 
-  bytes.shrink_to_fit();
-  std::cout << "Serialized to        : " << bytes.size() << " bytes\n";
-  std::cout << "Compression ratio    : " << (float(sizeof(s)) / float(bytes.size()) * 100.0f) << "%\n";
-  std::cout << "Space savings        : " << (1 - float(bytes.size()) / float(sizeof(s))) * 100.0f << "%\n";  
+    bytes.shrink_to_fit();
+    std::cout << "Serialized to        : " << bytes.size() << " bytes\n";
+    std::cout << "Compression ratio    : " << (float(sizeof(s)) / float(bytes.size()) * 100.0f) << "%\n";
+    std::cout << "Space savings        : " << (1 - float(bytes.size()) / float(sizeof(s))) * 100.0f << "%\n";  
 
-  for (auto& b: bytes) {
-    std::cout << "0x" << std::hex << std::setfill('0') << std::setw(2) << (int)b << " ";
+    for (auto& b: bytes) {
+      std::cout << "0x" << std::hex << std::setfill('0') << std::setw(2) << (int)b << " ";
+    }
+    std::cout << "\n";
+    std::cout.flags(f);
   }
-  std::cout << "\n";
+
+  std::cout << "\n---\n\n";
+
+  // Test 2
+  {
+    struct list {
+      std::vector<int> values;
+    };
+    list s;
+    for (int i = 0; i < 10E6; ++i) {
+      s.values.push_back(i);
+    }
+    
+    std::vector<uint8_t> bytes{};
+    serialize<list>(s, bytes);
+    bytes.shrink_to_fit();
+    std::cout << "Original struct size : " << s.values.size() * sizeof(s.values[0]) << " bytes\n";
+    std::cout << "Serialized to        : " << bytes.size() << " bytes\n";
+    std::cout << "Compression ratio    : " << (float(s.values.size() * sizeof(s.values[0])) / float(bytes.size()) * 100.0f) << "%\n";
+    std::cout << "Space savings        : " << (1 - float(bytes.size()) / float(sizeof(s))) * 100.0f << "%\n";
+    std::cout.flags(f);
+  }
   
 }
