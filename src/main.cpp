@@ -38,7 +38,8 @@ enum class type : uint8_t {
   string,
   vector,
   tuple,
-  pair
+  pair,
+  struct_
 };
 
 template <bool attempt_compression = true>
@@ -181,10 +182,10 @@ template <typename> struct is_tuple : std::false_type {};
 template <typename... T> struct is_tuple<std::tuple<T...>> : std::true_type {};
 
 // Forward declarations
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint64_t input, std::vector<uint8_t> &bytes);
 
-template <typename T, std::size_t index = 0>
+template <typename T, std::size_t index>
 void save_tuple_value_type(std::vector<uint8_t> &bytes);
 
 template <typename> struct is_pair : std::false_type {};
@@ -230,15 +231,17 @@ template <typename T, typename U> void append_value_type(U &bytes) {
     // save number of tuple elements
     to_bytes<true, true>(std::tuple_size<T>::value, bytes);
     // save type of each tuple element
-    save_tuple_value_type<T>(bytes);
+    save_tuple_value_type<T, 0>(bytes);
   } else if constexpr (is_pair<T>::value) {
     append(type::pair, bytes);
     // save type of each pair element
     save_pair_value_type<T>(bytes);
+  } else if constexpr (std::is_class<T>::value) {
+    append(type::struct_, bytes);
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint8_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -248,7 +251,7 @@ void to_bytes(uint8_t input, std::vector<uint8_t> &bytes) {
   append(input, bytes);
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint16_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -259,7 +262,7 @@ void to_bytes(uint16_t input, std::vector<uint8_t> &bytes) {
     if (input <= std::numeric_limits<uint8_t>::max() &&
         input >= std::numeric_limits<uint8_t>::min()) {
       // value can fit in an uint8_t
-      to_bytes<false>(static_cast<uint8_t>(input), bytes);
+      append(static_cast<uint8_t>(input), bytes);
     } else {
       // value
       append(input, bytes);
@@ -270,7 +273,7 @@ void to_bytes(uint16_t input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint32_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -281,7 +284,7 @@ void to_bytes(uint32_t input, std::vector<uint8_t> &bytes) {
     if (input <= std::numeric_limits<uint16_t>::max() &&
         input >= std::numeric_limits<uint16_t>::min()) {
       // value can fit in an uint16_t
-      to_bytes<false>(static_cast<uint16_t>(input), bytes);
+      to_bytes<false, true>(static_cast<uint16_t>(input), bytes);
     } else {
       // value
       append(input, bytes);
@@ -292,7 +295,7 @@ void to_bytes(uint32_t input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint64_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -303,7 +306,7 @@ void to_bytes(uint64_t input, std::vector<uint8_t> &bytes) {
     if (input <= std::numeric_limits<uint32_t>::max() &&
         input >= std::numeric_limits<uint32_t>::min()) {
       // value can fit in an uint32_t
-      to_bytes<false>(static_cast<uint32_t>(input), bytes);
+      to_bytes<false, true>(static_cast<uint32_t>(input), bytes);
     } else {
       // value
       append(input, bytes);
@@ -314,7 +317,7 @@ void to_bytes(uint64_t input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(bool input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -324,12 +327,13 @@ void to_bytes(bool input, std::vector<uint8_t> &bytes) {
   append(input, bytes);
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(char input, std::vector<uint8_t> &bytes) {
-  to_bytes<save_type_info>(static_cast<uint8_t>(input), bytes);
+  to_bytes<save_type_info, attempt_compression>(static_cast<uint8_t>(input),
+                                                bytes);
 }
 
-template <bool save_type_info = true>
+template <bool save_type_info>
 void to_bytes(int8_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -339,7 +343,7 @@ void to_bytes(int8_t input, std::vector<uint8_t> &bytes) {
   append(input, bytes);
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(int16_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -350,7 +354,7 @@ void to_bytes(int16_t input, std::vector<uint8_t> &bytes) {
     if (input <= std::numeric_limits<int8_t>::max() &&
         input >= std::numeric_limits<int8_t>::min()) {
       // value can find in an int8_t
-      to_bytes<false>(static_cast<int8_t>(input), bytes);
+      append(static_cast<int8_t>(input), bytes);
     } else {
       // value
       append(input, bytes);
@@ -361,7 +365,7 @@ void to_bytes(int16_t input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(int32_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -372,7 +376,7 @@ void to_bytes(int32_t input, std::vector<uint8_t> &bytes) {
     if (input <= std::numeric_limits<int16_t>::max() &&
         input >= std::numeric_limits<int16_t>::min()) {
       // value can find in an int16_t
-      to_bytes<false>(static_cast<int16_t>(input), bytes);
+      to_bytes<false, true>(static_cast<int16_t>(input), bytes);
     } else {
       // value
       append(input, bytes);
@@ -383,7 +387,7 @@ void to_bytes(int32_t input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(int64_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -394,7 +398,7 @@ void to_bytes(int64_t input, std::vector<uint8_t> &bytes) {
     if (input <= std::numeric_limits<int32_t>::max() &&
         input >= std::numeric_limits<int32_t>::min()) {
       // value can find in an int32_t
-      to_bytes<false>(static_cast<int32_t>(input), bytes);
+      to_bytes<false, true>(static_cast<int32_t>(input), bytes);
     } else {
       // value
       append(input, bytes);
@@ -405,7 +409,7 @@ void to_bytes(int64_t input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(const float input, std::vector<uint8_t> &bytes) {
   if constexpr (save_type_info) {
     append(type::float32, bytes);
@@ -413,7 +417,7 @@ void to_bytes(const float input, std::vector<uint8_t> &bytes) {
   append(input, bytes);
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(const double input, std::vector<uint8_t> &bytes) {
   if constexpr (save_type_info) {
     append(type::float64, bytes);
@@ -421,64 +425,34 @@ void to_bytes(const double input, std::vector<uint8_t> &bytes) {
   append(input, bytes);
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(const std::string &input, std::vector<uint8_t> &bytes) {
   if constexpr (save_type_info) {
     append(type::string, bytes);
   }
 
-  to_bytes<true>(input.size(), bytes);
+  to_bytes<true, true>(input.size(), bytes);
 
   for (auto &c : input) {
     append(c, bytes);
   }
 }
 
-template <bool save_type_info = true, bool attempt_compression = true>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(const char *input, std::vector<uint8_t> &bytes) {
   if constexpr (save_type_info) {
     append(type::string, bytes);
   }
 
   std::size_t size = strlen(input);
-  to_bytes<true>(size, bytes);
+  to_bytes<true, true>(size, bytes);
 
   for (std::size_t i = 0; i < size; ++i) {
     append(input[i], bytes);
   }
 }
 
-template <bool save_type_info, typename T>
-void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes);
-
-template <bool save_type_info, typename T>
-void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
-  // type of the value
-  if constexpr (save_type_info) {
-    append(type::vector, bytes);
-    // save type of list::value_type
-    append_value_type<typename std::decay<typename T::value_type>::type>(bytes);
-  }
-
-  to_bytes<true>(input.size(), bytes);
-
-  // value of each element in list
-  for (const auto &v : input) {
-    // check if the value_type is a nested list type
-    using decayed_value_type = typename std::decay<decltype(v)>::type;
-    if constexpr (is_vector<decayed_value_type>::value) {
-      to_bytes_from_list_type<false, decayed_value_type>(v, bytes);
-    } else if constexpr (is_tuple<decayed_value_type>::value) {
-      to_bytes_from_tuple_type<false, decayed_value_type>(v, bytes);
-    } else {
-      // dump all the values
-      // note: no attempted compression for integer types
-      append(v, bytes);
-    }
-  }
-}
-
-template <typename T, std::size_t index = 0>
+template <typename T, std::size_t index>
 void save_tuple_value_type(std::vector<uint8_t> &bytes) {
   constexpr auto max_index = std::tuple_size<T>::value;
   if constexpr (index < max_index) {
@@ -488,7 +462,7 @@ void save_tuple_value_type(std::vector<uint8_t> &bytes) {
   }
 }
 
-template <typename T, std::size_t index = 0>
+template <typename T, std::size_t index>
 void save_tuple_value(const T &tuple, std::vector<uint8_t> &bytes) {
   constexpr auto max_index = std::tuple_size<T>::value;
   if constexpr (index < max_index) {
@@ -503,13 +477,13 @@ void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes) {
   if constexpr (save_type_info) {
     append(type::tuple, bytes);
     // save number of types in tuple
-    to_bytes(std::tuple_size<T>::value, bytes);
+    to_bytes<true, true>(std::tuple_size<T>::value, bytes);
     // save type of each element
-    save_tuple_value_type<T>(bytes);
+    save_tuple_value_type<T, 0>(bytes);
   }
 
   // value of each element
-  save_tuple_value<T>(input, bytes);
+  save_tuple_value<T, 0>(input, bytes);
 }
 
 template <typename T> void save_pair_value_type(std::vector<uint8_t> &bytes) {
@@ -536,6 +510,33 @@ void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes) {
   save_pair_value<T>(input, bytes);
 }
 
+template <bool save_type_info, typename T>
+void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
+  // type of the value
+  if constexpr (save_type_info) {
+    append(type::vector, bytes);
+    // save type of list::value_type
+    append_value_type<typename std::decay<typename T::value_type>::type>(bytes);
+  }
+
+  to_bytes<true, true>(input.size(), bytes);
+
+  // value of each element in list
+  for (const auto &v : input) {
+    // check if the value_type is a nested list type
+    using decayed_value_type = typename std::decay<decltype(v)>::type;
+    if constexpr (is_vector<decayed_value_type>::value) {
+      to_bytes_from_list_type<false, decayed_value_type>(v, bytes);
+    } else if constexpr (is_tuple<decayed_value_type>::value) {
+      to_bytes_from_tuple_type<false, decayed_value_type>(v, bytes);
+    } else {
+      // dump all the values
+      // note: no attempted compression for integer types
+      append(v, bytes);
+    }
+  }
+}
+
 } // namespace detail
 
 template <typename T, std::size_t index = 0>
@@ -556,7 +557,7 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
           boost::pfr::get<index>(s), bytes);
 
     } else {
-      detail::to_bytes<true>(boost::pfr::get<index>(s), bytes);
+      detail::to_bytes<true, true>(boost::pfr::get<index>(s), bytes);
     }
     serialize<T, index + 1>(s, bytes);
   }
@@ -780,4 +781,6 @@ int main() {
     std::cout << "\n";
     std::cout.flags(f);
   }
+
+  std::cout << "\n---\n\n";
 }
