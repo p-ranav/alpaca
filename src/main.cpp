@@ -1,4 +1,3 @@
-
 /// Start of Library
 
 #include <boost/pfr.hpp>
@@ -188,6 +187,13 @@ void to_bytes(uint64_t input, std::vector<uint8_t> &bytes);
 template <typename T, std::size_t index = 0>
 void save_tuple_value_type(std::vector<uint8_t> &bytes);
 
+template <typename> struct is_pair : std::false_type {};
+
+template <typename T, typename U>
+struct is_pair<std::pair<T, U>> : std::true_type {};
+
+template <typename T> void save_pair_value_type(std::vector<uint8_t> &bytes);
+
 // append the type of value to bytes
 template <typename T, typename U> void append_value_type(U &bytes) {
   if constexpr (std::is_same<T, bool>::value) {
@@ -225,6 +231,10 @@ template <typename T, typename U> void append_value_type(U &bytes) {
     to_bytes<true, true>(std::tuple_size<T>::value, bytes);
     // save type of each tuple element
     save_tuple_value_type<T>(bytes);
+  } else if constexpr (is_pair<T>::value) {
+    append(type::pair, bytes);
+    // save type of each pair element
+    save_pair_value_type<T>(bytes);
   }
 }
 
@@ -502,6 +512,30 @@ void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes) {
   save_tuple_value<T>(input, bytes);
 }
 
+template <typename T> void save_pair_value_type(std::vector<uint8_t> &bytes) {
+  append_value_type<typename T::first_type>(bytes);
+  append_value_type<typename T::second_type>(bytes);
+}
+
+template <typename T>
+void save_pair_value(const T &pair, std::vector<uint8_t> &bytes) {
+  to_bytes<false, false>(pair.first, bytes);
+  to_bytes<false, false>(pair.second, bytes);
+}
+
+template <bool save_type_info, typename T>
+void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes) {
+  // type of tuple + each element
+  if constexpr (save_type_info) {
+    append(type::pair, bytes);
+    // save type of each element
+    save_pair_value_type<T>(bytes);
+  }
+
+  // value of each element
+  save_pair_value<T>(input, bytes);
+}
+
 } // namespace detail
 
 template <typename T, std::size_t index = 0>
@@ -515,6 +549,10 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
           boost::pfr::get<index>(s), bytes);
     } else if constexpr (detail::is_tuple<decayed_field_type>::value) {
       detail::to_bytes_from_tuple_type<true, decayed_field_type>(
+          boost::pfr::get<index>(s), bytes);
+
+    } else if constexpr (detail::is_pair<decayed_field_type>::value) {
+      detail::to_bytes_from_pair_type<true, decayed_field_type>(
           boost::pfr::get<index>(s), bytes);
 
     } else {
@@ -695,6 +733,35 @@ int main() {
     my_struct s;
     s.values.push_back(std::make_tuple(true, 5, 3.14, "Hello", 'a'));
     s.values.push_back(std::make_tuple(false, -15, 2.718, "World", 'z'));
+
+    std::vector<uint8_t> bytes{};
+    serialize<my_struct>(s, bytes);
+    bytes.shrink_to_fit();
+    std::cout << "Original struct size : " << sizeof(s) << " bytes\n";
+    std::cout << "Serialized to        : " << bytes.size() << " bytes\n";
+    std::cout << "Compression ratio    : "
+              << (float(sizeof(s)) / float(bytes.size()) * 100.0f) << "%\n";
+    std::cout << "Space savings        : "
+              << (1 - float(bytes.size()) / float(sizeof(s))) * 100.0f << "%\n";
+
+    for (auto &b : bytes) {
+      std::cout << "0x" << std::hex << std::setfill('0') << std::setw(2)
+                << (int)b << " ";
+    }
+    std::cout << "\n";
+    std::cout.flags(f);
+  }
+
+  std::cout << "\n---\n\n";
+
+  // Test 7
+  {
+    struct my_struct {
+      std::pair<int, float> values;
+    };
+    my_struct s;
+    s.values.first = 5;
+    s.values.second = 3.14;
 
     std::vector<uint8_t> bytes{};
     serialize<my_struct>(s, bytes);
