@@ -9,20 +9,128 @@ namespace detail {
 
   enum class type : uint8_t
   {
-   boolean, // 0x00
-   uint8,   // 0x01
-   uint16,  // 0x02
-   uint32,  // 0x03
-   uint64,  // 0x04
-   int8,    // 0x05
-   int16,   // 0x06
-   int32,   // 0x07
-   int64,   // 0x08
-   float32, // 0x09
-   float64, // 0x0a
-   string,  // 0x0b
-   vector,  // 0x0c
+   boolean,
+   uint8,
+   uint16_as_uint8,
+   uint16,   
+   uint32_as_uint8,
+   uint32_as_uint16,
+   uint32,
+   uint64_as_uint8,
+   uint64_as_uint16,
+   uint64_as_uint32,   
+   uint64,       
+   int8,
+   int16_as_int8,
+   int16,
+   int32_as_int8,
+   int32_as_int16,
+   int32,
+   int64_as_int8,
+   int64_as_int16,
+   int64_as_int32,
+   int64,        
+   float32,      
+   float64,      
+   string,       
+   vector
   };
+
+  type get_repr_type(const uint64_t& input) {
+    if (input <= std::numeric_limits<uint8_t>::max()
+        && input >= std::numeric_limits<uint8_t>::min())
+    {
+      return type::uint64_as_uint8;
+    }
+    else if (input <= std::numeric_limits<uint16_t>::max()
+        && input >= std::numeric_limits<uint16_t>::min())
+    {
+      return type::uint64_as_uint16;
+    }
+    else if (input <= std::numeric_limits<uint32_t>::max()
+        && input >= std::numeric_limits<uint32_t>::min())
+    {
+      return type::uint64_as_uint32;
+    }
+    else {
+      return type::uint64;
+    }    
+  }
+
+  type get_repr_type(const uint32_t& input) {
+    if (input <= std::numeric_limits<uint8_t>::max()
+        && input >= std::numeric_limits<uint8_t>::min())
+    {
+      return type::uint32_as_uint8;
+    }
+    else if (input <= std::numeric_limits<uint16_t>::max()
+        && input >= std::numeric_limits<uint16_t>::min())
+    {
+      return type::uint32_as_uint16;
+    }
+    else {
+      return type::uint32;
+    }    
+  }
+
+  type get_repr_type(const uint16_t& input) {
+    if (input <= std::numeric_limits<uint8_t>::max()
+        && input >= std::numeric_limits<uint8_t>::min())
+    {
+      return type::uint16_as_uint8;
+    }
+    else {
+      return type::uint16;
+    }    
+  }
+
+  type get_repr_type(const int64_t& input) {
+    if (input <= std::numeric_limits<int8_t>::max()
+        && input >= std::numeric_limits<int8_t>::min())
+    {
+      return type::int64_as_int8;
+    }
+    else if (input <= std::numeric_limits<int16_t>::max()
+        && input >= std::numeric_limits<int16_t>::min())
+    {
+      return type::int64_as_int16;
+    }
+    else if (input <= std::numeric_limits<int32_t>::max()
+        && input >= std::numeric_limits<int32_t>::min())
+    {
+      return type::int64_as_int32;
+    }
+    else {
+      return type::int64;
+    }    
+  }
+
+  type get_repr_type(const int32_t& input) {
+    if (input <= std::numeric_limits<int8_t>::max()
+        && input >= std::numeric_limits<int8_t>::min())
+    {
+      return type::int32_as_int8;
+    }
+    else if (input <= std::numeric_limits<int16_t>::max()
+        && input >= std::numeric_limits<int16_t>::min())
+    {
+      return type::int32_as_int16;
+    }
+    else {
+      return type::int32;
+    }    
+  }
+
+  type get_repr_type(const int16_t& input) {
+    if (input <= std::numeric_limits<int8_t>::max()
+        && input >= std::numeric_limits<int8_t>::min())
+    {
+      return type::int16_as_int8;
+    }
+    else {
+      return type::int16;
+    }    
+  }  
 
   template <typename T, typename U>
   void append(const T& value, U& bytes) {
@@ -106,12 +214,65 @@ namespace detail {
     if constexpr (save_type_info) {
       append(type::uint8, bytes);
     }
-    // width of the value - 1 byte
-    constexpr uint8_t width = 1;
-    append(width, bytes);
-    
     // value
     append(input, bytes);
+  }
+
+  template <bool save_type_info = true>  
+  void to_bytes(uint16_t input, std::vector<uint8_t>& bytes) {
+    // type of the value
+    if constexpr (save_type_info) {
+      append(get_repr_type(input), bytes);
+    }
+    
+    if (input <= std::numeric_limits<uint8_t>::max()
+        && input >= std::numeric_limits<uint8_t>::min())
+    {
+      // value can fit in an uint8_t
+      to_bytes<false>(static_cast<uint8_t>(input), bytes);
+    }
+    else {
+      // value
+      append(input, bytes);
+    }
+  }  
+
+  template <bool save_type_info = true>  
+  void to_bytes(uint32_t input, std::vector<uint8_t>& bytes) {
+    // type of the value
+    if constexpr (save_type_info) {
+      append(get_repr_type(input), bytes);
+    }
+    
+    if (input <= std::numeric_limits<uint16_t>::max()
+        && input >= std::numeric_limits<uint16_t>::min())
+    {
+      // value can fit in an uint16_t
+      to_bytes<false>(static_cast<uint16_t>(input), bytes);
+    }
+    else {
+      // value
+      append(input, bytes);
+    }
+  }
+
+  template <bool save_type_info = true>  
+  void to_bytes(uint64_t input, std::vector<uint8_t>& bytes) {
+    // type of the value
+    if constexpr (save_type_info) {      
+      append(get_repr_type(input), bytes);
+    }
+    
+    if (input <= std::numeric_limits<uint32_t>::max()
+        && input >= std::numeric_limits<uint32_t>::min())
+    {
+      // value can fit in an uint32_t
+      to_bytes<false>(static_cast<uint32_t>(input), bytes);
+    }
+    else {
+      // value
+      append(input, bytes);
+    }
   }
 
   template <bool save_type_info = true>  
@@ -127,70 +288,7 @@ namespace detail {
   template <bool save_type_info = true>  
   void to_bytes(char input, std::vector<uint8_t>& bytes) {
     to_bytes<save_type_info>(static_cast<uint8_t>(input), bytes);
-  }
-
-  template <bool save_type_info = true>  
-  void to_bytes(uint16_t input, std::vector<uint8_t>& bytes) {
-    if (input <= std::numeric_limits<uint8_t>::max()
-        && input >= std::numeric_limits<uint8_t>::min())
-    {
-      // value can fit in an uint8_t
-      to_bytes<save_type_info>(static_cast<uint8_t>(input), bytes);
-    }
-    else {
-      // type of the value
-      if constexpr (save_type_info) {      
-        append(type::uint16, bytes);
-      }
-      // width of the value - 2 bytes
-      constexpr uint8_t width = 2;
-      append(width, bytes);
-      // value
-      append(input, bytes);
-    }
   }  
-
-  template <bool save_type_info = true>  
-  void to_bytes(uint32_t input, std::vector<uint8_t>& bytes) {
-    if (input <= std::numeric_limits<uint16_t>::max()
-        && input >= std::numeric_limits<uint16_t>::min())
-    {
-      // value can fit in an uint16_t
-      to_bytes<save_type_info>(static_cast<uint16_t>(input), bytes);
-    }
-    else {
-      // type of the value
-      if constexpr (save_type_info) {      
-        append(type::uint32, bytes);
-      }
-      // width of the value - 4 bytes      
-      constexpr uint8_t width = 4;
-      append(width, bytes);
-      // value
-      append(input, bytes);
-    }
-  }
-
-  template <bool save_type_info = true>  
-  void to_bytes(uint64_t input, std::vector<uint8_t>& bytes) {
-    if (input <= std::numeric_limits<uint32_t>::max()
-        && input >= std::numeric_limits<uint32_t>::min())
-    {
-      // value can fit in an uint32_t
-      to_bytes<save_type_info>(static_cast<uint32_t>(input), bytes);
-    }
-    else {
-      // type of the value
-      if constexpr (save_type_info) {      
-        append(type::uint64, bytes);
-      }
-      // width of the value - 8 bytes      
-      constexpr uint8_t width = 8;
-      append(width, bytes);
-      // value
-      append(input, bytes);
-    }
-  }
 
   template <bool save_type_info = true>  
   void to_bytes(int8_t input, std::vector<uint8_t>& bytes) {
@@ -198,50 +296,43 @@ namespace detail {
     if constexpr (save_type_info) {
       append(type::int8, bytes);
     }
-    // width of the value - 1 byte
-    constexpr uint8_t width = 1;
-    append(width, bytes);
     // value
     append(input, bytes);
   }    
 
   template <bool save_type_info = true>
   void to_bytes(int16_t input, std::vector<uint8_t>& bytes) {
+    // type of the value
+    if constexpr (save_type_info) {
+      append(get_repr_type(input), bytes);	
+    }
+    
     if (input <= std::numeric_limits<int8_t>::max()
         && input >= std::numeric_limits<int8_t>::min())
     {
       // value can find in an int8_t
-      to_bytes<save_type_info>(static_cast<int8_t>(input), bytes);
+      to_bytes<false>(static_cast<int8_t>(input), bytes);
     }
     else {
-      // type of the value
-      if constexpr (save_type_info) {
-        append(type::int16, bytes);
-      }
-      // width of the value - 2 bytes
-      constexpr uint8_t width = 2;
-      append(width, bytes);
       // value
       append(input, bytes);
     }
   }  
 
-  template <bool save_type_info = true>  
+  template <bool save_type_info = true, bool originally_int32 = true>  
   void to_bytes(int32_t input, std::vector<uint8_t>& bytes) {
+    // type of the value
+    if constexpr (save_type_info) {
+      append(get_repr_type(input), bytes);	
+    }    
+    
     if (input <= std::numeric_limits<int16_t>::max()
         && input >= std::numeric_limits<int16_t>::min())
     {
       // value can find in an int16_t
-      to_bytes<save_type_info>(static_cast<int16_t>(input), bytes);
+      to_bytes<false>(static_cast<int16_t>(input), bytes);
     }
     else {
-      // type of the value
-      if constexpr (save_type_info) {
-        append(type::int32, bytes);
-      }
-      // width of the value - 4 bytes      
-      constexpr uint8_t width = 4;
-      append(width, bytes);
       // value
       append(input, bytes);
     }
@@ -249,20 +340,18 @@ namespace detail {
 
   template <bool save_type_info = true>  
   void to_bytes(int64_t input, std::vector<uint8_t>& bytes) {
+    // type of the value
+    if constexpr (save_type_info) {
+      append(get_repr_type(input), bytes);	
+    }    
+    
     if (input <= std::numeric_limits<int32_t>::max()
         && input >= std::numeric_limits<int32_t>::min())
     {
       // value can find in an int32_t
-      to_bytes<save_type_info>(static_cast<int32_t>(input), bytes);
+      to_bytes<false>(static_cast<int32_t>(input), bytes);
     }
     else {
-      // type of the value
-      if constexpr (save_type_info) {
-        append(type::int64, bytes);
-      }
-      // width of the value - 8 bytes      
-      constexpr uint8_t width = 8;
-      append(width, bytes);
       // value
       append(input, bytes);
     }
@@ -290,13 +379,7 @@ namespace detail {
       append(type::string, bytes);
     }
     
-    // size is always some unsigned integer type
-    // only save:
-    // 1. width (number of bytes in representation)
-    // 2. value
-    //
-    // No need to store type
-    to_bytes<false>(input.size(), bytes);
+    to_bytes<true>(input.size(), bytes);
 
     for (auto& c: input) {
       append(c, bytes);
@@ -312,15 +395,7 @@ namespace detail {
       append_value_type<typename std::decay<typename T::value_type>::type>(bytes);      
     }
     
-    // number of elements in list
-    // 
-    // size is always some unsigned integer type
-    // only save:
-    // 1. width (number of bytes in representation)
-    // 2. value
-    //
-    // No need to store type (e.g., uint8)
-    to_bytes<false>(input.size(), bytes);
+    to_bytes<true>(input.size(), bytes);
 
     // value of each element in list
     for (auto& v: input) {
@@ -330,7 +405,7 @@ namespace detail {
 	to_bytes_from_list_type<false, decayed_value_type>(v, bytes);
       }
       else {
-        to_bytes<false>(v, bytes);
+        to_bytes(v, bytes);
       }
     }
   }
