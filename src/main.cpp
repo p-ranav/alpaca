@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
-#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -426,19 +425,6 @@ void to_bytes(const std::string &input, std::vector<uint8_t> &bytes) {
 }
 
 template <bool save_type_info = true, bool attempt_compression = true>
-void to_bytes(std::string_view input, std::vector<uint8_t> &bytes) {
-  if constexpr (save_type_info) {
-    append(type::string, bytes);
-  }
-
-  to_bytes<true>(input.size(), bytes);
-
-  for (auto &c : input) {
-    append(c, bytes);
-  }
-}
-
-template <bool save_type_info = true, bool attempt_compression = true>
 void to_bytes(const char *input, std::vector<uint8_t> &bytes) {
   if constexpr (save_type_info) {
     append(type::string, bytes);
@@ -617,37 +603,6 @@ int main() {
   // Test 3
   {
     struct my_struct {
-      std::string_view str;
-    };
-    my_struct s;
-    s.str = "This is cool";
-
-    std::vector<uint8_t> bytes{};
-    serialize<my_struct>(s, bytes);
-    bytes.shrink_to_fit();
-    std::cout << "Original struct size : "
-              << sizeof(s) + s.str.size() * sizeof(s.str[0]) << " bytes\n";
-    std::cout << "Serialized to        : " << bytes.size() << " bytes\n";
-    std::cout << "Compression ratio    : "
-              << (float(sizeof(s) + s.str.size() * sizeof(s.str[0])) /
-                  float(bytes.size()) * 100.0f)
-              << "%\n";
-    std::cout << "Space savings        : "
-              << (1 - float(bytes.size()) / float(sizeof(s))) * 100.0f << "%\n";
-
-    for (auto &b : bytes) {
-      std::cout << "0x" << std::hex << std::setfill('0') << std::setw(2)
-                << (int)b << " ";
-    }
-    std::cout << "\n";
-    std::cout.flags(f);
-  }
-
-  std::cout << "\n---\n\n";
-
-  // Test 4
-  {
-    struct my_struct {
       const char *str;
     };
     my_struct s;
@@ -676,7 +631,7 @@ int main() {
 
   std::cout << "\n---\n\n";
 
-  // Test 5
+  // Test 4
   {
     struct my_struct {
       std::vector<bool> values;
@@ -704,7 +659,7 @@ int main() {
 
   std::cout << "\n---\n\n";
 
-  // Test 6
+  // Test 5
   {
     struct my_struct {
       std::tuple<bool, int, float, std::string, char> values;
@@ -732,7 +687,7 @@ int main() {
 
   std::cout << "\n---\n\n";
 
-  // Test 7
+  // Test 6
   {
     struct my_struct {
       std::vector<std::tuple<bool, int, float, std::string, char>> values;
