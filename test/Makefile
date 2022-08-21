@@ -1,5 +1,9 @@
 all:
-	g++ -Wall -std=c++17 -O3 -I. -I../include -o main main.cpp test_serialize_uint.cpp test_serialize_int.cpp test_serialize_string.cpp
+	g++ -Wall -std=c++17 -O3 -I. -I../include -o main main.cpp \
+	test_serialize_uint.cpp   \
+	test_serialize_int.cpp    \
+	test_serialize_string.cpp \
+	test_serialize_float.cpp
 
 clean:
 	rm main

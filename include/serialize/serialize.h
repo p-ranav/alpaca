@@ -21,21 +21,18 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
 
     // check if vector
     if constexpr (detail::is_vector<decayed_field_type>::value) {
-      detail::to_bytes_from_list_type<true, decayed_field_type>(
-          field, bytes);
-    } 
+      detail::to_bytes_from_list_type<true, decayed_field_type>(field, bytes);
+    }
     // check if tuple
     else if constexpr (detail::is_tuple<decayed_field_type>::value) {
-      detail::to_bytes_from_tuple_type<true, decayed_field_type>(
-          field, bytes);
+      detail::to_bytes_from_tuple_type<true, decayed_field_type>(field, bytes);
 
     }
-    // check if pair 
+    // check if pair
     else if constexpr (detail::is_pair<decayed_field_type>::value) {
-      detail::to_bytes_from_pair_type<true, decayed_field_type>(
-          field, bytes);
+      detail::to_bytes_from_pair_type<true, decayed_field_type>(field, bytes);
     }
-    // check if string 
+    // check if string
     else if constexpr (detail::is_string::detect<decayed_field_type>) {
       detail::to_bytes<true, true>(field, bytes);
     }
