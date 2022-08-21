@@ -89,9 +89,6 @@ TEST_CASE("Serialize vector<bool>" * test_suite("vector")) {
   }
 }
 
-#include <iomanip>
-#include <iostream>
-
 TEST_CASE("Serialize vector<std::string>" * test_suite("vector")) {
   struct my_struct {
     std::vector<std::string> value;
