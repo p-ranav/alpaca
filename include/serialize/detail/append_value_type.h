@@ -23,7 +23,7 @@ template <typename T, typename U> void append_value_type(U &bytes) {
   if constexpr (std::is_same<T, bool>::value) {
     append(type::boolean, bytes);
   } else if constexpr (std::is_same<T, char>::value) {
-    append(type::uint8, bytes);
+    append(type::int8, bytes);
   } else if constexpr (std::is_same<T, uint8_t>::value) {
     append(type::uint8, bytes);
   } else if constexpr (std::is_same<T, uint16_t>::value) {

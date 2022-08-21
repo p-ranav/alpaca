@@ -12,6 +12,30 @@ using doctest::test_suite;
           sizeof expected_value,                                               \
       std::back_inserter(expected));
 
+TEST_CASE("Serialize vector<char>" * test_suite("vector")) {
+  struct my_struct {
+    std::vector<char> value;
+  };
+
+  my_struct s{{'x', 'y', 'z'}};
+  auto bytes = serialize(s);
+  REQUIRE(bytes.size() == 7);
+  REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
+  // value_type
+  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::int8));
+  // size
+  REQUIRE(bytes[2] == static_cast<uint8_t>(detail::type::uint64_as_uint8));
+  REQUIRE(bytes[3] == static_cast<uint8_t>(3));
+  // values
+  char current_value = 'x';
+  for (std::size_t i = 4; i < bytes.size();) {
+    CONSTRUCT_EXPECTED_VALUE(char, current_value++);
+    for (std::size_t j = 0; j < expected.size(); ++j) {
+      REQUIRE(bytes[i++] == expected[j]);
+    }
+  }
+}
+
 TEST_CASE("Serialize vector<int>" * test_suite("vector")) {
   struct my_struct {
     std::vector<int> value;
