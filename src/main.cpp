@@ -3,6 +3,7 @@
 #include <boost/pfr.hpp>
 #include <cstdint>
 #include <cstring>
+#include <serialize/struct_nth_field.h>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -541,10 +542,13 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
 
 template <typename T, std::size_t index = 0>
 void serialize(T &s, std::vector<uint8_t> &bytes) {
-  constexpr static auto max_index = boost::pfr::tuple_size<T>::value;
+  constexpr static auto max_index =
+      detail::aggregate_arity<std::remove_cv_t<T>>::size();
   if constexpr (index < max_index) {
-    using decayed_field_type =
-        typename std::decay<decltype(boost::pfr::get<index>(s))>::type;
+    decltype(auto) field = detail::get<index>(s);
+    using decayed_field_type = typename std::decay<decltype(field)>::type;
+    // using decayed_field_type =
+    //     typename std::decay<decltype(boost::pfr::get<index>(s))>::type;
     if constexpr (detail::is_vector<decayed_field_type>::value) {
       detail::to_bytes_from_list_type<true, decayed_field_type>(
           boost::pfr::get<index>(s), bytes);
@@ -555,10 +559,19 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
     } else if constexpr (detail::is_pair<decayed_field_type>::value) {
       detail::to_bytes_from_pair_type<true, decayed_field_type>(
           boost::pfr::get<index>(s), bytes);
+    } else if constexpr (detail::is_string::detect<decayed_field_type>) {
+      detail::to_bytes<true, true>(boost::pfr::get<index>(s), bytes);
+    } else if constexpr (std::is_class<decayed_field_type>::value) {
+      // save nested struct type
+      detail::append(detail::type::struct_, bytes);
 
+      // recurse
+      serialize<decayed_field_type>(field, bytes);
     } else {
       detail::to_bytes<true, true>(boost::pfr::get<index>(s), bytes);
     }
+
+    // go to next field
     serialize<T, index + 1>(s, bytes);
   }
 }
@@ -766,6 +779,58 @@ int main() {
 
     std::vector<uint8_t> bytes{};
     serialize<my_struct>(s, bytes);
+    bytes.shrink_to_fit();
+    std::cout << "Original struct size : " << sizeof(s) << " bytes\n";
+    std::cout << "Serialized to        : " << bytes.size() << " bytes\n";
+    std::cout << "Compression ratio    : "
+              << (float(sizeof(s)) / float(bytes.size()) * 100.0f) << "%\n";
+    std::cout << "Space savings        : "
+              << (1 - float(bytes.size()) / float(sizeof(s))) * 100.0f << "%\n";
+
+    for (auto &b : bytes) {
+      std::cout << "0x" << std::hex << std::setfill('0') << std::setw(2)
+                << (int)b << " ";
+    }
+    std::cout << "\n";
+    std::cout.flags(f);
+  }
+
+  std::cout << "\n---\n\n";
+
+  // Test 8
+  {
+    struct my_struct {
+      int value;
+
+      struct nested_struct {
+        float value;
+      };
+      nested_struct nested;
+    };
+
+    // construct
+    my_struct s;
+    s.value = 5;
+    s.nested.value = 3.14f;
+
+    // serialize
+    std::vector<uint8_t> bytes{};
+    serialize<my_struct>(s, bytes);
+
+    // bytes: 0x0e 0x05 0x1b 0x15 0xc3 0xf5 0x48 0x40
+
+    /*
+      field:
+        type: 0x0e (int32_as_int8)
+        value: 0x05 (value = 5)
+
+      field:
+        type: 0x1b (struct)
+        field:
+          type: 0x15 (float32)
+          value: 0xc3 0xf5 0x48 0x40 (value = 3.14f)
+    */
+
     bytes.shrink_to_fit();
     std::cout << "Original struct size : " << sizeof(s) << " bytes\n";
     std::cout << "Serialized to        : " << bytes.size() << " bytes\n";
