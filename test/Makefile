@@ -6,7 +6,8 @@ all:
 	test_serialize_float.cpp  \
 	test_serialize_bool.cpp   \
 	test_serialize_vector.cpp \
-	test_serialize_tuple.cpp
+	test_serialize_tuple.cpp  \
+	test_serialize_pair.cpp
 
 clean:
 	rm main
