@@ -85,9 +85,6 @@ TEST_CASE("Serialize vector<float>" * test_suite("vector")) {
   }
 }
 
-#include <iomanip>
-#include <iostream>
-
 TEST_CASE("Serialize vector<bool>" * test_suite("vector")) {
   struct my_struct {
     std::vector<bool> value;
@@ -170,7 +167,8 @@ TEST_CASE("Serialize vector<vector<int>>" * test_suite("vector")) {
 
     if (current_value == 4) {
       // size of second sub-vector
-      REQUIRE(bytes[i++] == static_cast<uint8_t>(detail::type::uint64_as_uint8));
+      REQUIRE(bytes[i++] ==
+              static_cast<uint8_t>(detail::type::uint64_as_uint8));
       REQUIRE(bytes[i++] == static_cast<uint8_t>(3));
     }
   }
