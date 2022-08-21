@@ -12,7 +12,7 @@ using doctest::test_suite;
                 sizeof expected_value, \
             std::back_inserter(expected));
 
-TEST_CASE("Serialize int8_t" * test_suite("serialize")) {
+TEST_CASE("Serialize int8_t" * test_suite("signed_integer")) {
   struct my_struct {
     int8_t value;
   };
@@ -24,7 +24,7 @@ TEST_CASE("Serialize int8_t" * test_suite("serialize")) {
   REQUIRE(bytes[1] == static_cast<uint8_t>(5));
 }
 
-TEST_CASE("Serialize int16_t" * test_suite("serialize")) {
+TEST_CASE("Serialize int16_t" * test_suite("signed_integer")) {
   struct my_struct {
     int16_t value;
   };
@@ -50,7 +50,7 @@ TEST_CASE("Serialize int16_t" * test_suite("serialize")) {
   }
 }
 
-TEST_CASE("Serialize int32_t" * test_suite("serialize")) {
+TEST_CASE("Serialize int32_t" * test_suite("signed_integer")) {
   struct my_struct {
     int32_t value;
   };
@@ -88,7 +88,7 @@ TEST_CASE("Serialize int32_t" * test_suite("serialize")) {
   }
 }
 
-TEST_CASE("Serialize int64_t" * test_suite("serialize")) {
+TEST_CASE("Serialize int64_t" * test_suite("signed_integer")) {
   struct my_struct {
     int64_t value;
   };
