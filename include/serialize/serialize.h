@@ -1,6 +1,7 @@
 #pragma once
 #include <serialize/detail/aggregate_arity.h>
 #include <serialize/detail/append.h>
+#include <serialize/detail/from_bytes.h>
 #include <serialize/detail/get_repr_type.h>
 #include <serialize/detail/is_pair.h>
 #include <serialize/detail/is_string.h>
@@ -56,4 +57,28 @@ template <typename T> std::vector<uint8_t> serialize(T &s) {
   std::vector<uint8_t> bytes{};
   serialize<T, 0>(s, bytes);
   return bytes;
+}
+
+template <typename T, std::size_t index = 0>
+void deserialize(T &s, const std::vector<uint8_t> &bytes,
+                 std::size_t byte_index = 0) {
+  constexpr static auto max_index =
+      detail::aggregate_arity<std::remove_cv_t<T>>::size();
+  if constexpr (index < max_index) {
+    decltype(auto) field = detail::get<index>(s);
+    using decayed_field_type = typename std::decay<decltype(field)>::type;
+
+    // set value for current field
+    detail::from_bytes<decayed_field_type>(field, bytes, byte_index);
+    /// TODO: Check result of from_bytes call and proceed accordingly
+
+    // go to next field
+    deserialize<T, index + 1>(s, bytes, byte_index);
+  }
+}
+
+template <typename T> T deserialize(const std::vector<uint8_t> &bytes) {
+  T object{};
+  deserialize<T, 0>(object, bytes);
+  return object;
 }
