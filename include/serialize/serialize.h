@@ -1,5 +1,4 @@
 #pragma once
-#include <boost/pfr.hpp>
 #include <serialize/detail/aggregate_arity.h>
 #include <serialize/detail/append.h>
 #include <serialize/detail/append_value_type.h>
@@ -19,28 +18,36 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
   if constexpr (index < max_index) {
     decltype(auto) field = detail::get<index>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
-    // using decayed_field_type =
-    //     typename std::decay<decltype(boost::pfr::get<index>(s))>::type;
+
+    // check if vector
     if constexpr (detail::is_vector<decayed_field_type>::value) {
       detail::to_bytes_from_list_type<true, decayed_field_type>(
-          boost::pfr::get<index>(s), bytes);
-    } else if constexpr (detail::is_tuple<decayed_field_type>::value) {
+          field, bytes);
+    } 
+    // check if tuple
+    else if constexpr (detail::is_tuple<decayed_field_type>::value) {
       detail::to_bytes_from_tuple_type<true, decayed_field_type>(
-          boost::pfr::get<index>(s), bytes);
+          field, bytes);
 
-    } else if constexpr (detail::is_pair<decayed_field_type>::value) {
+    }
+    // check if pair 
+    else if constexpr (detail::is_pair<decayed_field_type>::value) {
       detail::to_bytes_from_pair_type<true, decayed_field_type>(
-          boost::pfr::get<index>(s), bytes);
-    } else if constexpr (detail::is_string::detect<decayed_field_type>) {
-      detail::to_bytes<true, true>(boost::pfr::get<index>(s), bytes);
-    } else if constexpr (std::is_class<decayed_field_type>::value) {
+          field, bytes);
+    }
+    // check if string 
+    else if constexpr (detail::is_string::detect<decayed_field_type>) {
+      detail::to_bytes<true, true>(field, bytes);
+    }
+    // check if nested struct
+    else if constexpr (std::is_class<decayed_field_type>::value) {
       // save nested struct type
       detail::append(detail::type::struct_, bytes);
 
       // recurse
       serialize<decayed_field_type>(field, bytes);
     } else {
-      detail::to_bytes<true, true>(boost::pfr::get<index>(s), bytes);
+      detail::to_bytes<true, true>(field, bytes);
     }
 
     // go to next field

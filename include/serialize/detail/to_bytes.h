@@ -92,11 +92,11 @@ void to_bytes(bool input, std::vector<uint8_t> &bytes) {
 
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(char input, std::vector<uint8_t> &bytes) {
-  to_bytes<save_type_info, attempt_compression>(static_cast<uint8_t>(input),
+  to_bytes<save_type_info, attempt_compression>(static_cast<int8_t>(input),
                                                 bytes);
 }
 
-template <bool save_type_info>
+template <bool save_type_info, bool attempt_compression>
 void to_bytes(int8_t input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
@@ -116,7 +116,7 @@ void to_bytes(int16_t input, std::vector<uint8_t> &bytes) {
   if constexpr (attempt_compression) {
     if (input <= std::numeric_limits<int8_t>::max() &&
         input >= std::numeric_limits<int8_t>::min()) {
-      // value can find in an int8_t
+      // value can fit in an int8_t
       append(static_cast<int8_t>(input), bytes);
     } else {
       // value
@@ -138,7 +138,7 @@ void to_bytes(int32_t input, std::vector<uint8_t> &bytes) {
   if constexpr (attempt_compression) {
     if (input <= std::numeric_limits<int16_t>::max() &&
         input >= std::numeric_limits<int16_t>::min()) {
-      // value can find in an int16_t
+      // value can fit in an int16_t
       to_bytes<false, true>(static_cast<int16_t>(input), bytes);
     } else {
       // value
@@ -160,7 +160,7 @@ void to_bytes(int64_t input, std::vector<uint8_t> &bytes) {
   if constexpr (attempt_compression) {
     if (input <= std::numeric_limits<int32_t>::max() &&
         input >= std::numeric_limits<int32_t>::min()) {
-      // value can find in an int32_t
+      // value can fit in an int32_t
       to_bytes<false, true>(static_cast<int32_t>(input), bytes);
     } else {
       // value
