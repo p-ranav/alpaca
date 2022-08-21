@@ -115,3 +115,39 @@ TEST_CASE("Serialize vector<std::string>" * test_suite("vector")) {
     }
   }
 }
+
+TEST_CASE("Serialize vector<vector<int>>" * test_suite("vector")) {
+  struct my_struct {
+    std::vector<std::vector<int>> value;
+  };
+
+  my_struct s{{{1, 2, 3}, {4, 5, 6}}};
+  auto bytes = serialize(s);
+  REQUIRE(bytes.size() == 33);
+  REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
+  // value_type
+  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::vector));
+  REQUIRE(bytes[2] == static_cast<uint8_t>(detail::type::int32));
+  // size
+  REQUIRE(bytes[3] == static_cast<uint8_t>(detail::type::uint64_as_uint8));
+  REQUIRE(bytes[4] == static_cast<uint8_t>(2));
+
+  // first sub-vector
+  REQUIRE(bytes[5] == static_cast<uint8_t>(detail::type::uint64_as_uint8));
+  REQUIRE(bytes[6] == static_cast<uint8_t>(3));
+
+  // values
+  int current_value = 1;
+  for (std::size_t i = 7; i < bytes.size();) {
+    CONSTRUCT_EXPECTED_VALUE(int32_t, current_value++);
+    for (std::size_t j = 0; j < expected.size(); ++j) {
+      REQUIRE(bytes[i++] == expected[j]);
+    }
+
+    if (current_value == 4) {
+      // size of second sub-vector
+      REQUIRE(bytes[i++] == static_cast<uint8_t>(detail::type::uint64_as_uint8));
+      REQUIRE(bytes[i++] == static_cast<uint8_t>(3));
+    }
+  }
+}
