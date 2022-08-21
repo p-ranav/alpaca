@@ -107,4 +107,4 @@ type get_repr_type(const int16_t &input) {
   }
 }
 
-}
+} // namespace detail

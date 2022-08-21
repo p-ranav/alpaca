@@ -441,6 +441,12 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
   }
 }
 
+template <typename T> std::vector<uint8_t> serialize(T &s) {
+  std::vector<uint8_t> bytes{};
+  serialize<T, 0>(s, bytes);
+  return bytes;
+}
+
 /// Start of Test Code
 
 #include <iostream>
@@ -679,8 +685,7 @@ int main() {
     s.nested.value = 3.14f;
 
     // serialize
-    std::vector<uint8_t> bytes{};
-    serialize<my_struct>(s, bytes);
+    auto bytes = serialize(s);
 
     // bytes: 0x0e 0x05 0x1b 0x15 0xc3 0xf5 0x48 0x40
 
