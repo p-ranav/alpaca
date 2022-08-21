@@ -1,21 +1,21 @@
 #include <iostream>
 #include <serialize/serialize.h>
 
-struct my_struct {
-  bool flag;
-  std::string s;
-  int i;
-  float f;
-  std::vector<int> list;
-  std::vector<std::vector<char>> list_of_lists;
-  std::vector<std::vector<int>> list_of_lists_int;
-};
-
 int main() {
   std::ios_base::fmtflags f(std::cout.flags());
 
   // Test 1
   {
+    struct my_struct {
+      bool flag;
+      std::string s;
+      int i;
+      float f;
+      std::vector<int> list;
+      std::vector<std::vector<char>> list_of_lists;
+      std::vector<std::vector<int>> list_of_lists_int;
+    };
+
     my_struct s{true,
                 {"Hello world!"},
                 5,
