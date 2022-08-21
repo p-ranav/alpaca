@@ -7,7 +7,8 @@ all:
 	test_serialize_bool.cpp   \
 	test_serialize_vector.cpp \
 	test_serialize_tuple.cpp  \
-	test_serialize_pair.cpp
+	test_serialize_pair.cpp   \
+	test_serialize_nested_struct.cpp
 
 clean:
 	rm main
