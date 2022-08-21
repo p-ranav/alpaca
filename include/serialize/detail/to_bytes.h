@@ -1,7 +1,7 @@
 #pragma once
 #include <cstring>
-#include <serialize/detail/append_value_type.h>
 #include <serialize/detail/is_string.h>
+#include <serialize/detail/size_to_type.h>
 
 namespace detail {
 
@@ -195,7 +195,12 @@ void to_bytes(const std::string &input, std::vector<uint8_t> &bytes) {
     append(type::string, bytes);
   }
 
-  to_bytes<true, true>(input.size(), bytes);
+  const auto size = input.size();
+  if (size <= 99) {
+    append(size_to_type(size), bytes);
+  } else {
+    to_bytes<true, true>(size, bytes);
+  }
 
   for (auto &c : input) {
     append(c, bytes);
@@ -209,20 +214,14 @@ void to_bytes(const char *input, std::vector<uint8_t> &bytes) {
   }
 
   std::size_t size = strlen(input);
-  to_bytes<true, true>(size, bytes);
+  if (size <= 99) {
+    append(size_to_type(size), bytes);
+  } else {
+    to_bytes<true, true>(size, bytes);
+  }
 
   for (std::size_t i = 0; i < size; ++i) {
     append(input[i], bytes);
-  }
-}
-
-template <typename T, std::size_t index>
-void save_tuple_value_type(std::vector<uint8_t> &bytes) {
-  constexpr auto max_index = std::tuple_size<T>::value;
-  if constexpr (index < max_index) {
-    using tuple_element_type = std::tuple_element_t<index, T>;
-    append_value_type<tuple_element_type>(bytes);
-    save_tuple_value_type<T, index + 1>(bytes);
   }
 }
 
@@ -240,19 +239,10 @@ void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes) {
   // type of tuple + each element
   if constexpr (save_type_info) {
     append(type::tuple, bytes);
-    // save number of types in tuple
-    to_bytes<true, true>(std::tuple_size<T>::value, bytes);
-    // save type of each element
-    save_tuple_value_type<T, 0>(bytes);
   }
 
   // value of each element
   save_tuple_value<T, 0>(input, bytes);
-}
-
-template <typename T> void save_pair_value_type(std::vector<uint8_t> &bytes) {
-  append_value_type<typename T::first_type>(bytes);
-  append_value_type<typename T::second_type>(bytes);
 }
 
 template <typename T>
@@ -266,8 +256,6 @@ void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes) {
   // type of tuple + each element
   if constexpr (save_type_info) {
     append(type::pair, bytes);
-    // save type of each element
-    save_pair_value_type<T>(bytes);
   }
 
   // value of each element
@@ -279,11 +267,14 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
   // type of the value
   if constexpr (save_type_info) {
     append(type::vector, bytes);
-    // save type of list::value_type
-    append_value_type<typename std::decay<typename T::value_type>::type>(bytes);
   }
 
-  to_bytes<true, true>(input.size(), bytes);
+  const auto size = input.size();
+  if (size <= 99) {
+    append(size_to_type(size), bytes);
+  } else {
+    to_bytes<true, true>(size, bytes);
+  }
 
   // value of each element in list
   for (const auto &v : input) {

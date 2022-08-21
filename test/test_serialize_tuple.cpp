@@ -19,23 +19,14 @@ TEST_CASE("Serialize tuple<int, float, bool>" * test_suite("tuple")) {
 
   my_struct s{std::make_tuple(5, 3.14, true, "Hello", 'i')};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 25);
+  REQUIRE(bytes.size() == 17);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::tuple));
-  // size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::uint64_as_uint8));
-  REQUIRE(bytes[2] == static_cast<uint8_t>(5));
-  // type of each element
-  REQUIRE(bytes[3] == static_cast<uint8_t>(detail::type::int32));
-  REQUIRE(bytes[4] == static_cast<uint8_t>(detail::type::float32));
-  REQUIRE(bytes[5] == static_cast<uint8_t>(detail::type::boolean));
-  REQUIRE(bytes[6] == static_cast<uint8_t>(detail::type::string));
-  REQUIRE(bytes[7] == static_cast<uint8_t>(detail::type::int8));
 
   // int
   {
     CONSTRUCT_EXPECTED_VALUE(int, 5);
     for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[8 + i] == expected[i]);
+      REQUIRE(bytes[1 + i] == expected[i]);
     }
   }
 
@@ -43,24 +34,23 @@ TEST_CASE("Serialize tuple<int, float, bool>" * test_suite("tuple")) {
   {
     CONSTRUCT_EXPECTED_VALUE(float, 3.14f);
     for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[12 + i] == expected[i]);
+      REQUIRE(bytes[5 + i] == expected[i]);
     }
   }
 
   // bool
-  REQUIRE(bytes[16] == static_cast<uint8_t>(true));
+  REQUIRE(bytes[9] == static_cast<uint8_t>(true));
 
   // string size
-  REQUIRE(bytes[17] == static_cast<uint8_t>(detail::type::uint64_as_uint8));
-  REQUIRE(bytes[18] == static_cast<uint8_t>(5));
+  REQUIRE(bytes[10] == static_cast<uint8_t>(detail::type::size5));
 
   // string value
-  REQUIRE(bytes[19] == static_cast<uint8_t>('H'));
-  REQUIRE(bytes[20] == static_cast<uint8_t>('e'));
-  REQUIRE(bytes[21] == static_cast<uint8_t>('l'));
-  REQUIRE(bytes[22] == static_cast<uint8_t>('l'));
-  REQUIRE(bytes[23] == static_cast<uint8_t>('o'));
+  REQUIRE(bytes[11] == static_cast<uint8_t>('H'));
+  REQUIRE(bytes[12] == static_cast<uint8_t>('e'));
+  REQUIRE(bytes[13] == static_cast<uint8_t>('l'));
+  REQUIRE(bytes[14] == static_cast<uint8_t>('l'));
+  REQUIRE(bytes[15] == static_cast<uint8_t>('o'));
 
   // char
-  REQUIRE(bytes[24] == static_cast<uint8_t>('i'));
+  REQUIRE(bytes[16] == static_cast<uint8_t>('i'));
 }
