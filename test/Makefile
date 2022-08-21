@@ -3,7 +3,8 @@ all:
 	test_serialize_uint.cpp   \
 	test_serialize_int.cpp    \
 	test_serialize_string.cpp \
-	test_serialize_float.cpp
+	test_serialize_float.cpp  \
+	test_serialize_bool.cpp
 
 clean:
 	rm main
