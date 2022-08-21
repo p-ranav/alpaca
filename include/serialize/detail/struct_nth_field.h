@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include <serialize/aggregate_arity.h>
+#include <serialize/detail/aggregate_arity.h>
 
 namespace detail {
 
