@@ -1,4 +1,5 @@
 #pragma once
+#include <iterator>
 #include <serialize/detail/type.h>
 
 namespace detail {

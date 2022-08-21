@@ -1,5 +1,4 @@
 #include <doctest.hpp>
-#include <iterator>
 #include <serialize/serialize.h>
 
 using doctest::test_suite;

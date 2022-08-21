@@ -1,6 +1,7 @@
 #pragma once
 #include <cstring>
 #include <serialize/detail/append_value_type.h>
+#include <serialize/detail/is_string.h>
 
 namespace detail {
 
@@ -292,6 +293,8 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
       to_bytes_from_list_type<false, decayed_value_type>(v, bytes);
     } else if constexpr (is_tuple<decayed_value_type>::value) {
       to_bytes_from_tuple_type<false, decayed_value_type>(v, bytes);
+    } else if constexpr (is_string::detect<decayed_value_type>) {
+      to_bytes<false, false>(v, bytes);
     } else {
       // dump all the values
       // note: no attempted compression for integer types

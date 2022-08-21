@@ -4,7 +4,8 @@ all:
 	test_serialize_int.cpp    \
 	test_serialize_string.cpp \
 	test_serialize_float.cpp  \
-	test_serialize_bool.cpp
+	test_serialize_bool.cpp   \
+	test_serialize_vector.cpp
 
 clean:
 	rm main
