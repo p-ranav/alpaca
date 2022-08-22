@@ -27,3 +27,11 @@ int main() {
   assert(recovered.d == "Hello");  
 }
 ```
+
+The above serialization generates a compact vector of 12 bytes:
+
+```
+0x61 0x05 0xc3 0xf5 0x48 0x40 0x05 0x48 0x65 0x6c 0x6c 0x6f
+^^^^ ^^^^ ^^^^^^^^^^^^^^^^^^^ ^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^
+'a'  5    3.14                5    "Hello"
+```
