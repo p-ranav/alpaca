@@ -5,14 +5,14 @@ Serialization library in modern C++ - serialize a struct to bytes and back witho
 #include <cassert>
 #include <serialize/serialize.h>
 
-int main() {
+struct Message {
+  char a;
+  int b;
+  float c;
+  std::string d;
+};
 
-  struct Message {
-    char a;
-    int b;
-    float c;
-    std::string d;
-  };
+int main() {
 
   Message msg{'a', 5, 3.14f, "Hello"};
 
@@ -26,5 +26,4 @@ int main() {
   assert(recovered.c == 3.14f);
   assert(recovered.d == "Hello");  
 }
-
 ```
