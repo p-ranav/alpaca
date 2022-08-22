@@ -3,8 +3,6 @@
 #include <serialize/detail/size_to_type.h>
 #include <vector>
 
-#include <iostream>
-
 namespace detail {
 
 template <typename T, typename U>
@@ -114,8 +112,6 @@ static inline bool from_bytes_to_string(std::string &value,
     // using type::size* for the size
     size = type_to_size(size_type);
   }
-
-  std::cout << size << "\n";
 
   if (!read_result) {
     return false;

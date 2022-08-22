@@ -31,3 +31,25 @@ TEST_CASE("Deserialize std::string" * test_suite("string")) {
     REQUIRE(result.value == std::string{"Hello World!"});
   }
 }
+
+TEST_CASE("Deserialize int and std::string" * test_suite("string")) {
+  struct my_struct {
+    int index;
+    std::string value;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    my_struct s{5, "Hello World!"};
+    bytes = serialize(s);
+  }
+
+  // deserialize
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE(result.index == 5);
+    REQUIRE(result.value == std::string{"Hello World!"});
+  }
+}

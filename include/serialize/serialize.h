@@ -35,7 +35,7 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
     }
     // check if string
     else if constexpr (detail::is_string::detect<decayed_field_type>) {
-      detail::to_bytes<true, true>(field, bytes);
+      detail::to_bytes<false, true>(field, bytes);
     }
     // check if nested struct
     else if constexpr (std::is_class<decayed_field_type>::value) {
@@ -71,7 +71,6 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
     // set value for current field
     /// TODO: Check result of from_bytes call and proceed accordingly
     if constexpr (detail::is_string::detect<decayed_field_type>) {
-      byte_index += 1; // get past the type_info byte (type::string)
       detail::from_bytes_to_string(field, bytes, byte_index);
     } else {
       detail::from_bytes<decayed_field_type>(field, bytes, byte_index);
