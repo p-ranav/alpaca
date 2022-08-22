@@ -12,7 +12,8 @@ all:
 	test_deserialize_uint.cpp \
 	test_deserialize_int.cpp \
 	test_deserialize_string.cpp \
-	test_deserialize_float.cpp
+	test_deserialize_float.cpp \
+	test_deserialize_bool.cpp
 
 clean:
 	rm main

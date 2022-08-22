@@ -2,83 +2,28 @@
 #include <cstring>
 #include <serialize/detail/is_string.h>
 #include <serialize/detail/size_to_type.h>
+#include <serialize/detail/unsigned_int_encoding.h>
 
 namespace detail {
 
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint8_t input, std::vector<uint8_t> &bytes) {
-  // type of the value
-  if constexpr (save_type_info) {
-    append(type::uint8, bytes);
-  }
-  // value
-  append(input, bytes);
+  encode_varint<uint8_t>(input, bytes);
 }
 
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint16_t input, std::vector<uint8_t> &bytes) {
-  // type of the value
-  if constexpr (save_type_info) {
-    append(get_repr_type<attempt_compression>(input), bytes);
-  }
-
-  if constexpr (attempt_compression) {
-    if (input <= std::numeric_limits<uint8_t>::max() &&
-        input >= std::numeric_limits<uint8_t>::min()) {
-      // value can fit in an uint8_t
-      append(static_cast<uint8_t>(input), bytes);
-    } else {
-      // value
-      append(input, bytes);
-    }
-  } else {
-    // value
-    append(input, bytes);
-  }
+  encode_varint<uint16_t>(input, bytes);
 }
 
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint32_t input, std::vector<uint8_t> &bytes) {
-  // type of the value
-  if constexpr (save_type_info) {
-    append(get_repr_type<attempt_compression>(input), bytes);
-  }
-
-  if constexpr (attempt_compression) {
-    if (input <= std::numeric_limits<uint16_t>::max() &&
-        input >= std::numeric_limits<uint16_t>::min()) {
-      // value can fit in an uint16_t
-      to_bytes<false, true>(static_cast<uint16_t>(input), bytes);
-    } else {
-      // value
-      append(input, bytes);
-    }
-  } else {
-    // value
-    append(input, bytes);
-  }
+  encode_varint<uint32_t>(input, bytes);
 }
 
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint64_t input, std::vector<uint8_t> &bytes) {
-  // type of the value
-  if constexpr (save_type_info || attempt_compression) {
-    append(get_repr_type<attempt_compression>(input), bytes);
-  }
-
-  if constexpr (attempt_compression) {
-    if (input <= std::numeric_limits<uint32_t>::max() &&
-        input >= std::numeric_limits<uint32_t>::min()) {
-      // value can fit in an uint32_t
-      to_bytes<false, true>(static_cast<uint32_t>(input), bytes);
-    } else {
-      // value
-      append(input, bytes);
-    }
-  } else {
-    // value
-    append(input, bytes);
-  }
+  encode_varint<uint64_t>(input, bytes);
 }
 
 template <bool save_type_info, bool attempt_compression>

@@ -23,7 +23,7 @@ TEST_CASE("Deserialize uint8_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{5};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 2);
+    REQUIRE(bytes.size() == 1);
   }
 
   // deserialize
@@ -45,7 +45,7 @@ TEST_CASE("Deserialize uint16_t (stored as uint8_t)" *
   {
     my_struct s{99};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 2);
+    REQUIRE(bytes.size() == 1);
   }
 
   // deserialize
@@ -66,7 +66,7 @@ TEST_CASE("Deserialize uint16_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{512};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 3);
+    REQUIRE(bytes.size() == 2);
   }
 
   // deserialize
@@ -88,7 +88,7 @@ TEST_CASE("Deserialize uint32_t (packed as uint8_t)" *
   {
     my_struct s{5};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 2);
+    REQUIRE(bytes.size() == 1);
   }
 
   // deserialize
@@ -110,7 +110,7 @@ TEST_CASE("Deserialize uint32_t (packed as uint16_t)" *
   {
     my_struct s{1600};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 3);
+    REQUIRE(bytes.size() == 2);
   }
 
   // deserialize
@@ -131,7 +131,7 @@ TEST_CASE("Deserialize uint32_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{75535};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 5);
+    REQUIRE(bytes.size() == 3);
   }
 
   // deserialize
@@ -153,7 +153,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint8_t)" *
   {
     my_struct s{5};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 2);
+    REQUIRE(bytes.size() == 1);
   }
 
   // deserialize
@@ -175,7 +175,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint16_t)" *
   {
     my_struct s{12345};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 3);
+    REQUIRE(bytes.size() == 2);
   }
 
   // deserialize
@@ -197,7 +197,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint32_t)" *
   {
     my_struct s{12345678};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 5);
+    REQUIRE(bytes.size() == 4);
   }
 
   // deserialize
@@ -218,7 +218,7 @@ TEST_CASE("Deserialize uint64_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{5294967295};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 9);
+    REQUIRE(bytes.size() == 5);
   }
 
   // deserialize
@@ -252,5 +252,33 @@ TEST_CASE("Deserialize unsigned integer types" *
     REQUIRE(result.b == 12345);
     REQUIRE(result.c == 12345678);
     REQUIRE(result.d == 5294967295);
+  }
+}
+
+TEST_CASE("Deserialize unsigned integer types" *
+          test_suite("unsigned_integer")) {
+  struct my_struct {
+    uint8_t e;
+    uint16_t f;
+    uint32_t g;
+    uint64_t h;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    my_struct s{5, 12345, 12345678, 5294967295};
+    bytes = serialize(s);
+    REQUIRE(bytes.size() == 12);
+  }
+
+  // deserialize
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE(result.e == 5);
+    REQUIRE(result.f == 12345);
+    REQUIRE(result.g == 12345678);
+    REQUIRE(result.h == 5294967295);
   }
 }

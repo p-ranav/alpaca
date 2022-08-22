@@ -274,6 +274,7 @@ TEST_CASE("Deserialize signed and unsigned integer types" *
     my_struct s{-5, -12345, -12345678, -5294967295,
                 5,  12345,  12345678,  5294967295};
     bytes = serialize(s);
+    REQUIRE(bytes.size() == 31);
   }
 
   // deserialize
