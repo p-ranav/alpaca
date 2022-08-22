@@ -7,14 +7,14 @@ Serialization library in modern C++ - serialize a struct to bytes and back witho
 
 int main() {
 
-  struct Foo {
+  struct Message {
     char a;
     int b;
     float c;
     std::string d;
   };
 
-  my_struct msg{'a', 5, 3.14f, "Hello"};
+  Message msg{'a', 5, 3.14f, "Hello"};
 
   // Serialize
   auto bytes = serialize(s);
@@ -24,7 +24,7 @@ int main() {
   // 'a'  5    3.14                5    "Hello"
   
   // Deserialize
-  auto recovered = deserialize<my_struct>(bytes);
+  auto recovered = deserialize<Message>(bytes);
   assert(recovered.a == 'a');
   assert(recovered.b == 5);
   assert(recovered.c == 3.14f);
