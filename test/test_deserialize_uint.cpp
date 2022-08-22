@@ -227,3 +227,30 @@ TEST_CASE("Deserialize uint64_t" * test_suite("unsigned_integer")) {
     REQUIRE(result.value == 5294967295);
   }
 }
+
+TEST_CASE("Deserialize unsigned integer types" *
+          test_suite("unsigned_integer")) {
+  struct my_struct {
+    uint8_t a;
+    uint16_t b;
+    uint32_t c;
+    uint64_t d;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    my_struct s{5, 12345, 12345678, 5294967295};
+    bytes = serialize(s);
+  }
+
+  // deserialize
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE(result.a == 5);
+    REQUIRE(result.b == 12345);
+    REQUIRE(result.c == 12345678);
+    REQUIRE(result.d == 5294967295);
+  }
+}

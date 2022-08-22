@@ -12,7 +12,7 @@ using doctest::test_suite;
           sizeof expected_value,                                               \
       std::back_inserter(expected));
 
-TEST_CASE("Deserialize int8_t" * test_suite("unsigned_integer")) {
+TEST_CASE("Deserialize int8_t" * test_suite("signed_integer")) {
   struct my_struct {
     int8_t value;
   };
@@ -34,7 +34,7 @@ TEST_CASE("Deserialize int8_t" * test_suite("unsigned_integer")) {
 }
 
 TEST_CASE("Deserialize int16_t (stored as int8_t)" *
-          test_suite("unsigned_integer")) {
+          test_suite("signed_integer")) {
   struct my_struct {
     int16_t value;
   };
@@ -55,7 +55,7 @@ TEST_CASE("Deserialize int16_t (stored as int8_t)" *
   }
 }
 
-TEST_CASE("Deserialize int16_t" * test_suite("unsigned_integer")) {
+TEST_CASE("Deserialize int16_t" * test_suite("signed_integer")) {
   struct my_struct {
     int16_t value;
   };
@@ -77,7 +77,7 @@ TEST_CASE("Deserialize int16_t" * test_suite("unsigned_integer")) {
 }
 
 TEST_CASE("Deserialize int32_t (packed as int8_t)" *
-          test_suite("unsigned_integer")) {
+          test_suite("signed_integer")) {
   struct my_struct {
     int32_t value;
   };
@@ -99,7 +99,7 @@ TEST_CASE("Deserialize int32_t (packed as int8_t)" *
 }
 
 TEST_CASE("Deserialize int32_t (packed as int16_t)" *
-          test_suite("unsigned_integer")) {
+          test_suite("signed_integer")) {
   struct my_struct {
     int32_t value;
   };
@@ -120,7 +120,7 @@ TEST_CASE("Deserialize int32_t (packed as int16_t)" *
   }
 }
 
-TEST_CASE("Deserialize int32_t" * test_suite("unsigned_integer")) {
+TEST_CASE("Deserialize int32_t" * test_suite("signed_integer")) {
   struct my_struct {
     int32_t value;
   };
@@ -142,7 +142,7 @@ TEST_CASE("Deserialize int32_t" * test_suite("unsigned_integer")) {
 }
 
 TEST_CASE("Deserialize int64_t (packed as int8_t)" *
-          test_suite("unsigned_integer")) {
+          test_suite("signed_integer")) {
   struct my_struct {
     int64_t value;
   };
@@ -164,7 +164,7 @@ TEST_CASE("Deserialize int64_t (packed as int8_t)" *
 }
 
 TEST_CASE("Deserialize int64_t (packed as int16_t)" *
-          test_suite("unsigned_integer")) {
+          test_suite("signed_integer")) {
   struct my_struct {
     int64_t value;
   };
@@ -186,7 +186,7 @@ TEST_CASE("Deserialize int64_t (packed as int16_t)" *
 }
 
 TEST_CASE("Deserialize int64_t (packed as int32_t)" *
-          test_suite("unsigned_integer")) {
+          test_suite("signed_integer")) {
   struct my_struct {
     int64_t value;
   };
@@ -207,7 +207,7 @@ TEST_CASE("Deserialize int64_t (packed as int32_t)" *
   }
 }
 
-TEST_CASE("Deserialize int64_t" * test_suite("unsigned_integer")) {
+TEST_CASE("Deserialize int64_t" * test_suite("signed_integer")) {
   struct my_struct {
     int64_t value;
   };
@@ -225,5 +225,31 @@ TEST_CASE("Deserialize int64_t" * test_suite("unsigned_integer")) {
   {
     auto result = deserialize<my_struct>(bytes);
     REQUIRE(result.value == 5294967295);
+  }
+}
+
+TEST_CASE("Deserialize signed integer types" * test_suite("integer")) {
+  struct my_struct {
+    int8_t a;
+    int16_t b;
+    int32_t c;
+    int64_t d;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    my_struct s{-5, -12345, -12345678, -5294967295};
+    bytes = serialize(s);
+  }
+
+  // deserialize
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE(result.a == -5);
+    REQUIRE(result.b == -12345);
+    REQUIRE(result.c == -12345678);
+    REQUIRE(result.d == -5294967295);
   }
 }
