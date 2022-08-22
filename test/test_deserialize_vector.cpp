@@ -56,6 +56,9 @@ TEST_CASE("Serialize vector<int>" * test_suite("vector")) {
 
   {
     auto result = deserialize<my_struct>(bytes);
+    for (auto& v: result.values) {
+      std::cout << v << "\n";
+    }
     REQUIRE((result.values == std::vector<int>{1, 2, 3, 4, 5, 6}));
   }
 }

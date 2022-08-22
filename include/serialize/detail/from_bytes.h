@@ -90,7 +90,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
 
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
-    T v;
+    T v{};
 
     /// TODO: handle nested vectors, strings, and other container types
     from_bytes<T>(v, bytes, current_index);

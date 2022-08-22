@@ -57,7 +57,7 @@ void to_bytes(bool input, std::vector<uint8_t> &bytes) {
 
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(char input, std::vector<uint8_t> &bytes) {
-  to_bytes<save_type_info, attempt_compression>(static_cast<int8_t>(input),
+  to_bytes<save_type_info, attempt_compression>(static_cast<uint8_t>(input),
                                                 bytes);
 }
 

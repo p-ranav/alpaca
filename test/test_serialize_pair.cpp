@@ -19,22 +19,15 @@ TEST_CASE("Serialize pair" * test_suite("pair")) {
 
   my_struct s{std::make_pair(5, 3.14)};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 13);
+  REQUIRE(bytes.size() == 10);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::pair));
-
-  // int
-  {
-    CONSTRUCT_EXPECTED_VALUE(int, 5);
-    for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[1 + i] == expected[i]);
-    }
-  }
+  REQUIRE(bytes[1] == static_cast<uint8_t>(5));
 
   // float
   {
     CONSTRUCT_EXPECTED_VALUE(double, 3.14);
     for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[5 + i] == expected[i]);
+      REQUIRE(bytes[2 + i] == expected[i]);
     }
   }
 }

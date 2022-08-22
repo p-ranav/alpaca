@@ -27,10 +27,12 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
     }
     // check if tuple
     else if constexpr (detail::is_tuple<decayed_field_type>::value) {
-      /// TODO: change to <false, decayed_field_type>
-      detail::to_bytes_from_tuple_type<true, decayed_field_type>(field, bytes);
+      detail::to_bytes_from_tuple_type<false, decayed_field_type>(field, bytes);
 
     }
+    /// TODO: change to <false, decayed_field_type>
+    
+    
     // check if pair
     else if constexpr (detail::is_pair<decayed_field_type>::value) {
       /// TODO: change to <false, decayed_field_type>

@@ -28,24 +28,23 @@ void print_bytes(const std::vector<uint8_t>& bytes) {
 
 template <typename int_t = uint64_t>
 bool encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
-  int_t copy = value;
   uint8_t octet = 0;
   if (value < 0) {
-    copy = std::abs(copy);
+    value *= -1;
     SET_BIT(octet, 7);
   }
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
-  if (copy > 63) {
+  if (value > 63) {
     //|128: Set the next byte flag
-    octet |= ((uint8_t)(copy & 63)) | 64;
+    octet |= ((uint8_t)(value & 63)) | 64;
     output.push_back(octet);
-    return true;
+    return true; // multibyte
   }
   else {
-    octet |= ((uint8_t)(copy & 63));
+    octet |= ((uint8_t)(value & 63));
     output.push_back(octet);
-    return false;
+    return false; // no more bytes needed
   }
 }
 
@@ -280,8 +279,8 @@ int main() {
         auto pair = decode_varint_firstbyte_6<decltype(value)>(bytes, current_index);
         auto partial = pair.first;
         auto is_negative = pair.second;
-        // // decode rest of the bytes
-        // partial |= decode_varint_7<decltype(value)>(bytes, current_index);
+        // decode rest of the bytes
+        partial |= decode_varint_7<decltype(value)>(bytes, current_index);
         if (is_negative) {
           partial *= -1;
         }

@@ -173,7 +173,7 @@ TEST_CASE("Serialize vector<tuple>" * test_suite("vector")) {
   s.values.push_back(std::make_tuple(false, -15, 2.718, "World", 'z'));
   auto bytes = serialize(s);
 
-  REQUIRE(bytes.size() == 33);
+  REQUIRE(bytes.size() == 27);
   // vector of tuple
 
   // vector size
@@ -183,49 +183,39 @@ TEST_CASE("Serialize vector<tuple>" * test_suite("vector")) {
 
   // vector[0]
   REQUIRE(bytes[1] == static_cast<uint8_t>(true));
-  {
-    CONSTRUCT_EXPECTED_VALUE(int, 5);
-    for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[2 + i] == expected[i]);
-    }
-  }
+  REQUIRE(bytes[2] == static_cast<uint8_t>(5));
   {
     CONSTRUCT_EXPECTED_VALUE(float, 3.14f);
     for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[6 + i] == expected[i]);
+      REQUIRE(bytes[3 + i] == expected[i]);
     }
   }
   {
-    REQUIRE(bytes[10] == static_cast<uint8_t>(5));
-    REQUIRE(bytes[11] == static_cast<uint8_t>('H'));
-    REQUIRE(bytes[12] == static_cast<uint8_t>('e'));
-    REQUIRE(bytes[13] == static_cast<uint8_t>('l'));
-    REQUIRE(bytes[14] == static_cast<uint8_t>('l'));
-    REQUIRE(bytes[15] == static_cast<uint8_t>('o'));
+    REQUIRE(bytes[7] == static_cast<uint8_t>(5));
+    REQUIRE(bytes[8] == static_cast<uint8_t>('H'));
+    REQUIRE(bytes[9] == static_cast<uint8_t>('e'));
+    REQUIRE(bytes[10] == static_cast<uint8_t>('l'));
+    REQUIRE(bytes[11] == static_cast<uint8_t>('l'));
+    REQUIRE(bytes[12] == static_cast<uint8_t>('o'));
   }
-  REQUIRE(bytes[16] == static_cast<uint8_t>('a'));
+  REQUIRE(bytes[13] == static_cast<uint8_t>('a'));
 
   // vector[1]
-  REQUIRE(bytes[17] == static_cast<uint8_t>(false));
-  {
-    CONSTRUCT_EXPECTED_VALUE(int, -15);
-    for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[18 + i] == expected[i]);
-    }
-  }
+  REQUIRE(bytes[14] == static_cast<uint8_t>(false));
+  REQUIRE(bytes[15] == static_cast<uint8_t>(0b10001111));
   {
     CONSTRUCT_EXPECTED_VALUE(float, 2.718f);
     for (std::size_t i = 0; i < expected.size(); ++i) {
-      REQUIRE(bytes[22 + i] == expected[i]);
+      REQUIRE(bytes[16 + i] == expected[i]);
     }
   }
   {
-    REQUIRE(bytes[26] == static_cast<uint8_t>(5));
-    REQUIRE(bytes[27] == static_cast<uint8_t>('W'));
-    REQUIRE(bytes[28] == static_cast<uint8_t>('o'));
-    REQUIRE(bytes[29] == static_cast<uint8_t>('r'));
-    REQUIRE(bytes[30] == static_cast<uint8_t>('l'));
-    REQUIRE(bytes[31] == static_cast<uint8_t>('d'));
+    REQUIRE(bytes[20] == static_cast<uint8_t>(5));
+    REQUIRE(bytes[21] == static_cast<uint8_t>('W'));
+    REQUIRE(bytes[22] == static_cast<uint8_t>('o'));
+    REQUIRE(bytes[23] == static_cast<uint8_t>('r'));
+    REQUIRE(bytes[24] == static_cast<uint8_t>('l'));
+    REQUIRE(bytes[25] == static_cast<uint8_t>('d'));
   }
-  REQUIRE(bytes[32] == static_cast<uint8_t>('z'));
+  REQUIRE(bytes[26] == static_cast<uint8_t>('z'));
 }

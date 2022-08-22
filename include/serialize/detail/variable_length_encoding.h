@@ -23,22 +23,21 @@ void RESET_BIT(T& value, uint8_t pos) {
 
 template <typename int_t = uint64_t>
 bool encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
-  int_t copy = value;
   uint8_t octet = 0;
-  if (copy < 0) {
-    copy *= -1;
+  if (value < 0) {
+    value *= -1;
     SET_BIT(octet, 7);
   }
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
-  if (copy > 63) {
+  if (value > 63) {
     //|128: Set the next byte flag
-    octet |= ((uint8_t)(copy & 63)) | 64;
+    octet |= ((uint8_t)(value & 63)) | 64;
     output.push_back(octet);
     return true; // multibyte
   }
   else {
-    octet |= ((uint8_t)(copy & 63));
+    octet |= ((uint8_t)(value & 63));
     output.push_back(octet);
     return false; // no more bytes needed
   }
@@ -75,17 +74,6 @@ std::tuple<int_t, bool, bool> decode_varint_firstbyte_6(const std::vector<uint8_
 
   octet |= input[current_index++] & 63;
   return {static_cast<int_t>(octet), negative, multibyte};
-
-  // uint8_t octet = 0;
-  // bool negative = false;
-  // if (CHECK_BIT(input[current_index], 7)) {
-  //   // negative number
-  //   RESET_BIT(input[current_index], 7);
-  //   negative = true;
-  // }
-  // RESET_BIT(input[current_index], 6);
-  // octet |= input[current_index++] & 63;
-  // return {static_cast<int_t>(octet), negative};
 }
 
 template <typename int_t = uint64_t>
@@ -152,12 +140,10 @@ decode_varint(const std::vector<uint8_t> &input,
 template <typename int_t = int64_t>
 typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>, void>::type
 encode_varint(int_t value, std::vector<uint8_t> &output) {
-  int_t copy = value;
-
   // first octet
-  if (encode_varint_firstbyte_6<int_t>(copy, output)) {
+  if (encode_varint_firstbyte_6<int_t>(value, output)) {
     // rest of the octets
-    encode_varint_7<int_t>(copy, output);
+    encode_varint_7<int_t>(value, output);
   }
 }
 
