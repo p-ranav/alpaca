@@ -22,17 +22,25 @@ void RESET_BIT(T& value, uint8_t pos) {
 }
 
 template <typename int_t = uint64_t>
-void encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
+bool encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
+  int_t copy = value;
   uint8_t octet = 0;
-  if (value < 0) {
+  if (copy < 0) {
+    copy *= -1;
     SET_BIT(octet, 7);
   }
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
-  if (std::abs(value) > 63) {
+  if (copy > 63) {
     //|128: Set the next byte flag
-    octet |= ((uint8_t)(std::abs(value) & 63)) | 64;
+    octet |= ((uint8_t)(copy & 63)) | 64;
     output.push_back(octet);
+    return true; // multibyte
+  }
+  else {
+    octet |= ((uint8_t)(copy & 63));
+    output.push_back(octet);
+    return false; // no more bytes needed
   }
 }
 
@@ -52,11 +60,6 @@ void encode_varint_6(int_t value, std::vector<uint8_t> &output) {
 template <typename int_t = uint64_t>
 std::tuple<int_t, bool, bool> decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
                     std::size_t &current_index) {
-
-  if constexpr (std::is_same_v<int_t, int8_t>) {
-    print_bytes({input[current_index]});
-  }
-
   int octet = 0;
   bool negative = false, multibyte = false;
   int_t current = input[current_index];
@@ -152,10 +155,10 @@ encode_varint(int_t value, std::vector<uint8_t> &output) {
   int_t copy = value;
 
   // first octet
-  encode_varint_firstbyte_6<int_t>(copy, output);
-  
-  // rest of the octets
-  encode_varint_7<int_t>(copy, output);
+  if (encode_varint_firstbyte_6<int_t>(copy, output)) {
+    // rest of the octets
+    encode_varint_7<int_t>(copy, output);
+  }
 }
 
 template <typename int_t = int64_t>
@@ -165,17 +168,14 @@ decode_varint(const std::vector<uint8_t> &input,
   // decode first byte
   auto [ret, is_negative, multibyte] = decode_varint_firstbyte_6<int_t>(input, current_index);
 
-  if constexpr (std::is_same_v<int_t, int8_t>) {
-    std::cout << (int)ret << " " << is_negative << " " << multibyte << "\n";
-  }
-
   // decode rest of the bytes
   // if continuation bit is set
   if (multibyte) {
     ret |= decode_varint_7<int_t>(input, current_index);
-    if (is_negative) {
-      ret *= -1;
-    }
+  }
+
+  if (is_negative) {
+    ret *= -1;
   }
 
   return ret;

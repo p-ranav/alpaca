@@ -27,17 +27,25 @@ void print_bytes(const std::vector<uint8_t>& bytes) {
 }
 
 template <typename int_t = uint64_t>
-void encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
+bool encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
+  int_t copy = value;
   uint8_t octet = 0;
   if (value < 0) {
+    copy = std::abs(copy);
     SET_BIT(octet, 7);
   }
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
-  if (std::abs(value) > 63) {
+  if (copy > 63) {
     //|128: Set the next byte flag
-    octet |= ((uint8_t)(std::abs(value) & 63)) | 64;
+    octet |= ((uint8_t)(copy & 63)) | 64;
     output.push_back(octet);
+    return true;
+  }
+  else {
+    octet |= ((uint8_t)(copy & 63));
+    output.push_back(octet);
+    return false;
   }
 }
 
@@ -242,9 +250,10 @@ int main() {
         std::vector<uint8_t> bytes;
         int8_t value = -5, recovered = 0;
         // first octet
-        encode_varint_firstbyte_6(value, bytes);
-        // rest of the octets
-        encode_varint_7(value, bytes);
+        if (encode_varint_firstbyte_6(value, bytes)) {
+          // rest of the octets
+          encode_varint_7(value, bytes);
+        }
         std::size_t current_index = 0;
         // decode first byte
         auto pair = decode_varint_firstbyte_6<decltype(value)>(bytes, current_index);
@@ -253,7 +262,28 @@ int main() {
         // // decode rest of the bytes
         // partial |= decode_varint_7<decltype(value)>(bytes, current_index);
         if (is_negative) {
-            partial *= -1;
+          partial *= -1;
+        }
+        std::cout << bytes.size() << " " << (int)partial << "\n";
+    }
+
+    {
+        std::vector<uint8_t> bytes;
+        int16_t value = -12345, recovered = 0;
+        // first octet
+        if (encode_varint_firstbyte_6(value, bytes)) {
+          // rest of the octets
+          encode_varint_7(value, bytes);
+        }
+        std::size_t current_index = 0;
+        // decode first byte
+        auto pair = decode_varint_firstbyte_6<decltype(value)>(bytes, current_index);
+        auto partial = pair.first;
+        auto is_negative = pair.second;
+        // // decode rest of the bytes
+        // partial |= decode_varint_7<decltype(value)>(bytes, current_index);
+        if (is_negative) {
+          partial *= -1;
         }
         std::cout << bytes.size() << " " << (int)partial << "\n";
     }
