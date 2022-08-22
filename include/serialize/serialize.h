@@ -1,16 +1,10 @@
 #pragma once
 #include <serialize/detail/aggregate_arity.h>
-#include <serialize/detail/append.h>
 #include <serialize/detail/from_bytes.h>
-#include <serialize/detail/get_repr_type.h>
-#include <serialize/detail/is_pair.h>
-#include <serialize/detail/is_string.h>
-#include <serialize/detail/is_tuple.h>
-#include <serialize/detail/is_vector.h>
 #include <serialize/detail/print_bytes.h>
 #include <serialize/detail/struct_nth_field.h>
 #include <serialize/detail/to_bytes.h>
-#include <serialize/detail/type.h>
+#include <serialize/detail/type_traits.h>
 #include <serialize/detail/variable_length_encoding.h>
 
 template <typename T, std::size_t index = 0>
@@ -23,42 +17,26 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
 
     // check if vector
     if constexpr (detail::is_vector<decayed_field_type>::value) {
-      detail::to_bytes_from_list_type<false, decayed_field_type>(field, bytes);
+      detail::to_bytes_from_list_type<decayed_field_type>(field, bytes);
+    }
+    // check if tuple
+    else if constexpr (detail::is_string::detect<decayed_field_type>) {
+      detail::to_bytes(field, bytes);
     }
     // check if tuple
     else if constexpr (detail::is_tuple<decayed_field_type>::value) {
-      detail::to_bytes_from_tuple_type<false, decayed_field_type>(field, bytes);
-
+      detail::to_bytes_from_tuple_type<decayed_field_type>(field, bytes);
     }
-    /// TODO: change to <false, decayed_field_type>
-    
-    
     // check if pair
     else if constexpr (detail::is_pair<decayed_field_type>::value) {
-      /// TODO: change to <false, decayed_field_type>
-      detail::to_bytes_from_pair_type<true, decayed_field_type>(field, bytes);
-    }
-    // check if string
-    else if constexpr (detail::is_string::detect<decayed_field_type>) {
-      detail::to_bytes<false, true>(field, bytes);
+      detail::to_bytes_from_pair_type<decayed_field_type>(field, bytes);
     }
     // check if nested struct
     else if constexpr (std::is_class<decayed_field_type>::value) {
       // recurse
       serialize<decayed_field_type>(field, bytes);
     } else {
-      if constexpr (std::is_same_v<decayed_field_type, bool>) {
-        detail::to_bytes<false, true>(field, bytes);
-      } else if constexpr (std::is_same_v<decayed_field_type, int8_t> ||
-                           std::is_same_v<decayed_field_type, int16_t> ||
-                           std::is_same_v<decayed_field_type, int32_t> ||
-                           std::is_same_v<decayed_field_type, int64_t>) {
-        // attempt to compress and save type_info
-        detail::to_bytes<true, true>(field, bytes);
-      } else {
-        // no type_info needed
-        detail::to_bytes<false, true>(field, bytes);
-      }
+      detail::to_bytes(field, bytes);
     }
 
     // go to next field

@@ -1,28 +1,24 @@
 #pragma once
 #include <cstdint>
-#include <serialize/detail/print_bytes.h>
 #include <utility>
 #include <vector>
 
 namespace detail {
 
-template <typename T>
-bool CHECK_BIT(T& value, uint8_t pos) {
-  return ((value) & (1<<(pos)));
+template <typename T> bool CHECK_BIT(T &value, uint8_t pos) {
+  return ((value) & (1 << (pos)));
 }
 
-template <typename T>
-void SET_BIT(T& value, uint8_t pos) {
+template <typename T> void SET_BIT(T &value, uint8_t pos) {
   value = value | 1 << pos;
 }
 
-template <typename T>
-void RESET_BIT(T& value, uint8_t pos) {
+template <typename T> void RESET_BIT(T &value, uint8_t pos) {
   value = value & ~(1 << pos);
 }
 
 template <typename int_t = uint64_t>
-bool encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
+bool encode_varint_firstbyte_6(int_t &value, std::vector<uint8_t> &output) {
   uint8_t octet = 0;
   if (value < 0) {
     value *= -1;
@@ -35,8 +31,7 @@ bool encode_varint_firstbyte_6(int_t& value, std::vector<uint8_t> &output) {
     octet |= ((uint8_t)(value & 63)) | 64;
     output.push_back(octet);
     return true; // multibyte
-  }
-  else {
+  } else {
     octet |= ((uint8_t)(value & 63));
     output.push_back(octet);
     return false; // no more bytes needed
@@ -57,8 +52,9 @@ void encode_varint_6(int_t value, std::vector<uint8_t> &output) {
 }
 
 template <typename int_t = uint64_t>
-std::tuple<int_t, bool, bool> decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
-                    std::size_t &current_index) {
+std::tuple<int_t, bool, bool>
+decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
+                          std::size_t &current_index) {
   int octet = 0;
   bool negative = false, multibyte = false;
   int_t current = input[current_index];
@@ -78,7 +74,7 @@ std::tuple<int_t, bool, bool> decode_varint_firstbyte_6(const std::vector<uint8_
 
 template <typename int_t = uint64_t>
 int_t decode_varint_6(const std::vector<uint8_t> &input,
-                    std::size_t &current_index) {
+                      std::size_t &current_index) {
   int_t ret = 0;
   for (std::size_t i = 0; i < sizeof(int_t); ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 63)) << (6 * i);
@@ -109,7 +105,7 @@ void encode_varint_7(int_t value, std::vector<uint8_t> &output) {
 
 template <typename int_t = uint64_t>
 int_t decode_varint_7(const std::vector<uint8_t> &input,
-                    std::size_t &current_index) {
+                      std::size_t &current_index) {
   int_t ret = 0;
   for (std::size_t i = 0; i < sizeof(int_t); ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 127)) << (7 * i);
@@ -124,21 +120,23 @@ int_t decode_varint_7(const std::vector<uint8_t> &input,
 
 // Unsigned integer variable-length encoding functions
 template <typename int_t = uint64_t>
-typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>, void>::type
+typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>,
+                        void>::type
 encode_varint(int_t value, std::vector<uint8_t> &output) {
   encode_varint_7<int_t>(value, output);
 }
 
 template <typename int_t = uint64_t>
-typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>, int_t>::type
-decode_varint(const std::vector<uint8_t> &input,
-                    std::size_t &current_index) {
+typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>,
+                        int_t>::type
+decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
   return decode_varint_7<int_t>(input, current_index);
 }
 
 // Signed integer variable-length encoding functions
 template <typename int_t = int64_t>
-typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>, void>::type
+typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
+                        void>::type
 encode_varint(int_t value, std::vector<uint8_t> &output) {
   // first octet
   if (encode_varint_firstbyte_6<int_t>(value, output)) {
@@ -148,11 +146,12 @@ encode_varint(int_t value, std::vector<uint8_t> &output) {
 }
 
 template <typename int_t = int64_t>
-typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>, int_t>::type
-decode_varint(const std::vector<uint8_t> &input,
-                    std::size_t &current_index) {
+typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
+                        int_t>::type
+decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
   // decode first byte
-  auto [ret, is_negative, multibyte] = decode_varint_firstbyte_6<int_t>(input, current_index);
+  auto [ret, is_negative, multibyte] =
+      decode_varint_firstbyte_6<int_t>(input, current_index);
 
   // decode rest of the bytes
   // if continuation bit is set
@@ -167,4 +166,4 @@ decode_varint(const std::vector<uint8_t> &input,
   return ret;
 }
 
-}
+} // namespace detail
