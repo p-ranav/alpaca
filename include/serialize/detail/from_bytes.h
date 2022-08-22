@@ -24,6 +24,14 @@ bool read_bytes(T &value, const std::vector<uint8_t> &bytes,
 }
 
 template <typename T>
+typename std::enable_if<std::is_same_v<T, bool>, bool>::type
+from_bytes(T &value, const std::vector<uint8_t> &bytes,
+           std::size_t &current_index) {
+  // current byte is the value
+  return read_bytes<bool, bool>(value, bytes, current_index);
+}
+
+template <typename T>
 typename std::enable_if<
     std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
@@ -78,6 +86,14 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
   } else {
     return false;
   }
+}
+
+template <typename T>
+typename std::enable_if<std::is_same_v<T, float> || std::is_same_v<T, double>,
+                        bool>::type
+from_bytes(T &value, const std::vector<uint8_t> &bytes,
+           std::size_t &current_index) {
+  return read_bytes<T, T>(value, bytes, current_index);
 }
 
 static inline bool from_bytes_to_string(std::string &value,

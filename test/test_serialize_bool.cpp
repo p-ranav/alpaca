@@ -10,9 +10,8 @@ TEST_CASE("Serialize bool (true)" * test_suite("bool")) {
 
   my_struct s{true};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 2);
-  REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::boolean));
-  REQUIRE(bytes[1] == static_cast<uint8_t>(true));
+  REQUIRE(bytes.size() == 1);
+  REQUIRE(bytes[0] == static_cast<uint8_t>(true));
 }
 
 TEST_CASE("Serialize bool (false)" * test_suite("bool")) {
@@ -22,7 +21,6 @@ TEST_CASE("Serialize bool (false)" * test_suite("bool")) {
 
   my_struct s{false};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 2);
-  REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::boolean));
-  REQUIRE(bytes[1] == static_cast<uint8_t>(false));
+  REQUIRE(bytes.size() == 1);
+  REQUIRE(bytes[0] == static_cast<uint8_t>(false));
 }

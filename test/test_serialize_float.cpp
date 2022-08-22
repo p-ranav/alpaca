@@ -19,12 +19,11 @@ TEST_CASE("Serialize float" * test_suite("float")) {
 
   my_struct s{3.14f};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 5);
-  REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::float32));
+  REQUIRE(bytes.size() == 4);
 
   CONSTRUCT_EXPECTED_VALUE(float, s.value);
-  for (std::size_t i = 1; i < bytes.size() - 1; ++i) {
-    REQUIRE(bytes[i] == expected[i - 1]);
+  for (std::size_t i = 0; i < bytes.size() - 1; ++i) {
+    REQUIRE(bytes[i] == expected[i]);
   }
 }
 
@@ -35,11 +34,10 @@ TEST_CASE("Serialize double" * test_suite("float")) {
 
   my_struct s{2.71828};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 9);
-  REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::float64));
+  REQUIRE(bytes.size() == 8);
 
   CONSTRUCT_EXPECTED_VALUE(double, s.value);
-  for (std::size_t i = 1; i < bytes.size() - 1; ++i) {
-    REQUIRE(bytes[i] == expected[i - 1]);
+  for (std::size_t i = 0; i < bytes.size() - 1; ++i) {
+    REQUIRE(bytes[i] == expected[i]);
   }
 }

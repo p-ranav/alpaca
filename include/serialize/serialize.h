@@ -39,13 +39,25 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
     }
     // check if nested struct
     else if constexpr (std::is_class<decayed_field_type>::value) {
-      // save nested struct type
-      detail::append(detail::type::struct_, bytes);
-
       // recurse
       serialize<decayed_field_type>(field, bytes);
     } else {
-      detail::to_bytes<true, true>(field, bytes);
+      if constexpr (std::is_same_v<decayed_field_type, bool>) {
+        detail::to_bytes<false, true>(field, bytes);
+      } else if constexpr (std::is_same_v<decayed_field_type, uint8_t> ||
+                           std::is_same_v<decayed_field_type, uint16_t> ||
+                           std::is_same_v<decayed_field_type, uint32_t> ||
+                           std::is_same_v<decayed_field_type, uint64_t> ||
+                           std::is_same_v<decayed_field_type, int8_t> ||
+                           std::is_same_v<decayed_field_type, int16_t> ||
+                           std::is_same_v<decayed_field_type, int32_t> ||
+                           std::is_same_v<decayed_field_type, int64_t>) {
+        // attempt to compress and save type_info
+        detail::to_bytes<true, true>(field, bytes);
+      } else {
+        // no type_info needed
+        detail::to_bytes<false, true>(field, bytes);
+      }
     }
 
     // go to next field

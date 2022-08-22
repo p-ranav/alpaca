@@ -62,7 +62,7 @@ void to_bytes(uint32_t input, std::vector<uint8_t> &bytes) {
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(uint64_t input, std::vector<uint8_t> &bytes) {
   // type of the value
-  if constexpr (save_type_info) {
+  if constexpr (save_type_info || attempt_compression) {
     append(get_repr_type<attempt_compression>(input), bytes);
   }
 
