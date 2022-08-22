@@ -51,14 +51,11 @@ TEST_CASE("Serialize vector<int>" * test_suite("vector")) {
   {
     my_struct s{{1, 2, 3, 4, 5, 6}};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 25);
+    REQUIRE(bytes.size() == 7);
   }
 
   {
     auto result = deserialize<my_struct>(bytes);
-    for (auto& v: result.values) {
-      std::cout << v << "\n";
-    }
     REQUIRE((result.values == std::vector<int>{1, 2, 3, 4, 5, 6}));
   }
 }

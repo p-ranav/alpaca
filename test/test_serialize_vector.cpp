@@ -57,17 +57,15 @@ TEST_CASE("Serialize vector<int>" * test_suite("vector")) {
 
   my_struct s{{1, 2, 3, 4, 5}};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 21);
+  REQUIRE(bytes.size() == 6);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
   // values
-  int current_value = 1;
-  for (std::size_t i = 1; i < bytes.size();) {
-    CONSTRUCT_EXPECTED_VALUE(int32_t, current_value++);
-    for (std::size_t j = 0; j < expected.size(); ++j) {
-      REQUIRE(bytes[i++] == expected[j]);
-    }
-  }
+  REQUIRE(bytes[1] == static_cast<uint8_t>(1));
+  REQUIRE(bytes[2] == static_cast<uint8_t>(2));
+  REQUIRE(bytes[3] == static_cast<uint8_t>(3));
+  REQUIRE(bytes[4] == static_cast<uint8_t>(4));
+  REQUIRE(bytes[5] == static_cast<uint8_t>(5));
 }
 
 TEST_CASE("Serialize vector<float>" * test_suite("vector")) {
@@ -141,26 +139,25 @@ TEST_CASE("Serialize vector<vector<int>>" * test_suite("vector")) {
 
   my_struct s{{{1, 2, 3}, {4, 5, 6}}};
   auto bytes = serialize(s);
-  REQUIRE(bytes.size() == 27);
+  REQUIRE(bytes.size() == 9);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(2));
 
   // first sub-vector
+  // size
   REQUIRE(bytes[1] == static_cast<uint8_t>(3));
-
   // values
-  int current_value = 1;
-  for (std::size_t i = 2; i < bytes.size();) {
-    CONSTRUCT_EXPECTED_VALUE(int32_t, current_value++);
-    for (std::size_t j = 0; j < expected.size(); ++j) {
-      REQUIRE(bytes[i++] == expected[j]);
-    }
+  REQUIRE(bytes[2] == static_cast<uint8_t>(1));
+  REQUIRE(bytes[3] == static_cast<uint8_t>(2));
+  REQUIRE(bytes[4] == static_cast<uint8_t>(3));
 
-    if (current_value == 4) {
-      // size of second sub-vector
-      REQUIRE(bytes[i++] == static_cast<uint8_t>(3));
-    }
-  }
+  // second sub-vector
+  // size
+  REQUIRE(bytes[5] == static_cast<uint8_t>(3));
+  // values
+  REQUIRE(bytes[6] == static_cast<uint8_t>(4));
+  REQUIRE(bytes[7] == static_cast<uint8_t>(5));
+  REQUIRE(bytes[8] == static_cast<uint8_t>(6));
 }
 
 TEST_CASE("Serialize vector<tuple>" * test_suite("vector")) {

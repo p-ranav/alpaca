@@ -47,11 +47,6 @@ void to_bytes(int64_t input, std::vector<uint8_t> &bytes) {
 
 template <bool save_type_info, bool attempt_compression>
 void to_bytes(bool input, std::vector<uint8_t> &bytes) {
-  // type of the value
-  if constexpr (save_type_info) {
-    append(type::boolean, bytes);
-  }
-  // value
   append(input, bytes);
 }
 
@@ -148,13 +143,8 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
       to_bytes_from_tuple_type<false, decayed_value_type>(v, bytes);
     } else if constexpr (is_string::detect<decayed_value_type>) {
       to_bytes<false, false>(v, bytes);
-    } else if constexpr (std::is_same_v<decayed_value_type, uint8_t> ||
-                         std::is_same_v<decayed_value_type, uint16_t> ||
-                         std::is_same_v<decayed_value_type, uint32_t> ||
-                         std::is_same_v<decayed_value_type, uint64_t> ||
-                         std::is_same_v<decayed_value_type, std::size_t>) {
-      // unsigned integer type
-      // use MSB variable-length encoding
+    } else if constexpr (std::is_integral_v<decayed_value_type>) {
+      // use variable-length encoding if possible
       to_bytes<true, true>(v, bytes);
     } else {
       // dump all the values
