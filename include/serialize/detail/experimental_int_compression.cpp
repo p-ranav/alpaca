@@ -237,6 +237,26 @@ int main() {
         }
         std::cout << bytes.size() << " " << partial << "\n";
     }
+
+    {
+        std::vector<uint8_t> bytes;
+        int8_t value = -5, recovered = 0;
+        // first octet
+        encode_varint_firstbyte_6(value, bytes);
+        // rest of the octets
+        encode_varint_7(value, bytes);
+        std::size_t current_index = 0;
+        // decode first byte
+        auto pair = decode_varint_firstbyte_6<decltype(value)>(bytes, current_index);
+        auto partial = pair.first;
+        auto is_negative = pair.second;
+        // // decode rest of the bytes
+        // partial |= decode_varint_7<decltype(value)>(bytes, current_index);
+        if (is_negative) {
+            partial *= -1;
+        }
+        std::cout << bytes.size() << " " << (int)partial << "\n";
+    }
 }
 
 /*

@@ -50,31 +50,39 @@ void encode_varint_6(int_t value, std::vector<uint8_t> &output) {
 }
 
 template <typename int_t = uint64_t>
-std::pair<int_t, bool> decode_varint_firstbyte_6(std::vector<uint8_t> &input,
+std::tuple<int_t, bool, bool> decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
                     std::size_t &current_index) {
+
+  if constexpr (std::is_same_v<int_t, int8_t>) {
+    print_bytes({input[current_index]});
+  }
+
+  int octet = 0;
+  bool negative = false, multibyte = false;
+  int_t current = input[current_index];
+  if (CHECK_BIT(current, 7)) {
+    // negative number
+    RESET_BIT(current, 7);
+    negative = true;
+  }
+  if (CHECK_BIT(current, 6)) {
+    RESET_BIT(current, 6);
+    multibyte = true;
+  }
+
+  octet |= input[current_index++] & 63;
+  return {static_cast<int_t>(octet), negative, multibyte};
 
   // uint8_t octet = 0;
   // bool negative = false;
-  // int_t current = input[current_index];
-  // if (CHECK_BIT(current, 7)) {
+  // if (CHECK_BIT(input[current_index], 7)) {
   //   // negative number
-  //   RESET_BIT(current, 7);
+  //   RESET_BIT(input[current_index], 7);
   //   negative = true;
   // }
-  // RESET_BIT(current, 6);
+  // RESET_BIT(input[current_index], 6);
   // octet |= input[current_index++] & 63;
   // return {static_cast<int_t>(octet), negative};
-
-  uint8_t octet = 0;
-  bool negative = false;
-  if (CHECK_BIT(input[current_index], 7)) {
-    // negative number
-    RESET_BIT(input[current_index], 7);
-    negative = true;
-  }
-  RESET_BIT(input[current_index], 6);
-  octet |= input[current_index++] & 63;
-  return {static_cast<int_t>(octet), negative};
 }
 
 template <typename int_t = uint64_t>
@@ -155,14 +163,19 @@ typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>, in
 decode_varint(const std::vector<uint8_t> &input,
                     std::size_t &current_index) {
   // decode first byte
-  auto bytes = input; // copy
-  auto pair = decode_varint_firstbyte_6<int_t>(bytes, current_index);
-  auto ret = pair.first;
-  auto is_negative = pair.second;
+  auto [ret, is_negative, multibyte] = decode_varint_firstbyte_6<int_t>(input, current_index);
+
+  if constexpr (std::is_same_v<int_t, int8_t>) {
+    std::cout << (int)ret << " " << is_negative << " " << multibyte << "\n";
+  }
+
   // decode rest of the bytes
-  ret |= decode_varint_7<int_t>(bytes, current_index);
-  if (is_negative) {
+  // if continuation bit is set
+  if (multibyte) {
+    ret |= decode_varint_7<int_t>(input, current_index);
+    if (is_negative) {
       ret *= -1;
+    }
   }
 
   return ret;

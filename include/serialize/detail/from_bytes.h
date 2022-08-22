@@ -52,7 +52,6 @@ typename std::enable_if<
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index) {
   value = decode_varint<T>(bytes, current_index);
-  std::cout << value << "\n";
   return true;
 }
 

@@ -34,7 +34,6 @@ TEST_CASE("Serialize int16_t" * test_suite("signed_integer")) {
   {
     my_struct s{12345};
     auto bytes = serialize(s);
-    detail::print_bytes(bytes);
     REQUIRE(bytes.size() == 3);
 
     CONSTRUCT_EXPECTED_VALUE_SIGNED(int16_t, 12345);
