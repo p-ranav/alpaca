@@ -85,6 +85,8 @@ bool from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
                           std::size_t &current_index) {
 
+  print_bytes(bytes);
+
   // current byte is the size of the vector
   std::size_t size = decode_varint<std::size_t>(bytes, current_index);
 
@@ -94,6 +96,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
 
     /// TODO: handle nested vectors, strings, and other container types
     from_bytes<T>(v, bytes, current_index);
+    std::cout << v << "\n";
 
     value.push_back(v);
   }
