@@ -7,9 +7,11 @@
 #include <serialize/detail/is_string.h>
 #include <serialize/detail/is_tuple.h>
 #include <serialize/detail/is_vector.h>
+#include <serialize/detail/print_bytes.h>
 #include <serialize/detail/struct_nth_field.h>
 #include <serialize/detail/to_bytes.h>
 #include <serialize/detail/type.h>
+#include <serialize/detail/variable_length_encoding.h>
 
 template <typename T, std::size_t index = 0>
 void serialize(T &s, std::vector<uint8_t> &bytes) {
