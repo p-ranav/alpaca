@@ -1,7 +1,6 @@
 #pragma once
 #include <cstring>
 #include <serialize/detail/is_string.h>
-#include <serialize/detail/size_to_type.h>
 #include <serialize/detail/unsigned_int_encoding.h>
 
 namespace detail {
@@ -140,12 +139,8 @@ void to_bytes(const std::string &input, std::vector<uint8_t> &bytes) {
     append(type::string, bytes);
   }
 
-  const auto size = input.size();
-  if (size <= 99) {
-    append(size_to_type(size), bytes);
-  } else {
-    to_bytes<true, true>(size, bytes);
-  }
+  // save string length
+  to_bytes<true, true>(input.size(), bytes);
 
   for (auto &c : input) {
     append(c, bytes);
@@ -196,12 +191,8 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
     append(type::vector, bytes);
   }
 
-  const auto size = input.size();
-  if (size <= 99) {
-    append(size_to_type(size), bytes);
-  } else {
-    to_bytes<true, true>(size, bytes);
-  }
+  // save vector size
+  to_bytes<true, true>(input.size(), bytes);
 
   // value of each element in list
   for (const auto &v : input) {

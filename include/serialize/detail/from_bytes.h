@@ -1,6 +1,5 @@
 #pragma once
 #include <cstdint>
-#include <serialize/detail/size_to_type.h>
 #include <serialize/detail/unsigned_int_encoding.h>
 #include <vector>
 
@@ -91,39 +90,7 @@ static inline bool from_bytes_to_string(std::string &value,
                                         std::size_t &current_index) {
 
   // current byte is the length of the string
-
-  /// TODO: Move the following read_size into a separate function
-  type size_type = static_cast<type>(bytes[current_index++]);
-  std::size_t size{0};
-  bool read_result{true};
-  if (size_type == type::uint8) {
-    read_result = read_bytes<std::size_t, uint8_t>(size, bytes, current_index);
-  } else if (size_type == type::uint16_as_uint8) {
-    read_result = read_bytes<std::size_t, uint8_t>(size, bytes, current_index);
-  } else if (size_type == type::uint16) {
-    read_result = read_bytes<std::size_t, uint16_t>(size, bytes, current_index);
-  } else if (size_type == type::uint32_as_uint8) {
-    read_result = read_bytes<std::size_t, uint8_t>(size, bytes, current_index);
-  } else if (size_type == type::uint32_as_uint16) {
-    read_result = read_bytes<std::size_t, uint16_t>(size, bytes, current_index);
-  } else if (size_type == type::uint32) {
-    read_result = read_bytes<std::size_t, uint32_t>(size, bytes, current_index);
-  } else if (size_type == type::uint64_as_uint8) {
-    read_result = read_bytes<std::size_t, uint8_t>(size, bytes, current_index);
-  } else if (size_type == type::uint64_as_uint16) {
-    read_result = read_bytes<std::size_t, uint16_t>(size, bytes, current_index);
-  } else if (size_type == type::uint64_as_uint32) {
-    read_result = read_bytes<std::size_t, uint32_t>(size, bytes, current_index);
-  } else if (size_type == type::uint64) {
-    read_result = read_bytes<std::size_t, uint64_t>(size, bytes, current_index);
-  } else {
-    // using type::size* for the size
-    size = type_to_size(size_type);
-  }
-
-  if (!read_result) {
-    return false;
-  }
+  std::size_t size = decode_varint<std::size_t>(bytes, current_index);
 
   // read `size` bytes and save to value
   value.reserve(size);

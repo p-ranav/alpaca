@@ -7,7 +7,6 @@
 #include <serialize/detail/is_string.h>
 #include <serialize/detail/is_tuple.h>
 #include <serialize/detail/is_vector.h>
-#include <serialize/detail/size_to_type.h>
 #include <serialize/detail/struct_nth_field.h>
 #include <serialize/detail/to_bytes.h>
 #include <serialize/detail/type.h>

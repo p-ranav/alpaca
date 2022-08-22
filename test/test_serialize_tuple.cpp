@@ -42,7 +42,7 @@ TEST_CASE("Serialize tuple<int, float, bool>" * test_suite("tuple")) {
   REQUIRE(bytes[9] == static_cast<uint8_t>(true));
 
   // string size
-  REQUIRE(bytes[10] == static_cast<uint8_t>(detail::type::size5));
+  REQUIRE(bytes[10] == static_cast<uint8_t>(5));
 
   // string value
   REQUIRE(bytes[11] == static_cast<uint8_t>('H'));

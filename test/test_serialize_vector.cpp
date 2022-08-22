@@ -22,7 +22,7 @@ TEST_CASE("Serialize vector<char>" * test_suite("vector")) {
   REQUIRE(bytes.size() == 5);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
   // size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::size3));
+  REQUIRE(bytes[1] == static_cast<uint8_t>(3));
   // values
   char current_value = 'x';
   for (std::size_t i = 2; i < bytes.size();) {
@@ -43,7 +43,7 @@ TEST_CASE("Serialize vector<int>" * test_suite("vector")) {
   REQUIRE(bytes.size() == 22);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
   // size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::size5));
+  REQUIRE(bytes[1] == static_cast<uint8_t>(5));
   // values
   int current_value = 1;
   for (std::size_t i = 2; i < bytes.size();) {
@@ -64,7 +64,7 @@ TEST_CASE("Serialize vector<float>" * test_suite("vector")) {
   REQUIRE(bytes.size() == 22);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
   // size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::size5));
+  REQUIRE(bytes[1] == static_cast<uint8_t>(5));
   // values
   float current_value = 1.1;
   for (std::size_t i = 2; i < bytes.size();) {
@@ -86,7 +86,7 @@ TEST_CASE("Serialize vector<bool>" * test_suite("vector")) {
   REQUIRE(bytes.size() == 7);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
   // size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::size5));
+  REQUIRE(bytes[1] == static_cast<uint8_t>(5));
   // values
   bool current_value = true;
   for (std::size_t i = 2; i < bytes.size();) {
@@ -108,11 +108,11 @@ TEST_CASE("Serialize vector<std::string>" * test_suite("vector")) {
   REQUIRE(bytes.size() == 12);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
   // size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::size5));
+  REQUIRE(bytes[1] == static_cast<uint8_t>(5));
   // values
   char current_value = 'a';
   for (std::size_t i = 2; i < bytes.size();) {
-    REQUIRE(bytes[i++] == static_cast<uint8_t>(detail::type::size1));
+    REQUIRE(bytes[i++] == static_cast<uint8_t>(1));
 
     CONSTRUCT_EXPECTED_VALUE(char, current_value++);
     for (std::size_t j = 0; j < expected.size(); ++j) {
@@ -131,10 +131,10 @@ TEST_CASE("Serialize vector<vector<int>>" * test_suite("vector")) {
   REQUIRE(bytes.size() == 28);
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
   // size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::size2));
+  REQUIRE(bytes[1] == static_cast<uint8_t>(2));
 
   // first sub-vector
-  REQUIRE(bytes[2] == static_cast<uint8_t>(detail::type::size3));
+  REQUIRE(bytes[2] == static_cast<uint8_t>(3));
 
   // values
   int current_value = 1;
@@ -146,7 +146,7 @@ TEST_CASE("Serialize vector<vector<int>>" * test_suite("vector")) {
 
     if (current_value == 4) {
       // size of second sub-vector
-      REQUIRE(bytes[i++] == static_cast<uint8_t>(detail::type::size3));
+      REQUIRE(bytes[i++] == static_cast<uint8_t>(3));
     }
   }
 }
@@ -166,7 +166,7 @@ TEST_CASE("Serialize vector<tuple>" * test_suite("vector")) {
   REQUIRE(bytes[0] == static_cast<uint8_t>(detail::type::vector));
 
   // vector size
-  REQUIRE(bytes[1] == static_cast<uint8_t>(detail::type::size2));
+  REQUIRE(bytes[1] == static_cast<uint8_t>(2));
 
   // start vector values
 
@@ -185,7 +185,7 @@ TEST_CASE("Serialize vector<tuple>" * test_suite("vector")) {
     }
   }
   {
-    REQUIRE(bytes[11] == static_cast<uint8_t>(detail::type::size5));
+    REQUIRE(bytes[11] == static_cast<uint8_t>(5));
     REQUIRE(bytes[12] == static_cast<uint8_t>('H'));
     REQUIRE(bytes[13] == static_cast<uint8_t>('e'));
     REQUIRE(bytes[14] == static_cast<uint8_t>('l'));
@@ -209,7 +209,7 @@ TEST_CASE("Serialize vector<tuple>" * test_suite("vector")) {
     }
   }
   {
-    REQUIRE(bytes[27] == static_cast<uint8_t>(detail::type::size5));
+    REQUIRE(bytes[27] == static_cast<uint8_t>(5));
     REQUIRE(bytes[28] == static_cast<uint8_t>('W'));
     REQUIRE(bytes[29] == static_cast<uint8_t>('o'));
     REQUIRE(bytes[30] == static_cast<uint8_t>('r'));
