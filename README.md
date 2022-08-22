@@ -17,11 +17,7 @@ int main() {
   Message msg{'a', 5, 3.14f, "Hello"};
 
   // Serialize
-  auto bytes = serialize(s);
-
-  // 0x61 0x05 0xc3 0xf5 0x48 0x40 0x05 0x48 0x65 0x6c 0x6c 0x6f
-  // ^^^^ ^^^^ ^^^^^^^^^^^^^^^^^^^ ^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^
-  // 'a'  5    3.14                5    "Hello"
+  auto bytes = serialize(s); // 12 bytes
   
   // Deserialize
   auto recovered = deserialize<Message>(bytes);
