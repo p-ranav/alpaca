@@ -207,24 +207,6 @@ void to_bytes(const std::string &input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <bool save_type_info, bool attempt_compression>
-void to_bytes(const char *input, std::vector<uint8_t> &bytes) {
-  if constexpr (save_type_info) {
-    append(type::string, bytes);
-  }
-
-  std::size_t size = strlen(input);
-  if (size <= 99) {
-    append(size_to_type(size), bytes);
-  } else {
-    to_bytes<true, true>(size, bytes);
-  }
-
-  for (std::size_t i = 0; i < size; ++i) {
-    append(input[i], bytes);
-  }
-}
-
 template <typename T, std::size_t index>
 void save_tuple_value(const T &tuple, std::vector<uint8_t> &bytes) {
   constexpr auto max_index = std::tuple_size<T>::value;

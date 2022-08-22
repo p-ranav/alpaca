@@ -69,8 +69,13 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // set value for current field
-    detail::from_bytes<decayed_field_type>(field, bytes, byte_index);
     /// TODO: Check result of from_bytes call and proceed accordingly
+    if constexpr (detail::is_string::detect<decayed_field_type>) {
+      byte_index += 1; // get past the type_info byte (type::string)
+      detail::from_bytes_to_string(field, bytes, byte_index);
+    } else {
+      detail::from_bytes<decayed_field_type>(field, bytes, byte_index);
+    }
 
     // go to next field
     deserialize<T, index + 1>(s, bytes, byte_index);

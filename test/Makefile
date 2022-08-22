@@ -10,7 +10,8 @@ all:
 	test_serialize_pair.cpp   \
 	test_serialize_nested_struct.cpp \
 	test_deserialize_uint.cpp \
-	test_deserialize_int.cpp
+	test_deserialize_int.cpp \
+	test_deserialize_string.cpp
 
 clean:
 	rm main
