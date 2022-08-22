@@ -21,15 +21,17 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
 
     // check if vector
     if constexpr (detail::is_vector<decayed_field_type>::value) {
-      detail::to_bytes_from_list_type<true, decayed_field_type>(field, bytes);
+      detail::to_bytes_from_list_type<false, decayed_field_type>(field, bytes);
     }
     // check if tuple
     else if constexpr (detail::is_tuple<decayed_field_type>::value) {
+      /// TODO: change to <false, decayed_field_type>
       detail::to_bytes_from_tuple_type<true, decayed_field_type>(field, bytes);
 
     }
     // check if pair
     else if constexpr (detail::is_pair<decayed_field_type>::value) {
+      /// TODO: change to <false, decayed_field_type>
       detail::to_bytes_from_pair_type<true, decayed_field_type>(field, bytes);
     }
     // check if string
@@ -43,11 +45,7 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
     } else {
       if constexpr (std::is_same_v<decayed_field_type, bool>) {
         detail::to_bytes<false, true>(field, bytes);
-      } else if constexpr (std::is_same_v<decayed_field_type, uint8_t> ||
-                           std::is_same_v<decayed_field_type, uint16_t> ||
-                           std::is_same_v<decayed_field_type, uint32_t> ||
-                           std::is_same_v<decayed_field_type, uint64_t> ||
-                           std::is_same_v<decayed_field_type, int8_t> ||
+      } else if constexpr (std::is_same_v<decayed_field_type, int8_t> ||
                            std::is_same_v<decayed_field_type, int16_t> ||
                            std::is_same_v<decayed_field_type, int32_t> ||
                            std::is_same_v<decayed_field_type, int64_t>) {
@@ -83,6 +81,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
     /// TODO: Check result of from_bytes call and proceed accordingly
     if constexpr (detail::is_string::detect<decayed_field_type>) {
       detail::from_bytes_to_string(field, bytes, byte_index);
+    } else if constexpr (detail::is_vector<decayed_field_type>::value) {
+      detail::from_bytes_to_vector(field, bytes, byte_index);
     } else {
       detail::from_bytes<decayed_field_type>(field, bytes, byte_index);
     }
