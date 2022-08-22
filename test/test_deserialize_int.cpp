@@ -253,3 +253,39 @@ TEST_CASE("Deserialize signed integer types" * test_suite("integer")) {
     REQUIRE(result.d == -5294967295);
   }
 }
+
+TEST_CASE("Deserialize signed and unsigned integer types" *
+          test_suite("integer")) {
+  struct my_struct {
+    int8_t a;
+    int16_t b;
+    int32_t c;
+    int64_t d;
+    uint8_t e;
+    uint16_t f;
+    uint32_t g;
+    uint64_t h;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    my_struct s{-5, -12345, -12345678, -5294967295,
+                5,  12345,  12345678,  5294967295};
+    bytes = serialize(s);
+  }
+
+  // deserialize
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE(result.a == -5);
+    REQUIRE(result.b == -12345);
+    REQUIRE(result.c == -12345678);
+    REQUIRE(result.d == -5294967295);
+    REQUIRE(result.e == 5);
+    REQUIRE(result.f == 12345);
+    REQUIRE(result.g == 12345678);
+    REQUIRE(result.h == 5294967295);
+  }
+}
