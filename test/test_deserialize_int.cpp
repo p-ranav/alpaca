@@ -209,6 +209,46 @@ TEST_CASE("Deserialize int64_t" * test_suite("signed_integer")) {
   }
 }
 
+TEST_CASE("Deserialize int64_t (big positive)" * test_suite("signed_integer")) {
+  struct my_struct {
+    int64_t value;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    my_struct s{12345678910111314};
+    bytes = serialize(s);
+  }
+
+  // deserialize
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE(result.value == 12345678910111314);
+  }
+}
+
+TEST_CASE("Deserialize int64_t (big negative)" * test_suite("signed_integer")) {
+  struct my_struct {
+    int64_t value;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    my_struct s{-12345678910111314};
+    bytes = serialize(s);
+  }
+
+  // deserialize
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE(result.value == -12345678910111314);
+  }
+}
+
 TEST_CASE("Deserialize signed integer types" * test_suite("integer")) {
   struct my_struct {
     int8_t a;
