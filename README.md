@@ -45,7 +45,6 @@ The above serialization generates a compact vector of 12 bytes:
 ## Supported Types
 
 ```cpp
-// arithmetic
 uint8_t
 uint16_t 
 uint32_t 
@@ -54,19 +53,18 @@ int8_t
 int16_t 
 int32_t 
 int64_t
+enum class
 float
 double 
 bool
-// string
 char
 std::string
-// containers
+std::optional<T>
 std_array<T, N>
 std::vector<T>
 std::tuple<T, U...>
 std::pair<T, U>
 std::map<T, U>
 std::unordered_map<T, U>
-// nested structures
 struct
 ```
