@@ -3,7 +3,7 @@
 
 using doctest::test_suite;
 
-TEST_CASE("Deserialize vector<char>" * test_suite("vector")) {
+TEST_CASE("Deserialize array<char, 3>" * test_suite("array")) {
   struct my_struct {
     std::array<char, 3> values;
   };
@@ -22,7 +22,7 @@ TEST_CASE("Deserialize vector<char>" * test_suite("vector")) {
   }
 }
 
-TEST_CASE("Deserialize vector<char>" * test_suite("vector")) {
+TEST_CASE("Deserialize array<array<int, 3>, 3>" * test_suite("array")) {
   struct my_struct {
     std::array<std::array<int, 3>, 3> values;
   };
