@@ -1,7 +1,10 @@
 # serialize
-Serialization library in modern C++ - serialize a struct to bytes and back without any macros or boilerplate.
+
+`serialize` is a serialization library written in C++17. 
 
 ## Quick Start
+
+`serialize` allows users to pack C++ structs into a compact vector of bytes without macros or boilerplate code.
 
 ```cpp
 #include <cassert>
