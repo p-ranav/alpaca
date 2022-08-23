@@ -12,7 +12,7 @@ using doctest::test_suite;
           sizeof expected_value,                                               \
       std::back_inserter(expected));
 
-TEST_CASE("Serialize vector<char>" * test_suite("array")) {
+TEST_CASE("Serialize array<char, 3>" * test_suite("array")) {
   struct my_struct {
     std::array<char, 3> value;
   };
