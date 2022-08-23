@@ -41,6 +41,12 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   else if constexpr (detail::is_array<T>::value) {
     to_bytes_from_array_type<T>(input, bytes);
   }
+  // enum class
+  else if constexpr (std::is_enum<T>::value) {
+    using underlying_type = typename std::underlying_type<T>::type;
+    to_bytes_router<underlying_type>(static_cast<underlying_type>(input),
+                                     bytes);
+  }
   // pair
   else if constexpr (detail::is_pair<T>::value) {
     to_bytes_from_pair_type<T>(input, bytes);
@@ -209,6 +215,14 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // array
   else if constexpr (detail::is_array<T>::value) {
     from_bytes_to_array(output, bytes, byte_index);
+  }
+  // enum class
+  else if constexpr (std::is_enum<T>::value) {
+    using underlying_type = typename std::underlying_type<T>::type;
+    underlying_type underlying_value;
+    from_bytes_router<underlying_type>(underlying_value, bytes, byte_index);
+    output = static_cast<T>(underlying_value);
+    byte_index += 1;
   }
   // pair
   else if constexpr (detail::is_pair<T>::value) {
