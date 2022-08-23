@@ -80,6 +80,21 @@ static inline bool from_bytes_to_string(std::string &value,
   return true;
 }
 
+// Specialization for pair
+
+template <typename T>
+void load_pair_value(const T &pair, std::vector<uint8_t> &bytes,
+                     std::size_t &current_index) {
+  /// TODO: call from_bytes router for first and second
+}
+
+template <typename T>
+bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
+                        std::size_t &current_index) {
+  load_pair_value<T, 0>(pair, bytes, current_index);
+  return true;
+}
+
 // Specialization for tuple
 
 template <typename T, std::size_t index>
