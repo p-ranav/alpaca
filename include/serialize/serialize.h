@@ -7,37 +7,108 @@
 #include <serialize/detail/type_traits.h>
 #include <serialize/detail/variable_length_encoding.h>
 
-template <typename T, std::size_t index = 0>
-void serialize(T &s, std::vector<uint8_t> &bytes) {
+template <typename T, std::size_t index>
+void serialize(const T &s, std::vector<uint8_t> &bytes);
+
+template <typename T>
+void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes);
+
+template <typename T>
+void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes);
+
+template <typename T>
+void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
+
+template <typename T>
+void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
+  // unsigned or signed integer types
+  // char, bool
+  // float, double
+  if constexpr (std::is_arithmetic_v<T>) {
+    // use variable-length encoding if possible
+    detail::to_bytes(input, bytes);
+  }
+  // pair
+  else if constexpr (detail::is_pair<T>::value) {
+    to_bytes_from_pair_type<T>(input, bytes);
+  }
+  // std::string
+  else if constexpr (detail::is_string::detect<T>) {
+    detail::to_bytes(input, bytes);
+  }
+  // tuple
+  else if constexpr (detail::is_tuple<T>::value) {
+    to_bytes_from_tuple_type<T>(input, bytes);
+  }
+  // vector
+  else if constexpr (detail::is_vector<T>::value) {
+    to_bytes_from_list_type<T>(input, bytes);
+  }
+  // nested struct
+  else if constexpr (std::is_class_v<T>) {
+    serialize<T, 0>(input, bytes);
+  } else {
+    /// TODO: throw error unsupported type
+    detail::append(input, bytes);
+  }
+}
+
+// Specialization for pair
+
+template <typename T>
+void save_pair_value(const T &pair, std::vector<uint8_t> &bytes) {
+  detail::to_bytes(pair.first, bytes);
+  detail::to_bytes(pair.second, bytes);
+}
+
+template <typename T>
+void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes) {
+  // value of each element
+  save_pair_value<T>(input, bytes);
+}
+
+// Specialization for tuple
+
+template <typename T, std::size_t index>
+void save_tuple_value(const T &tuple, std::vector<uint8_t> &bytes) {
+  constexpr auto max_index = std::tuple_size<T>::value;
+  if constexpr (index < max_index) {
+    detail::to_bytes(std::get<index>(tuple), bytes);
+    save_tuple_value<T, index + 1>(tuple, bytes);
+  }
+}
+
+template <typename T>
+void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes) {
+  // value of each element
+  save_tuple_value<T, 0>(input, bytes);
+}
+
+// Specialization for vector
+
+template <typename T>
+void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
+  // save vector size
+  detail::to_bytes(input.size(), bytes);
+
+  // value of each element in list
+  for (const auto &v : input) {
+    // check if the value_type is a nested list type
+    using decayed_value_type = typename std::decay<decltype(v)>::type;
+    to_bytes_router<decayed_value_type>(v, bytes);
+  }
+}
+
+template <typename T, std::size_t index>
+void serialize(const T &s, std::vector<uint8_t> &bytes) {
   constexpr static auto max_index =
       detail::aggregate_arity<std::remove_cv_t<T>>::size();
   if constexpr (index < max_index) {
     decltype(auto) field = detail::get<index>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
-    // check if vector
-    if constexpr (detail::is_vector<decayed_field_type>::value) {
-      detail::to_bytes_from_list_type<decayed_field_type>(field, bytes);
-    }
-    // check if tuple
-    else if constexpr (detail::is_string::detect<decayed_field_type>) {
-      detail::to_bytes(field, bytes);
-    }
-    // check if tuple
-    else if constexpr (detail::is_tuple<decayed_field_type>::value) {
-      detail::to_bytes_from_tuple_type<decayed_field_type>(field, bytes);
-    }
-    // check if pair
-    else if constexpr (detail::is_pair<decayed_field_type>::value) {
-      detail::to_bytes_from_pair_type<decayed_field_type>(field, bytes);
-    }
-    // check if nested struct
-    else if constexpr (std::is_class<decayed_field_type>::value) {
-      // recurse
-      serialize<decayed_field_type>(field, bytes);
-    } else {
-      detail::to_bytes(field, bytes);
-    }
+    // serialize field
+    to_bytes_router<decayed_field_type>(field, bytes);
 
     // go to next field
     serialize<T, index + 1>(s, bytes);
