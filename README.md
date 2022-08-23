@@ -41,3 +41,32 @@ The above serialization generates a compact vector of 12 bytes:
   0x48, 0x65, 0x6c, 0x6c, 0x6f    // string "Hello"
 }
 ```
+
+## Supported Types
+
+```cpp
+// arithmetic
+uint8_t
+uint16_t 
+uint32_t 
+uint64_t
+int8_t 
+int16_t 
+int32_t 
+int64_t
+float
+double 
+bool
+// string
+char
+std::string
+// containers
+std_array<T, N>
+std::vector<T>
+std::tuple<T, U...>
+std::pair<T, U>
+std::map<T, U>
+std::unordered_map<T, U>
+// nested structures
+struct
+```
