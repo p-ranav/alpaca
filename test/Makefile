@@ -14,7 +14,9 @@ all:
 	test_deserialize_string.cpp \
 	test_deserialize_float.cpp \
 	test_deserialize_bool.cpp \
-	test_deserialize_vector.cpp
+	test_deserialize_vector.cpp \
+	test_deserialize_tuple.cpp \
+	test_deserialize_pair.cpp
 
 clean:
 	rm main
