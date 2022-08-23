@@ -25,7 +25,7 @@ int main() {
   auto bytes = serialize(s); // 12 bytes
   
   // Deserialize
-  auto recovered = deserialize<MyStruct>(bytes); 
+  auto recovered = deserialize<MyStruct>(bytes);
 }
 ```
 
