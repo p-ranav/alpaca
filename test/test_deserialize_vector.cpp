@@ -95,7 +95,6 @@ TEST_CASE("Deserialize vector<nested_struct>" * test_suite("vector")) {
                 {my_struct::nested_t{1}, my_struct::nested_t{2},
                  my_struct::nested_t{3}}};
     bytes = serialize(s);
-    detail::print_bytes(bytes);
   }
 
   {

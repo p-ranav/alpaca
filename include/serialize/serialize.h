@@ -14,6 +14,9 @@ template <typename T>
 void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
+void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes);
+
+template <typename T>
 void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
@@ -36,6 +39,11 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   else if constexpr (detail::is_string::detect<T>) {
     detail::to_bytes(input, bytes);
   }
+  // map-like
+  else if constexpr (detail::is_mappish<T>::value) {
+    // Serialize map type
+    to_bytes_from_map_type<T>(input, bytes);
+  }
   // tuple
   else if constexpr (detail::is_tuple<T>::value) {
     to_bytes_from_tuple_type<T>(input, bytes);
@@ -50,6 +58,24 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   } else {
     /// TODO: throw error unsupported type
     detail::append(input, bytes);
+  }
+}
+
+// Specialization for map
+
+template <typename T>
+void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
+  // save map size
+  detail::to_bytes(input.size(), bytes);
+
+  // save key,value pairs in map
+  for (const auto &[key, value] : input) {
+
+    using decayed_key_type = typename std::decay<decltype(key)>::type;
+    to_bytes_router<decayed_key_type>(key, bytes);
+
+    using decayed_value_type = typename std::decay<decltype(value)>::type;
+    to_bytes_router<decayed_value_type>(value, bytes);
   }
 }
 
