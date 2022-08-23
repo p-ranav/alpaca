@@ -57,8 +57,8 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
 
 template <typename T>
 void save_pair_value(const T &pair, std::vector<uint8_t> &bytes) {
-  detail::to_bytes(pair.first, bytes);
-  detail::to_bytes(pair.second, bytes);
+  to_bytes_router(pair.first, bytes);
+  to_bytes_router(pair.second, bytes);
 }
 
 template <typename T>
@@ -73,7 +73,7 @@ template <typename T, std::size_t index>
 void save_tuple_value(const T &tuple, std::vector<uint8_t> &bytes) {
   constexpr auto max_index = std::tuple_size<T>::value;
   if constexpr (index < max_index) {
-    detail::to_bytes(std::get<index>(tuple), bytes);
+    to_bytes_router(std::get<index>(tuple), bytes);
     save_tuple_value<T, index + 1>(tuple, bytes);
   }
 }

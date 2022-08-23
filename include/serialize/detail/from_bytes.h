@@ -80,6 +80,28 @@ static inline bool from_bytes_to_string(std::string &value,
   return true;
 }
 
+// Specialization for tuple
+
+template <typename T, std::size_t index>
+void load_tuple_value(const T &tuple, std::vector<uint8_t> &bytes,
+                      std::size_t &current_index) {
+  constexpr auto max_index = std::tuple_size<T>::value;
+  if constexpr (index < max_index) {
+    /// TODO: call from_bytes router here
+    // detail::from_bytes(std::get<index>(tuple), bytes);
+    load_tuple_value<T, index + 1>(tuple, bytes, current_index);
+  }
+}
+
+template <typename T>
+bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
+                         std::size_t &current_index) {
+  load_tuple_value<T, 0>(tuple, bytes, current_index);
+  return true;
+}
+
+// Specialization for vector
+
 template <typename T>
 bool from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
@@ -92,6 +114,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
   for (std::size_t i = 0; i < size; ++i) {
     T v{};
 
+    /// TODO: call from_bytes router here
     /// TODO: handle nested vectors, strings, and other container types
     from_bytes<T>(v, bytes, current_index);
 
