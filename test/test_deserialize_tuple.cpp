@@ -12,7 +12,6 @@ TEST_CASE("Deserialize tuple<int, float, bool>" * test_suite("tuple")) {
   {
     my_struct s{std::make_tuple(5, 3.14, true, "Hello", 'i')};
     bytes = serialize(s);
-    detail::print_bytes(bytes);
   }
   {
     auto result = deserialize<my_struct>(bytes);
@@ -37,7 +36,6 @@ TEST_CASE("Deserialize tuple<std::vector<int>, std::vector<tuple>>" *
                         std::vector<std::tuple<int, float>>{
                             std::make_tuple(4, 5.5), std::make_tuple(6, 7.7)})};
     bytes = serialize(s);
-    detail::print_bytes(bytes);
   }
   {
     auto result = deserialize<my_struct>(bytes);

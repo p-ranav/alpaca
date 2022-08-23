@@ -59,3 +59,22 @@ TEST_CASE("Serialize vector<int>" * test_suite("vector")) {
     REQUIRE((result.values == std::vector<int>{1, 2, 3, 4, 5, 6}));
   }
 }
+
+TEST_CASE("Serialize vector<vector<char>>" * test_suite("vector")) {
+  struct my_struct {
+    std::vector<std::vector<char>> values;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  {
+    my_struct s{{{'a', 'b', 'c'}, {'d', 'e', 'f'}}};
+    bytes = serialize(s);
+  }
+
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE((result.values ==
+             std::vector<std::vector<char>>{{'a', 'b', 'c'}, {'d', 'e', 'f'}}));
+  }
+}
