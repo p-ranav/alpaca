@@ -12,6 +12,7 @@ all:
 	test_serialize_enum_class.cpp \
 	test_serialize_nested_struct.cpp \
 	test_serialize_map.cpp \
+	test_serialize_optional.cpp \
 	test_deserialize_uint.cpp \
 	test_deserialize_int.cpp \
 	test_deserialize_string.cpp \

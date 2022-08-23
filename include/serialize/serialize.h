@@ -47,6 +47,19 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
     to_bytes_router<underlying_type>(static_cast<underlying_type>(input),
                                      bytes);
   }
+  // optional
+  else if constexpr (detail::is_specialization<T, std::optional>::value) {
+    const auto has_value = input.has_value();
+
+    // save if optional has value
+    to_bytes_router<bool>(has_value, bytes);
+
+    // save value
+    if (has_value) {
+      using value_type = typename T::value_type;
+      to_bytes_router<value_type>(input.value(), bytes);
+    }
+  }
   // pair
   else if constexpr (detail::is_pair<T>::value) {
     to_bytes_from_pair_type<T>(input, bytes);
@@ -71,8 +84,7 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   else if constexpr (std::is_class_v<T>) {
     serialize<T, 0>(input, bytes);
   } else {
-    /// TODO: throw error unsupported type
-    detail::append(input, bytes);
+    throw std::invalid_argument("unsupported type");
   }
 }
 
@@ -171,6 +183,31 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
 template <typename T> std::vector<uint8_t> serialize(T &s) {
   std::vector<uint8_t> bytes{};
   serialize<T, 0>(s, bytes);
+  return bytes;
+}
+
+// Overload of serialize where the number of fields in struct is SPECIFIED
+
+/// N -> number of fields in struct
+/// I -> field to start from
+template <typename T, std::size_t N, std::size_t I = 0>
+void serialize2(T &s, std::vector<uint8_t> &bytes) {
+  if constexpr (I < N) {
+    decltype(auto) field = detail::get<I, T, N>(s);
+    using decayed_field_type = typename std::decay<decltype(field)>::type;
+
+    // serialize field
+    to_bytes_router<decayed_field_type>(field, bytes);
+
+    // go to next field
+    serialize2<T, N, I + 1>(s, bytes);
+  }
+}
+
+template <typename T, std::size_t N, std::size_t I = 0>
+std::vector<uint8_t> serialize(T &s) {
+  std::vector<uint8_t> bytes{};
+  serialize2<T, N, I>(s, bytes);
   return bytes;
 }
 

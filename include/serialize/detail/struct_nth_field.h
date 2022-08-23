@@ -4,9 +4,10 @@
 
 namespace detail {
 
-template <std::size_t index, typename type>
+template <std::size_t index, typename type,
+          std::size_t arity = aggregate_arity<std::remove_cv_t<type>>::size()>
 constexpr decltype(auto) get(type &value) noexcept {
-  constexpr std::size_t arity = aggregate_arity<std::remove_cv_t<type>>::size();
+
   if constexpr (arity == 1) {
     auto &[p1] = value;
     if constexpr (index == 0) {

@@ -1,10 +1,19 @@
 #pragma once
+#include <array>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 namespace detail {
+
+// check if T is instantiation of U
+template <typename Test, template <typename...> class Ref>
+struct is_specialization : std::false_type {};
+
+template <template <typename...> class Ref, typename... Args>
+struct is_specialization<Ref<Args...>, Ref> : std::true_type {};
 
 // array
 template <std::size_t N, class T> constexpr std::size_t countof(T (&)[N]) {
@@ -26,6 +35,8 @@ template <typename> struct is_pair : std::false_type {};
 
 template <typename T, typename U>
 struct is_pair<std::pair<T, U>> : std::true_type {};
+
+// map
 
 namespace map {
 // Needed for some older versions of GCC
