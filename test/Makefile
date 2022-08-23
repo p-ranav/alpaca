@@ -5,6 +5,7 @@ all:
 	test_serialize_string.cpp \
 	test_serialize_float.cpp  \
 	test_serialize_bool.cpp   \
+	test_serialize_array.cpp \
 	test_serialize_vector.cpp \
 	test_serialize_tuple.cpp  \
 	test_serialize_pair.cpp   \
@@ -15,6 +16,7 @@ all:
 	test_deserialize_string.cpp \
 	test_deserialize_float.cpp \
 	test_deserialize_bool.cpp \
+	test_deserialize_array.cpp \
 	test_deserialize_vector.cpp \
 	test_deserialize_tuple.cpp \
 	test_deserialize_pair.cpp \

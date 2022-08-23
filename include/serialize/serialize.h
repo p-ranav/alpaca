@@ -7,8 +7,14 @@
 #include <serialize/detail/type_traits.h>
 #include <serialize/detail/variable_length_encoding.h>
 
+// Start of serialization functions
+
+// Forward declares
 template <typename T, std::size_t index>
 void serialize(const T &s, std::vector<uint8_t> &bytes);
+
+template <typename T>
+void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
 void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes);
@@ -30,6 +36,10 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   if constexpr (std::is_arithmetic_v<T>) {
     // use variable-length encoding if possible
     detail::to_bytes(input, bytes);
+  }
+  // array
+  else if constexpr (detail::is_array<T>::value) {
+    to_bytes_from_array_type<T>(input, bytes);
   }
   // pair
   else if constexpr (detail::is_pair<T>::value) {
@@ -75,6 +85,18 @@ void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
 
     using decayed_value_type = typename std::decay<decltype(value)>::type;
     to_bytes_router<decayed_value_type>(value, bytes);
+  }
+}
+
+// Specialization for array
+
+template <typename T>
+void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes) {
+  using decayed_value_type = typename std::decay<typename T::value_type>::type;
+
+  // value of each element in list
+  for (const auto &v : input) {
+    to_bytes_router<decayed_value_type>(v, bytes);
   }
 }
 
@@ -146,10 +168,16 @@ template <typename T> std::vector<uint8_t> serialize(T &s) {
   return bytes;
 }
 
+// Start of deserialization functions
+
 // Forward declares
 template <typename T, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
                  std::size_t byte_index);
+
+template <typename T>
+bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
+                         std::size_t &current_index);
 
 template <typename T>
 bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
@@ -177,6 +205,10 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // float, double
   if constexpr (std::is_arithmetic_v<T>) {
     detail::from_bytes(output, bytes, byte_index);
+  }
+  // array
+  else if constexpr (detail::is_array<T>::value) {
+    from_bytes_to_array(output, bytes, byte_index);
   }
   // pair
   else if constexpr (detail::is_pair<T>::value) {
@@ -206,6 +238,26 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     /// TODO: throw error unsupported type
     detail::from_bytes(output, bytes, byte_index);
   }
+}
+
+// Specialization for array
+
+template <typename T>
+bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
+                         std::size_t &current_index) {
+
+  using decayed_value_type = typename std::decay<typename T::value_type>::type;
+
+  constexpr auto size = std::tuple_size<T>::value;
+
+  // read `size` bytes and save to value
+  for (std::size_t i = 0; i < size; ++i) {
+    decayed_value_type v{};
+    from_bytes_router(v, bytes, current_index);
+    value[i] = v;
+  }
+
+  return true;
 }
 
 // Specialization for pair

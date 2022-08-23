@@ -6,6 +6,21 @@
 
 namespace detail {
 
+// array
+template <std::size_t N, class T> constexpr std::size_t countof(T (&)[N]) {
+  return N;
+}
+
+template <class Array, std::size_t N = std::tuple_size<Array>::value>
+constexpr std::size_t countof(Array &) {
+  return N;
+}
+
+template <typename T> struct is_array : std::false_type {};
+
+template <typename T, std::size_t N>
+struct is_array<std::array<T, N>> : std::true_type {};
+
 // pair
 template <typename> struct is_pair : std::false_type {};
 
