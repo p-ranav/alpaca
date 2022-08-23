@@ -27,7 +27,7 @@ bool encode_varint_firstbyte_6(int_t &value, std::vector<uint8_t> &output) {
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
   if (value > 63) {
-    //|128: Set the next byte flag
+    // Set the next byte flag
     octet |= ((uint8_t)(value & 63)) | 64;
     output.push_back(octet);
     return true; // multibyte
@@ -43,7 +43,7 @@ void encode_varint_6(int_t value, std::vector<uint8_t> &output) {
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
   while (value > 63) {
-    //|128: Set the next byte flag
+    // Set the next byte flag
     output.push_back(((uint8_t)(value & 63)) | 64);
     // Remove the seven bits we just wrote
     value >>= 6;
