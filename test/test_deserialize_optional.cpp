@@ -54,3 +54,31 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     }
   }
 }
+
+TEST_CASE("Deserialize optional sandwiched by regular types" *
+          test_suite("optional")) {
+  struct my_struct {
+    bool before;
+    std::optional<int> value;
+    float after;
+  };
+
+  {
+    std::vector<uint8_t> bytes;
+    {
+      my_struct s{true, 5, 3.14f};
+      // number of fields in struct needs to be specified
+      bytes = serialize<my_struct, 3>(s);
+      REQUIRE(bytes.size() == 7);
+    }
+    {
+      // number of fields in struct needs to be specified
+      auto result = deserialize<my_struct, 3>(bytes);
+
+      REQUIRE(result.before == true);
+      REQUIRE(result.value.has_value() == true);
+      REQUIRE(result.value.value() == 5);
+      REQUIRE(result.after == 3.14f);
+    }
+  }
+}
