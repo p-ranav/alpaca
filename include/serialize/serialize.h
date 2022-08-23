@@ -168,6 +168,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // nested struct
   else if constexpr (std::is_class_v<T>) {
     deserialize<T, 0>(output, bytes, byte_index);
+    byte_index++;
   } else {
     /// TODO: throw error unsupported type
     detail::from_bytes(output, bytes, byte_index);
