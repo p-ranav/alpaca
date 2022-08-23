@@ -265,6 +265,19 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   else if constexpr (detail::is_pair<T>::value) {
     from_bytes_to_pair(output, bytes, byte_index);
   }
+  // optional
+  else if constexpr (detail::is_specialization<T, std::optional>::value) {
+    // current byte is the `has_value` byte
+    bool has_value = detail::decode_varint<bool>(bytes, byte_index);
+
+    if (has_value) {
+      // read value of optional
+      using value_type = typename T::value_type;
+      value_type value;
+      from_bytes_router(value, bytes, byte_index);
+      output = value;
+    }
+  }
   // std::string
   else if constexpr (detail::is_string::detect<T>) {
     detail::from_bytes(output, bytes, byte_index);
@@ -408,5 +421,31 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
 template <typename T> T deserialize(const std::vector<uint8_t> &bytes) {
   T object{};
   deserialize<T, 0>(object, bytes, 0);
+  return object;
+}
+
+// Overload of deserialize where the number of struct fields is SPECIFIED
+
+/// N -> number of fields in struct
+/// I -> field to start from
+template <typename T, std::size_t N, std::size_t I = 0>
+void deserialize2(T &s, const std::vector<uint8_t> &bytes,
+                  std::size_t byte_index) {
+  if constexpr (I < N) {
+    decltype(auto) field = detail::get<I, T, N>(s);
+    using decayed_field_type = typename std::decay<decltype(field)>::type;
+
+    // load current field
+    from_bytes_router<decayed_field_type>(field, bytes, byte_index);
+
+    // go to next field
+    deserialize2<T, N, I + 1>(s, bytes, byte_index);
+  }
+}
+
+template <typename T, std::size_t N, std::size_t I = 0>
+T deserialize(const std::vector<uint8_t> &bytes) {
+  T object{};
+  deserialize2<T, N, I>(object, bytes, 0);
   return object;
 }

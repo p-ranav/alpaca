@@ -23,7 +23,8 @@ all:
 	test_deserialize_tuple.cpp \
 	test_deserialize_pair.cpp \
 	test_deserialize_map.cpp \
-	test_deserialize_enum_class.cpp
+	test_deserialize_enum_class.cpp \
+	test_deserialize_optional.cpp
 
 clean:
 	rm main
