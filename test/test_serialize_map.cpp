@@ -4,7 +4,7 @@
 
 using doctest::test_suite;
 
-TEST_CASE("Serialize map<char, int>" * test_suite("vector")) {
+TEST_CASE("Serialize map<char, int>" * test_suite("map")) {
   struct my_struct {
     std::map<char, int> value;
   };
@@ -23,7 +23,7 @@ TEST_CASE("Serialize map<char, int>" * test_suite("vector")) {
   REQUIRE(bytes[6] == static_cast<uint8_t>(3));
 }
 
-TEST_CASE("Serialize map<std::string, vector<int>>" * test_suite("vector")) {
+TEST_CASE("Serialize map<std::string, vector<int>>" * test_suite("map")) {
   struct my_struct {
     std::map<std::string, std::vector<int>> value;
   };

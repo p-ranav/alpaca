@@ -17,7 +17,8 @@ all:
 	test_deserialize_bool.cpp \
 	test_deserialize_vector.cpp \
 	test_deserialize_tuple.cpp \
-	test_deserialize_pair.cpp
+	test_deserialize_pair.cpp \
+	test_deserialize_map.cpp
 
 clean:
 	rm main

@@ -41,7 +41,6 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   }
   // map-like
   else if constexpr (detail::is_mappish<T>::value) {
-    // Serialize map type
     to_bytes_from_map_type<T>(input, bytes);
   }
   // tuple
@@ -157,6 +156,10 @@ bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
                         std::size_t &current_index);
 
 template <typename T>
+bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
+                       std::size_t &current_index);
+
+template <typename T>
 bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index);
 
@@ -182,6 +185,10 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // std::string
   else if constexpr (detail::is_string::detect<T>) {
     detail::from_bytes(output, bytes, byte_index);
+  }
+  // map-like
+  else if constexpr (detail::is_mappish<T>::value) {
+    from_bytes_to_map(output, bytes, byte_index);
   }
   // tuple
   else if constexpr (detail::is_tuple<T>::value) {
@@ -214,6 +221,28 @@ template <typename T>
 bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
                         std::size_t &current_index) {
   load_pair_value<T>(pair, bytes, current_index);
+  return true;
+}
+
+// Specialization for map
+
+template <typename T>
+bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
+                       std::size_t &current_index) {
+  // current byte is the size of the map
+  std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
+
+  // read `size` bytes and save to value
+  for (std::size_t i = 0; i < size; ++i) {
+    typename T::key_type key{};
+    from_bytes_router(key, bytes, current_index);
+
+    typename T::mapped_type value{};
+    from_bytes_router(value, bytes, current_index);
+
+    map.insert(std::make_pair(key, value));
+  }
+
   return true;
 }
 
