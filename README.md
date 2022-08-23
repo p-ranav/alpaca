@@ -4,7 +4,7 @@
 
 ## Quick Start
 
-`serialize` allows users to pack C++ structs into a compact vector of bytes without macros or boilerplate code.
+Pack C++ structs into a compact vector of bytes without macros or boilerplate code.
 
 ```cpp
 #include <cassert>
