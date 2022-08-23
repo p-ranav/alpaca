@@ -3,7 +3,7 @@
 
 using doctest::test_suite;
 
-TEST_CASE("Deserialize pair" * test_suite("pair")) {
+TEST_CASE("Deserialize pair<int, double>" * test_suite("pair")) {
   struct my_struct {
     std::pair<int, double> value;
   };
@@ -19,5 +19,26 @@ TEST_CASE("Deserialize pair" * test_suite("pair")) {
     auto result = deserialize<my_struct>(bytes);
     REQUIRE(result.value.first == 5);
     REQUIRE(result.value.second == 3.14);
+  }
+}
+
+TEST_CASE("Deserialize pair<std::vector<int>, std::vector<float>>" *
+          test_suite("pair")) {
+  struct my_struct {
+    std::pair<std::vector<int>, std::vector<float>> value;
+  };
+
+  std::vector<uint8_t> bytes;
+
+  {
+    my_struct s{std::make_pair(std::vector<int>{1, 2, 3},
+                               std::vector<float>{1.1, 2.2, 3.3})};
+    bytes = serialize(s);
+  }
+
+  {
+    auto result = deserialize<my_struct>(bytes);
+    REQUIRE((result.value.first == std::vector<int>{1, 2, 3}));
+    REQUIRE(result.value.second == std::vector<float>{1.1, 2.2, 3.3});
   }
 }
