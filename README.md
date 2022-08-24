@@ -1,13 +1,17 @@
 # serialize
 
-`serialize` is a serialization library written in C++17. 
-
-## Quick Start
-
 Pack C++ structs into a compact byte-array without macros or boilerplate code.
 
+* Header-only library
+* No external dependencies
+* Requires `C++17`
+* MIT License
+
+### Example 0
+
+`SBLIBNAME` can serialize 
+
 ```cpp
-#include <cassert>
 #include <serialize/serialize.h>
 
 struct MyStruct {
@@ -15,21 +19,23 @@ struct MyStruct {
   int b;
   float c;
   std::string d;
+  uint64_t e;
+  bool f;
 };
 
 int main() {
 
-  MyStruct s{'a', 5, 3.14f, "Hello"};
+  MyStruct s{'a', 5, 3.14f, "Hello", 12345, true};
 
   // Serialize
-  auto bytes = serialize(s); // 12 bytes
-  
+  auto bytes = serialize(s); // 15 bytes
+
   // Deserialize
   auto recovered = deserialize<MyStruct>(bytes);
 }
 ```
 
-The above serialization generates a compact vector of 12 bytes:
+The above serialization generates a compact vector of `15` bytes:
 
 ```cpp
 // bytes
@@ -39,6 +45,8 @@ The above serialization generates a compact vector of 12 bytes:
   0xc3, 0xf5, 0x48, 0x40,         // float 3.14f
   0x05,                           // start of 5-byte string
   0x48, 0x65, 0x6c, 0x6c, 0x6f    // string "Hello"
+  0xb9, 0x60,                     // 2-byte uint 12345
+  0x01                            // bool true
 }
 ```
 
