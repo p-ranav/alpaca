@@ -10,7 +10,7 @@ Pack C++ structs into a compact byte-array without macros or boilerplate code.
 ## Simple arithmetic and string types
 
 ```cpp
-#include <serialize/serialize.h>
+#include <structbyte/structbyte.h>
 
 struct MyStruct {
   char a;
@@ -48,7 +48,7 @@ int main() {
 
 ```cpp
 #include <cassert>
-#include <serialize/serialize.h>
+#include <structbyte/structbyte.h>
 
 struct MyStruct {
   std::array<int, 3> a;

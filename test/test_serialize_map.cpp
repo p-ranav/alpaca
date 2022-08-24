@@ -1,6 +1,7 @@
 #include <doctest.hpp>
 #include <map>
-#include <serialize/serialize.h>
+#include <structbyte/structbyte.h>
+using namespace structbyte;
 
 using doctest::test_suite;
 

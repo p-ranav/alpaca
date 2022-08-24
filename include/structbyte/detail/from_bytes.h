@@ -1,9 +1,10 @@
 #pragma once
 #include <cstdint>
-#include <serialize/detail/variable_length_encoding.h>
+#include <structbyte/detail/variable_length_encoding.h>
+#include <string>
 #include <vector>
 
-#include <iostream>
+namespace structbyte {
 
 namespace detail {
 
@@ -82,3 +83,5 @@ static inline bool from_bytes(std::string &value,
 }
 
 } // namespace detail
+
+}

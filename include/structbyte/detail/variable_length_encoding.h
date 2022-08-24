@@ -3,6 +3,8 @@
 #include <utility>
 #include <vector>
 
+namespace structbyte {
+
 namespace detail {
 
 template <typename T> bool CHECK_BIT(T &value, uint8_t pos) {
@@ -167,3 +169,5 @@ decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
 }
 
 } // namespace detail
+
+}

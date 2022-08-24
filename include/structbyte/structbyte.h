@@ -1,17 +1,21 @@
 #pragma once
-#include <serialize/detail/aggregate_arity.h>
-#include <serialize/detail/from_bytes.h>
-#include <serialize/detail/print_bytes.h>
-#include <serialize/detail/struct_nth_field.h>
-#include <serialize/detail/to_bytes.h>
-#include <serialize/detail/type_traits.h>
-#include <serialize/detail/variable_length_encoding.h>
+#include <structbyte/detail/aggregate_arity.h>
+#include <structbyte/detail/from_bytes.h>
+#include <structbyte/detail/print_bytes.h>
+#include <structbyte/detail/struct_nth_field.h>
+#include <structbyte/detail/to_bytes.h>
+#include <structbyte/detail/type_traits.h>
+#include <structbyte/detail/variable_length_encoding.h>
 
-// Start of serialization functions
+namespace structbyte {
 
 // Forward declares
 template <typename T, std::size_t index>
 void serialize(const T &s, std::vector<uint8_t> &bytes);
+
+namespace detail {
+
+// Start of serialization functions
 
 template <typename T>
 void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes);
@@ -164,6 +168,8 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
   }
 }
 
+}
+
 template <typename T, std::size_t index>
 void serialize(const T &s, std::vector<uint8_t> &bytes) {
   constexpr static auto max_index =
@@ -173,7 +179,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // serialize field
-    to_bytes_router<decayed_field_type>(field, bytes);
+    detail::to_bytes_router<decayed_field_type>(field, bytes);
 
     // go to next field
     serialize<T, index + 1>(s, bytes);
@@ -190,33 +196,35 @@ template <typename T> std::vector<uint8_t> serialize(T &s) {
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <typename T, std::size_t N, std::size_t I = 0>
-void serialize2(T &s, std::vector<uint8_t> &bytes) {
+template <typename T, std::size_t N, std::size_t I>
+void serialize(T &s, std::vector<uint8_t> &bytes) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // serialize field
-    to_bytes_router<decayed_field_type>(field, bytes);
+    detail::to_bytes_router<decayed_field_type>(field, bytes);
 
     // go to next field
-    serialize2<T, N, I + 1>(s, bytes);
+    serialize<T, N, I + 1>(s, bytes);
   }
 }
 
 template <typename T, std::size_t N, std::size_t I = 0>
 std::vector<uint8_t> serialize(T &s) {
   std::vector<uint8_t> bytes{};
-  serialize2<T, N, I>(s, bytes);
+  serialize<T, N, I>(s, bytes);
   return bytes;
 }
-
-// Start of deserialization functions
 
 // Forward declares
 template <typename T, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
                  std::size_t byte_index);
+
+namespace detail {
+
+// Start of deserialization functions
 
 template <typename T>
 bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
@@ -401,6 +409,8 @@ bool from_bytes_to_vector(std::vector<T> &value,
   return true;
 }
 
+}
+
 template <typename T, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
                  std::size_t byte_index) {
@@ -411,7 +421,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // load current field
-    from_bytes_router<decayed_field_type>(field, bytes, byte_index);
+    detail::from_bytes_router<decayed_field_type>(field, bytes, byte_index);
 
     // go to next field
     deserialize<T, index + 1>(s, bytes, byte_index);
@@ -428,24 +438,26 @@ template <typename T> T deserialize(const std::vector<uint8_t> &bytes) {
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <typename T, std::size_t N, std::size_t I = 0>
-void deserialize2(T &s, const std::vector<uint8_t> &bytes,
+template <typename T, std::size_t N, std::size_t I>
+void deserialize(T &s, const std::vector<uint8_t> &bytes,
                   std::size_t byte_index) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // load current field
-    from_bytes_router<decayed_field_type>(field, bytes, byte_index);
+    detail::from_bytes_router<decayed_field_type>(field, bytes, byte_index);
 
     // go to next field
-    deserialize2<T, N, I + 1>(s, bytes, byte_index);
+    deserialize<T, N, I + 1>(s, bytes, byte_index);
   }
 }
 
 template <typename T, std::size_t N, std::size_t I = 0>
 T deserialize(const std::vector<uint8_t> &bytes) {
   T object{};
-  deserialize2<T, N, I>(object, bytes, 0);
+  deserialize<T, N, I>(object, bytes, 0);
   return object;
+}
+
 }

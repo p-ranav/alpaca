@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+namespace structbyte {
+
 namespace detail {
 
 static inline void print_bytes(const std::vector<uint8_t> &bytes) {
@@ -19,3 +21,5 @@ static inline void print_bytes(const std::vector<uint8_t> &bytes) {
 }
 
 } // namespace detail
+
+}

@@ -1,22 +1,25 @@
-#include <cassert>
-#include <serialize/serialize.h>
+#include <structbyte/structbyte.h>
 
 struct MyStruct {
   char a;
   int b;
   float c;
-  std::string d;
-  uint64_t e;
+  unsigned e;
   bool f;
+
+  enum class color { red, blue, green };
+  color g;
 };
 
 int main() {
 
-  MyStruct s{'a', 5, 3.14f, "Hello", 12345, true};
+  MyStruct s{'a', 5, 3.14f, 12345, true, MyStruct::color::green};
 
   // Serialize
-  auto bytes = serialize(s); // 15 bytes
+  auto bytes = structbyte::serialize(s); // 10 bytes
+  std::cout << bytes.size() << "\n";
+  structbyte::detail::print_bytes(bytes);
 
   // Deserialize
-  auto recovered = deserialize<MyStruct>(bytes);
+  auto recovered = structbyte::deserialize<MyStruct>(bytes);
 }

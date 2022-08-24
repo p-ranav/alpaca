@@ -1,8 +1,10 @@
 #pragma once
 #include <cstring>
 #include <iterator>
-#include <serialize/detail/type_traits.h>
-#include <serialize/detail/variable_length_encoding.h>
+#include <structbyte/detail/type_traits.h>
+#include <structbyte/detail/variable_length_encoding.h>
+
+namespace structbyte {
 
 namespace detail {
 
@@ -55,3 +57,5 @@ static inline void to_bytes(const std::string &input,
 }
 
 } // namespace detail
+
+}

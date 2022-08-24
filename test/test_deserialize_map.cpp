@@ -1,7 +1,8 @@
 #include <doctest.hpp>
 #include <map>
-#include <serialize/serialize.h>
+#include <structbyte/structbyte.h>
 #include <unordered_map>
+using namespace structbyte;
 
 using doctest::test_suite;
 

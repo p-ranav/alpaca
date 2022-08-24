@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
-#include <serialize/detail/aggregate_arity.h>
+#include <structbyte/detail/aggregate_arity.h>
+
+namespace structbyte {
 
 namespace detail {
 
@@ -10715,3 +10717,5 @@ constexpr decltype(auto) get(type &value) noexcept {
   }
 }
 } // namespace detail
+
+}

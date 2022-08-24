@@ -1,6 +1,8 @@
 #pragma once
 #include <utility>
 
+namespace structbyte {
+
 namespace detail {
 
 struct filler {
@@ -20,3 +22,5 @@ struct aggregate_arity<
                       std::index_sequence<indices..., sizeof...(indices)>> {};
 
 } // namespace detail
+
+}

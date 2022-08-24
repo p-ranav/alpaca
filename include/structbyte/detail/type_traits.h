@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+namespace structbyte {
+
 namespace detail {
 
 // check if T is instantiation of U
@@ -85,3 +87,5 @@ template <typename T, typename A>
 struct is_vector<std::vector<T, A>> : public std::true_type {};
 
 } // namespace detail
+
+}
