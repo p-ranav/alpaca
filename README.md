@@ -10,7 +10,7 @@ Pack C++ structs into a compact byte-array without macros or boilerplate code.
 ## Simple arithmetic and string types
 
 ```cpp
-#include <serialize/serialize.h>
+##include <serialize/serialize.h>
 
 struct MyStruct {
   char a;
@@ -19,16 +19,19 @@ struct MyStruct {
   std::string d;
   uint64_t e;
   bool f;
+
+  enum class color { red, blue, green };
+  color g;
 };
 
 int main() {
 
-  MyStruct s{'a', 5, 3.14f, "Hello", 12345, true};
+  MyStruct s{'a', 5, 3.14f, "Hello", 12345, true, MyStruct::color::green};
 
-  // Serialize
-  auto bytes = serialize(s); // 15 bytes
+  // Serialize                                                                                           
+  auto bytes = serialize(s); // 16 bytes                                                                 
 
-  // Deserialize
+  // Deserialize                                                                                         
   auto recovered = deserialize<MyStruct>(bytes);
 }
 
@@ -41,6 +44,7 @@ int main() {
 //   0x48, 0x65, 0x6c, 0x6c, 0x6f    // string "Hello"
 //   0xb9, 0x60,                     // 2-byte uint 12345
 //   0x01                            // bool true
+//   0x02                            // enum class MyStruct::green
 // }
 ```
 
