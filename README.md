@@ -1,4 +1,6 @@
-# structbyte
+<p align="center">
+  <img height="80" src="https://user-images.githubusercontent.com/8450091/186311115-c2539558-d194-40c5-9696-d4f970d8274f.png"/>  
+</p>
 
 Pack C++ structs into a compact byte-array without any macros or boilerplate code.
 
