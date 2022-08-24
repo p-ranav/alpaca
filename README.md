@@ -1,13 +1,15 @@
 # structbyte
 
-Pack C++ structs into a compact byte-array without macros or boilerplate code.
+Pack C++ structs into a compact byte-array without any macros or boilerplate code.
 
 * Header-only library
 * No external dependencies
 * Requires `C++17`
 * MIT License
 
-## Fundamental types
+## Motivating Examples
+
+### Fundamental types
 
 ```cpp
 #include <structbyte/structbyte.h>
@@ -42,7 +44,7 @@ int main() {
 // }
 ```
 
-## Sequence containers: arrays, vectors, and strings
+### Sequence containers: arrays, vectors, and strings
 
 ```cpp
 #include <structbyte/structbyte.h>
@@ -82,7 +84,7 @@ int main() {
 // }
 ```
 
-### Supported Types
+## Supported Types
 
 ```cpp
 uint8_t
