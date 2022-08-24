@@ -184,6 +184,45 @@ int main() {
 // }
 ```
 
+### Optional values
+
+```cpp
+#include <alpaca/alpaca.h>
+using namespace alpaca;
+
+struct MyStruct {
+  std::optional<int> a;
+  std::optional<float> b;
+  std::optional<std::string> c;
+  std::optional<std::vector<bool>> d;
+};
+
+int main() {
+
+  MyStruct s{5, 3.14f, std::nullopt, std::vector<bool>{true, false, true, false}};
+
+  // Serialize
+  auto bytes = serialize<MyStruct, 4>(s); // 14 bytes
+
+  detail::print_bytes(bytes);
+
+  // Deserialize
+  auto recovered = deserialize<MyStruct>(bytes);
+}
+
+// bytes:
+// {
+//   0x01                    // optional has_value = true
+//   0x05                    // value = 5
+//   0x01                    // optional has_value = true
+//   0xc3 0xf5 0x48 0x40     // value = 3.14f
+//   0x00                    // optional has_value = false
+//   0x01                    // optional has_value = true
+//   0x04                    // 4-element vector
+//   0x01 0x00 0x01 0x00     // {true, false, true, false}
+// }
+```
+
 ## Supported Types
 
 ```cpp
