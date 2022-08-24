@@ -134,6 +134,67 @@ int main() {
 // }
 ```
 
+### Nested structures
+
+```cpp
+#include <alpaca/alpaca.h>
+using namespace alpaca;
+
+struct MyStruct {
+  struct gps {
+    double latitude;
+    double longitude;
+  };
+  gps location;
+
+  struct image {
+    uint16_t width;
+    uint16_t height;
+    std::string url;
+
+    struct format {
+      enum class type {
+        bayer_10bit,
+	yuyv_422
+      };
+      type type;
+    };
+    format format;
+    
+  };
+  image thumbnail;  
+};
+
+int main() {
+
+  MyStruct s{
+    {41.13, -73.70},
+    {480,340, "https://foo/bar/baz.jpg", {MyStruct::image::format::type::yuyv_422}}
+  };
+
+  // Serialize                                                                                           
+  auto bytes = serialize(s); // 45 bytes
+
+  // Deserialize
+  auto recovered = deserialize<MyStruct>(bytes);
+}
+
+// bytes:
+// {
+//   0x71, 0x3d, 0x0a, 0xd7, 0xa3, 0x90, 0x44, 0x40,  // double 41.13
+//   0xcd, 0xcc, 0xcc, 0xcc, 0xcc, 0x6c, 0x52, 0xc0,  // double -73.70
+//   0xe0, 0x01,                                      // uint 480
+//   0x54, 0x01,                                      // uint 340
+//   0x17,                                            // 23-byte string
+//   0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f,  // "https://"
+//   0x66, 0x6f, 0x6f, 0x2f,                          // "foo/"
+//   0x62, 0x61, 0x72, 0x2f,                          // "bar/"
+//   0x62, 0x61, 0x7a,                                // "baz"
+//   0x2e, 0x6a, 0x70, 0x67,                          // "jpg"
+//   0x01                                             // enum value 1
+// }
+```
+
 ## Supported Types
 
 ```cpp
