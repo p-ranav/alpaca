@@ -160,3 +160,19 @@ std::set<T>
 std::unordered_set<T>
 struct
 ```
+
+## Building, Installing, and Testing
+
+```bash
+git clone https://github.com/p-ranav/structbyte
+cd structbyte
+mkdir build && cd build
+cmake -DSTRUCTBYTE_BUILD_TESTS=on ..
+make
+make install
+```
+
+
+## License
+
+The project is available under the [MIT](https://opensource.org/licenses/MIT) license.
