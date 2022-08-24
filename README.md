@@ -11,6 +11,7 @@ Pack C++ structs into a compact byte-array without macros or boilerplate code.
 
 ```cpp
 #include <structbyte/structbyte.h>
+using namespace structbyte;
 
 struct MyStruct {
   char a;
@@ -28,10 +29,10 @@ int main() {
   MyStruct s{'a', 5, 3.14f, 12345, true, MyStruct::color::green};
 
   // Serialize
-  auto bytes = structbyte::serialize(s); // 10 bytes
+  auto bytes = serialize(s); // 10 bytes
 
   // Deserialize
-  auto recovered = structbyte::deserialize<MyStruct>(bytes);
+  auto recovered = deserialize<MyStruct>(bytes);
 }
 
 // bytes
@@ -49,6 +50,7 @@ int main() {
 
 ```cpp
 #include <structbyte/structbyte.h>
+using namespace structbyte;
 
 struct MyStruct {
   std::array<int, 3> a;
@@ -63,10 +65,10 @@ int main() {
 	     "Hello"};
 
   // Serialize
-  auto bytes = structbyte::serialize(s); // 24 bytes
+  auto bytes = serialize(s); // 24 bytes
 
   // Deserialize
-  auto recovered = structbyte::deserialize<MyStruct>(bytes);
+  auto recovered = deserialize<MyStruct>(bytes);
 } 
 
 // bytes:
