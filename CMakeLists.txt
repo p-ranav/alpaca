@@ -32,14 +32,15 @@ install(EXPORT structbyteConfig
         NAMESPACE structbyte::
         DESTINATION ${CMAKE_INSTALL_LIBDIR_ARCHIND}/cmake/${PROJECT_NAME})
 
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/include/structbyte/structbyte.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/structbyte)
+
 FILE(GLOB STRUCTBYTE_HEADERS 
-    "${PROJECT_SOURCE_DIR}/include/structbyte/*.h"
     "${PROJECT_SOURCE_DIR}/include/structbyte/detail/*.h"
     )
 
 install(FILES ${STRUCTBYTE_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/structbyte)
-
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/structbyte/detail)
 
 set(CONFIG_FILE_NAME_WITHOUT_EXT "${PROJECT_NAME}Config")
 set(CMAKE_CONFIG_FILE_BASENAME "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME_WITHOUT_EXT}")
