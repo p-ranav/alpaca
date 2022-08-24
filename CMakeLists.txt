@@ -1,46 +1,46 @@
 cmake_minimum_required(VERSION 3.12.4)
 
-project(structbyte
+project(alpaca
         VERSION 1.0.0
         DESCRIPTION "Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code."
-        HOMEPAGE_URL "https://github.com/p-ranav/structbyte"
+        HOMEPAGE_URL "https://github.com/p-ranav/alpaca"
         LANGUAGES CXX
 )
 
-option(STRUCTBYTE_BUILD_TESTS OFF)
+option(ALPACA_BUILD_TESTS OFF)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 string(REPLACE "/${CMAKE_LIBRARY_ARCHITECTURE}" "" CMAKE_INSTALL_LIBDIR_ARCHIND "${CMAKE_INSTALL_LIBDIR}")
 
 
-add_library(structbyte INTERFACE)
-add_library(structbyte::structbyte ALIAS structbyte)
+add_library(alpaca INTERFACE)
+add_library(alpaca::alpaca ALIAS alpaca)
 
-target_compile_features(structbyte INTERFACE cxx_std_17)
-target_include_directories(structbyte INTERFACE
+target_compile_features(alpaca INTERFACE cxx_std_17)
+target_include_directories(alpaca INTERFACE
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
 
 
-if(STRUCTBYTE_BUILD_TESTS)
+if(ALPACA_BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
-install(TARGETS structbyte EXPORT structbyteConfig)
-install(EXPORT structbyteConfig
-        NAMESPACE structbyte::
+install(TARGETS alpaca EXPORT alpacaConfig)
+install(EXPORT alpacaConfig
+        NAMESPACE alpaca::
         DESTINATION ${CMAKE_INSTALL_LIBDIR_ARCHIND}/cmake/${PROJECT_NAME})
 
-install(FILES ${CMAKE_CURRENT_LIST_DIR}/include/structbyte/structbyte.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/structbyte)
+install(FILES ${CMAKE_CURRENT_LIST_DIR}/include/alpaca/alpaca.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/alpaca)
 
-FILE(GLOB STRUCTBYTE_HEADERS 
-    "${PROJECT_SOURCE_DIR}/include/structbyte/detail/*.h"
+FILE(GLOB ALPACA_HEADERS 
+    "${PROJECT_SOURCE_DIR}/include/alpaca/detail/*.h"
     )
 
-install(FILES ${STRUCTBYTE_HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/structbyte/detail)
+install(FILES ${ALPACA_HEADERS}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/alpaca/detail)
 
 set(CONFIG_FILE_NAME_WITHOUT_EXT "${PROJECT_NAME}Config")
 set(CMAKE_CONFIG_FILE_BASENAME "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE_NAME_WITHOUT_EXT}")
@@ -56,8 +56,8 @@ write_basic_package_version_file("${CMAKE_CONFIG_VERSION_FILE_NAME}"
     ${OPTIONAL_ARCH_INDEPENDENT}
 )
 
-export(EXPORT structbyteConfig
-       NAMESPACE structbyte::)
+export(EXPORT alpacaConfig
+       NAMESPACE alpaca::)
 
 install(FILES "${CMAKE_CONFIG_VERSION_FILE_NAME}"
        DESTINATION "${CMAKE_INSTALL_LIBDIR_ARCHIND}/cmake/${PROJECT_NAME}")
@@ -65,7 +65,7 @@ install(FILES "${CMAKE_CONFIG_VERSION_FILE_NAME}"
 set(PackagingTemplatesDir "${CMAKE_CURRENT_SOURCE_DIR}/packaging")
 
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_VENDOR "structbyte (C++) developers")
+set(CPACK_PACKAGE_VENDOR "alpaca (C++) developers")
 set(CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}")
 set(CPACK_DEBIAN_PACKAGE_NAME "${CPACK_PACKAGE_NAME}")
 set(CPACK_RPM_PACKAGE_NAME "${CPACK_PACKAGE_NAME}")

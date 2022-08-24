@@ -1,7 +1,7 @@
 #pragma once
 #include <utility>
 
-namespace structbyte {
+namespace alpaca {
 
 namespace detail {
 
@@ -23,4 +23,4 @@ struct aggregate_arity<
 
 } // namespace detail
 
-} // namespace structbyte
+} // namespace alpaca

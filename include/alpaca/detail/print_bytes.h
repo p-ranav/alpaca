@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-namespace structbyte {
+namespace alpaca {
 
 namespace detail {
 
@@ -22,4 +22,4 @@ static inline void print_bytes(const std::vector<uint8_t> &bytes) {
 
 } // namespace detail
 
-} // namespace structbyte
+} // namespace alpaca

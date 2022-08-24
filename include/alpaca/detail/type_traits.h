@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-namespace structbyte {
+namespace alpaca {
 
 namespace detail {
 
@@ -92,4 +92,4 @@ struct is_vector<std::vector<T, A>> : public std::true_type {};
 
 } // namespace detail
 
-} // namespace structbyte
+} // namespace alpaca

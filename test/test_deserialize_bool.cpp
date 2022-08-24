@@ -1,6 +1,6 @@
 #include <doctest.hpp>
-#include <structbyte/structbyte.h>
-using namespace structbyte;
+#include <alpaca/alpaca.h>
+using namespace alpaca;
 
 using doctest::test_suite;
 

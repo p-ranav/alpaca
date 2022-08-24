@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(structbyte)
+project(alpaca)
 
 if(MSVC)
   # Force to always compile with W4
@@ -22,8 +22,8 @@ if (WIN32)
 	add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
-# STRUCTBYTE executable
-file(GLOB STRUCTBYTE_TEST_SOURCES
+# ALPACA executable
+file(GLOB ALPACA_TEST_SOURCES
     main.cpp
 	test_serialize_uint.cpp
 	test_serialize_int.cpp
@@ -56,10 +56,10 @@ file(GLOB STRUCTBYTE_TEST_SOURCES
 set_source_files_properties(main.cpp
     PROPERTIES
     COMPILE_DEFINITIONS DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
-ADD_EXECUTABLE(STRUCTBYTE ${STRUCTBYTE_TEST_SOURCES})
+ADD_EXECUTABLE(ALPACA ${ALPACA_TEST_SOURCES})
 INCLUDE_DIRECTORIES("../include" ".")
-set_target_properties(STRUCTBYTE PROPERTIES OUTPUT_NAME tests)
-set_property(TARGET STRUCTBYTE PROPERTY CXX_STANDARD 17)
+set_target_properties(ALPACA PROPERTIES OUTPUT_NAME tests)
+set_property(TARGET ALPACA PROPERTY CXX_STANDARD 17)
 
 # Set ${PROJECT_NAME} as the startup project
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT STRUCTBYTE)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ALPACA)

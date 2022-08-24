@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
-#include <structbyte/detail/aggregate_arity.h>
+#include <alpaca/detail/aggregate_arity.h>
 
-namespace structbyte {
+namespace alpaca {
 
 namespace detail {
 
@@ -10718,4 +10718,4 @@ constexpr decltype(auto) get(type &value) noexcept {
 }
 } // namespace detail
 
-} // namespace structbyte
+} // namespace alpaca

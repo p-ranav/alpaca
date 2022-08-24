@@ -1,14 +1,14 @@
 #pragma once
-#include <structbyte/detail/aggregate_arity.h>
-#include <structbyte/detail/endian.h>
-#include <structbyte/detail/from_bytes.h>
-#include <structbyte/detail/print_bytes.h>
-#include <structbyte/detail/struct_nth_field.h>
-#include <structbyte/detail/to_bytes.h>
-#include <structbyte/detail/type_traits.h>
-#include <structbyte/detail/variable_length_encoding.h>
+#include <alpaca/detail/aggregate_arity.h>
+#include <alpaca/detail/endian.h>
+#include <alpaca/detail/from_bytes.h>
+#include <alpaca/detail/print_bytes.h>
+#include <alpaca/detail/struct_nth_field.h>
+#include <alpaca/detail/to_bytes.h>
+#include <alpaca/detail/type_traits.h>
+#include <alpaca/detail/variable_length_encoding.h>
 
-namespace structbyte {
+namespace alpaca {
 
 // Forward declares
 template <typename T, std::size_t index>
@@ -339,8 +339,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     deserialize<T, 0>(output, bytes, byte_index);
     byte_index++;
   } else {
-    /// TODO: throw error unsupported type
-    detail::from_bytes(output, bytes, byte_index);
+    throw std::invalid_argument("unsupported type");
   }
 }
 
@@ -510,4 +509,4 @@ T deserialize(const std::vector<uint8_t> &bytes) {
   return object;
 }
 
-} // namespace structbyte
+} // namespace alpaca

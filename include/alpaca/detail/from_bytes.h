@@ -1,10 +1,10 @@
 #pragma once
 #include <cstdint>
 #include <string>
-#include <structbyte/detail/variable_length_encoding.h>
+#include <alpaca/detail/variable_length_encoding.h>
 #include <vector>
 
-namespace structbyte {
+namespace alpaca {
 
 namespace detail {
 
@@ -93,4 +93,4 @@ static inline bool from_bytes(std::string &value,
 
 } // namespace detail
 
-} // namespace structbyte
+} // namespace alpaca

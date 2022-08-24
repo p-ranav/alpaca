@@ -14,8 +14,8 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 ### Fundamental types
 
 ```cpp
-#include <structbyte/structbyte.h>
-using namespace structbyte;
+#include <alpaca/alpaca.h>
+using namespace alpaca;
 
 struct MyStruct {
   char a;
@@ -49,8 +49,8 @@ int main() {
 ### Sequence containers: arrays, vectors, and strings
 
 ```cpp
-#include <structbyte/structbyte.h>
-using namespace structbyte;
+#include <alpaca/alpaca.h>
+using namespace alpaca;
 
 struct MyStruct {
   std::array<int, 3> a;
@@ -91,8 +91,8 @@ int main() {
 ### Associative containers: map and set
 
 ```cpp
-#include <structbyte/structbyte.h>
-using namespace structbyte;
+#include <alpaca/alpaca.h>
+using namespace alpaca;
 
 struct MyStruct {
   std::map<std::string, std::tuple<uint8_t, uint8_t, uint8_t>> a;
@@ -166,10 +166,10 @@ struct
 ## Building, Installing, and Testing
 
 ```bash
-git clone https://github.com/p-ranav/structbyte
-cd structbyte
+git clone https://github.com/p-ranav/alpaca
+cd alpaca
 mkdir build && cd build
-cmake -DSTRUCTBYTE_BUILD_TESTS=on ..
+cmake -DALPACA_BUILD_TESTS=on ..
 make
 make install
 ```

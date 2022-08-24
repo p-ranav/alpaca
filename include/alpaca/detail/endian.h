@@ -1,6 +1,6 @@
 #pragma once
 
-namespace structbyte {
+namespace alpaca {
 
 namespace detail {
 
@@ -14,4 +14,4 @@ static inline bool is_system_little_endian() {
 
 } // namespace detail
 
-} // namespace structbyte
+} // namespace alpaca

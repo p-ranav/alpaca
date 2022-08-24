@@ -1,10 +1,10 @@
 #pragma once
 #include <cstring>
 #include <iterator>
-#include <structbyte/detail/type_traits.h>
-#include <structbyte/detail/variable_length_encoding.h>
+#include <alpaca/detail/type_traits.h>
+#include <alpaca/detail/variable_length_encoding.h>
 
-namespace structbyte {
+namespace alpaca {
 
 namespace detail {
 
@@ -66,4 +66,4 @@ static inline void to_bytes(const std::string &input,
 
 } // namespace detail
 
-} // namespace structbyte
+} // namespace alpaca
