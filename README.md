@@ -40,7 +40,7 @@ int main() {
 // {
 //   0x61,                           // char 'a'
 //   0x05,                           // int 5
-//   0xb9, 0x60,                     // 2-byte uint 12345
+//   0xb9, 0x60,                     // uint 12345
 //   0xc3, 0xf5, 0x48, 0x40,         // float 3.14f
 //   0x01                            // bool true
 // }
@@ -76,11 +76,11 @@ int main() {
 //   0x01, 0x02, 0x03,             // array {1, 2, 3}
 //   0x02,                         // vector size = 2
 //   0x02,                         // start of inner vector (size = 2)
-//   0xc3, 0xf5, 0x48, 0x40,       // vector[0][1] = 3.14
+//   0xc3, 0xf5, 0x48, 0x40,       // vector[0][0] = 3.14
 //   0x7b, 0x14, 0xce, 0x3f,       // vector[0][1] = 1.61
 //   0x02,                         // sub-vector size = 2
 //   0xa4, 0x70, 0x2d, 0x40,       // vector[1][0] = 2.71
-//   0x00, 0x00, 0x80, 0xbf        // vector[1][0] = -1
+//   0x00, 0x00, 0x80, 0xbf        // vector[1][1] = -1
 //   0x05,                         // start of 5-byte string
 //   0x48, 0x65, 0x6c, 0x6c, 0x6f  // string "Hello"
 // }
