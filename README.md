@@ -171,3 +171,8 @@ cmake -DSTRUCTBYTE_BUILD_TESTS=on ..
 make
 make install
 ```
+
+
+## License
+
+The project is available under the [MIT](https://opensource.org/licenses/MIT) license.
