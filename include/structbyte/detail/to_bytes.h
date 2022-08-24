@@ -23,7 +23,15 @@ template <typename T, typename U> void append(const T &value, U &bytes) {
 template <typename T>
 typename std::enable_if<std::is_integral_v<T>, void>::type
 to_bytes(const T &input, std::vector<uint8_t> &bytes) {
-  encode_varint<T>(input, bytes);
+
+  // for smaller ints, save as is
+  // don't perform variable-length encoding
+  if constexpr (std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
+                std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t>) {
+    append(input, bytes);
+  } else {
+    encode_varint<T>(input, bytes);
+  }
 }
 
 // Specializations for particular numeric types

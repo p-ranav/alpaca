@@ -1,5 +1,6 @@
 #pragma once
 #include <structbyte/detail/aggregate_arity.h>
+#include <structbyte/detail/endian.h>
 #include <structbyte/detail/from_bytes.h>
 #include <structbyte/detail/print_bytes.h>
 #include <structbyte/detail/struct_nth_field.h>

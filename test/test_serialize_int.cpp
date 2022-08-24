@@ -28,18 +28,28 @@ TEST_CASE("Serialize int16_t" * test_suite("signed_integer")) {
   {
     my_struct s{5};
     auto bytes = serialize(s);
-    REQUIRE(bytes.size() == 1);
-    REQUIRE(bytes[0] == static_cast<uint8_t>(5));
+    REQUIRE(bytes.size() == 2);
+
+    if (detail::is_system_little_endian()) {
+      REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
+      REQUIRE(bytes[1] == static_cast<uint8_t>(0x00));
+    } else {
+      REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
+      REQUIRE(bytes[1] == static_cast<uint8_t>(0x05));
+    }
   }
 
   {
     my_struct s{12345};
     auto bytes = serialize(s);
-    REQUIRE(bytes.size() == 3);
+    REQUIRE(bytes.size() == 2);
 
-    CONSTRUCT_EXPECTED_VALUE_SIGNED(int16_t, 12345);
-    for (std::size_t i = 0; i < bytes.size() - 1; ++i) {
-      REQUIRE(bytes[i] == expected[i]);
+    if (detail::is_system_little_endian()) {
+      REQUIRE(bytes[0] == static_cast<uint8_t>(0x39));
+      REQUIRE(bytes[1] == static_cast<uint8_t>(0x30));
+    } else {
+      REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
+      REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));
     }
   }
 }

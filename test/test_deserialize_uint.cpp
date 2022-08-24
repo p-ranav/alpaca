@@ -46,7 +46,7 @@ TEST_CASE("Deserialize uint16_t (stored as uint8_t)" *
   {
     my_struct s{99};
     bytes = serialize(s);
-    REQUIRE(bytes.size() == 1);
+    REQUIRE(bytes.size() == 2);
   }
 
   // deserialize

@@ -44,16 +44,25 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 
 template <typename T>
 typename std::enable_if<
-    std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
-        std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
-        std::is_same_v<T, std::size_t> || std::is_same_v<T, int8_t> ||
-        std::is_same_v<T, int16_t> || std::is_same_v<T, int32_t> ||
+    std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
+        std::is_same_v<T, std::size_t> || std::is_same_v<T, int32_t> ||
         std::is_same_v<T, int64_t>,
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index) {
   value = decode_varint<T>(bytes, current_index);
   return true;
+}
+
+// small ints
+template <typename T>
+typename std::enable_if<
+    std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
+        std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t>,
+    bool>::type
+from_bytes(T &value, const std::vector<uint8_t> &bytes,
+           std::size_t &current_index) {
+  return read_bytes<T, T>(value, bytes, current_index);
 }
 
 template <typename T>
