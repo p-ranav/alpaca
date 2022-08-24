@@ -1,6 +1,6 @@
 # structbyte
 
-Pack C++ structs into a compact byte-array without macros or boilerplate code.
+Pack C++ structs into a compact byte-array without any macros or boilerplate code.
 
 * Header-only library
 * No external dependencies
