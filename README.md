@@ -82,7 +82,7 @@ int main() {
 //   0x7b, 0x14, 0xce, 0x3f,       // vector[0][1] = 1.61
 //   0x02,                         // 2-element (inner) vector
 //   0xa4, 0x70, 0x2d, 0x40,       // vector[1][0] = 2.71
-//   0x00, 0x00, 0x80, 0xbf        // vector[1][1] = -1
+//   0x00, 0x00, 0x80, 0xbf,       // vector[1][1] = -1
 //   0x05,                         // start of 5-byte string
 //   0x48, 0x65, 0x6c, 0x6c, 0x6f  // string "Hello"
 // }
@@ -111,7 +111,7 @@ int main() {
   };
 
   // Serialize                                                                                           
-  auto bytes = serialize(s); // 33 bytes                                                                 
+  auto bytes = serialize(s); // 30 bytes
 
   // Deserialize                                                                                         
   auto recovered = deserialize<MyStruct>(bytes);
@@ -119,18 +119,18 @@ int main() {
 
 // bytes:                                                                                                
 // {                                                                                                     
-//   0x03                          // 3-element map                                                      
-//   0x04                          // start of 4-byte string                                             
-//   0x62, 0x6c, 0x75, 0x65        // string "blue"                                                      
-//   0x00, 0x00, 0xff, 0x01        // tuple {0, 0, 255}                                                  
-//   0x05                          // start of 5-byte string                                             
-//   0x67 0x72 0x65 0x65 0x6e      // string "green"                                                     
-//   0x00 0xff 0x01, 0x00          // tuple {0, 255, 0}                                                  
-//   0x03                          // 3-byte string                                                      
-//   0x72 0x65 0x64                // string "red"                                                       
-//   0xff 0x01 0x00, 0x00          // tuple {255, 0, 0}                                                  
-//   0x04                          // 4-element set                                                      
-//   0x01 0x02 0x03 0x04           // set {1, 2, 3, 4}                                                   
+//   0x03,                          // 3-element map                                                      
+//   0x04,                          // start of 4-byte string                                             
+//   0x62, 0x6c, 0x75, 0x65,        // string "blue"                                                      
+//   0x00, 0x00, 0xff,              // tuple {0, 0, 255}                                                  
+//   0x05,                          // start of 5-byte string                                             
+//   0x67, 0x72, 0x65, 0x65, 0x6e,  // string "green"                                                     
+//   0x00, 0xff, 0x00,              // tuple {0, 255, 0}                                                  
+//   0x03,                          // 3-byte string                                                      
+//   0x72, 0x65, 0x64,              // string "red"                                                       
+//   0xff, 0x00, 0x00,              // tuple {255, 0, 0}                                                  
+//   0x04,                          // 4-element set                                                      
+//   0x01, 0x02, 0x03, 0x04         // set {1, 2, 3, 4}                                                   
 // } 
 ```
 
