@@ -1,4 +1,4 @@
-# serialize
+# structbyte
 
 Pack C++ structs into a compact byte-array without macros or boilerplate code.
 
@@ -16,33 +16,29 @@ using namespace structbyte;
 struct MyStruct {
   char a;
   int b;
-  float c;
-  unsigned e;
-  bool f;
-
-  enum class color { red, blue, green };
-  color g;
+  uint64_t c;  
+  float d;
+  bool e;
 };
 
 int main() {
 
-  MyStruct s{'a', 5, 3.14f, 12345, true, MyStruct::color::green};
+  MyStruct s{'a', 5, 12345, 3.14f, true};
 
   // Serialize
-  auto bytes = serialize(s); // 10 bytes
+  auto bytes = serialize(s); // 9 bytes
 
   // Deserialize
   auto recovered = deserialize<MyStruct>(bytes);
 }
 
-// bytes
+// bytes:
 // {
 //   0x61,                           // char 'a'
 //   0x05,                           // int 5
-//   0xc3, 0xf5, 0x48, 0x40,         // float 3.14f
 //   0xb9, 0x60,                     // 2-byte uint 12345
+//   0xc3, 0xf5, 0x48, 0x40,         // float 3.14f
 //   0x01                            // bool true
-//   0x02                            // enum class MyStruct::green
 // }
 ```
 
