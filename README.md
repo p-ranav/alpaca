@@ -61,7 +61,7 @@ int main() {
 	     "Hello"};
 
   // Serialize
-  auto bytes = serialize(s); // 24 bytes
+  auto bytes = serialize(s); // 28 bytes
 
   // Deserialize
   auto recovered = deserialize<MyStruct>(bytes);
