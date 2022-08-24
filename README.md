@@ -60,16 +60,18 @@ struct MyStruct {
 
 int main() {
 
-  MyStruct s{{1, 2, 3},
-	     {{3.14, 1.61}, {2.71, -1}}
-	     "Hello"};
+  MyStruct s{
+      {1, 2, 3},
+      {{3.14, 1.61}, {2.71, -1}},
+      {"Hello"}
+  };
 
   // Serialize
   auto bytes = serialize(s); // 28 bytes
-
+  
   // Deserialize
   auto recovered = deserialize<MyStruct>(bytes);
-} 
+}
 
 // bytes:
 // {
