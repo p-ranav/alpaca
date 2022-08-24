@@ -198,7 +198,8 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
   constexpr static auto max_index =
       detail::aggregate_arity<std::remove_cv_t<T>>::size();
   if constexpr (index < max_index) {
-    decltype(auto) field = detail::get<index>(s);
+    const auto& ref = s;
+    decltype(auto) field = detail::get<index, decltype(ref)>(ref);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // serialize field
@@ -209,7 +210,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <typename T> std::vector<uint8_t> serialize(T &s) {
+template <typename T> std::vector<uint8_t> serialize(const T &s) {
   std::vector<uint8_t> bytes{};
   serialize<T, 0>(s, bytes);
   return bytes;
@@ -220,9 +221,10 @@ template <typename T> std::vector<uint8_t> serialize(T &s) {
 /// N -> number of fields in struct
 /// I -> field to start from
 template <typename T, std::size_t N, std::size_t I>
-void serialize(T &s, std::vector<uint8_t> &bytes) {
+void serialize(const T &s, std::vector<uint8_t> &bytes) {
   if constexpr (I < N) {
-    decltype(auto) field = detail::get<I, T, N>(s);
+    const auto& ref = s;
+    decltype(auto) field = detail::get<I, decltype(ref), N>(ref);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // serialize field
@@ -234,7 +236,7 @@ void serialize(T &s, std::vector<uint8_t> &bytes) {
 }
 
 template <typename T, std::size_t N, std::size_t I = 0>
-std::vector<uint8_t> serialize(T &s) {
+std::vector<uint8_t> serialize(const T &s) {
   std::vector<uint8_t> bytes{};
   serialize<T, N, I>(s, bytes);
   return bytes;
