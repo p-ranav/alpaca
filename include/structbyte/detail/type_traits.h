@@ -1,8 +1,12 @@
 #pragma once
 #include <array>
+#include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <tuple>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -88,4 +92,4 @@ struct is_vector<std::vector<T, A>> : public std::true_type {};
 
 } // namespace detail
 
-}
+} // namespace structbyte

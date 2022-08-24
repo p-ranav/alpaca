@@ -1,5 +1,4 @@
 #include <doctest.hpp>
-#include <map>
 #include <structbyte/structbyte.h>
 using namespace structbyte;
 

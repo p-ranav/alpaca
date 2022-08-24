@@ -12,6 +12,7 @@ all:
 	test_serialize_enum_class.cpp \
 	test_serialize_nested_struct.cpp \
 	test_serialize_map.cpp \
+	test_serialize_set.cpp \
 	test_serialize_optional.cpp \
 	test_deserialize_uint.cpp \
 	test_deserialize_int.cpp \
@@ -23,6 +24,7 @@ all:
 	test_deserialize_tuple.cpp \
 	test_deserialize_pair.cpp \
 	test_deserialize_map.cpp \
+	test_deserialize_set.cpp \
 	test_deserialize_enum_class.cpp \
 	test_deserialize_optional.cpp
 

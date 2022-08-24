@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
-#include <structbyte/detail/variable_length_encoding.h>
 #include <string>
+#include <structbyte/detail/variable_length_encoding.h>
 #include <vector>
 
 namespace structbyte {
@@ -84,4 +84,4 @@ static inline bool from_bytes(std::string &value,
 
 } // namespace detail
 
-}
+} // namespace structbyte

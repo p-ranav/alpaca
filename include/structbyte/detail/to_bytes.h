@@ -58,4 +58,4 @@ static inline void to_bytes(const std::string &input,
 
 } // namespace detail
 
-}
+} // namespace structbyte

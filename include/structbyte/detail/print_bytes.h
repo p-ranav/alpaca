@@ -22,4 +22,4 @@ static inline void print_bytes(const std::vector<uint8_t> &bytes) {
 
 } // namespace detail
 
-}
+} // namespace structbyte

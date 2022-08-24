@@ -23,4 +23,4 @@ struct aggregate_arity<
 
 } // namespace detail
 
-}
+} // namespace structbyte

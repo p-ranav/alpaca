@@ -27,6 +27,9 @@ template <typename T>
 void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
+void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes);
+
+template <typename T>
 void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
@@ -76,6 +79,11 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   else if constexpr (detail::is_mappish<T>::value) {
     to_bytes_from_map_type<T>(input, bytes);
   }
+  // set, unordered_set
+  else if constexpr (detail::is_specialization<T, std::set>::value ||
+                     detail::is_specialization<T, std::unordered_set>::value) {
+    to_bytes_from_set_type<T>(input, bytes);
+  }
   // tuple
   else if constexpr (detail::is_tuple<T>::value) {
     to_bytes_from_tuple_type<T>(input, bytes);
@@ -89,24 +97,6 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
     serialize<T, 0>(input, bytes);
   } else {
     throw std::invalid_argument("unsupported type");
-  }
-}
-
-// Specialization for map
-
-template <typename T>
-void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
-  // save map size
-  detail::to_bytes(input.size(), bytes);
-
-  // save key,value pairs in map
-  for (const auto &[key, value] : input) {
-
-    using decayed_key_type = typename std::decay<decltype(key)>::type;
-    to_bytes_router<decayed_key_type>(key, bytes);
-
-    using decayed_value_type = typename std::decay<decltype(value)>::type;
-    to_bytes_router<decayed_value_type>(value, bytes);
   }
 }
 
@@ -134,6 +124,38 @@ template <typename T>
 void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes) {
   // value of each element
   save_pair_value<T>(input, bytes);
+}
+
+// Specialization for map
+
+template <typename T>
+void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
+  // save map size
+  detail::to_bytes(input.size(), bytes);
+
+  // save key,value pairs in map
+  for (const auto &[key, value] : input) {
+
+    using decayed_key_type = typename std::decay<decltype(key)>::type;
+    to_bytes_router<decayed_key_type>(key, bytes);
+
+    using decayed_value_type = typename std::decay<decltype(value)>::type;
+    to_bytes_router<decayed_value_type>(value, bytes);
+  }
+}
+
+// Specialization for set/unordered_set
+
+template <typename T>
+void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes) {
+  // save set size
+  detail::to_bytes(input.size(), bytes);
+
+  // save values in set
+  for (const auto &value : input) {
+    using decayed_key_type = typename std::decay<typename T::value_type>::type;
+    to_bytes_router<decayed_key_type>(value, bytes);
+  }
 }
 
 // Specialization for tuple
@@ -168,7 +190,7 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
   }
 }
 
-}
+} // namespace detail
 
 template <typename T, std::size_t index>
 void serialize(const T &s, std::vector<uint8_t> &bytes) {
@@ -239,6 +261,10 @@ bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index);
 
 template <typename T>
+bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
+                       std::size_t &current_index);
+
+template <typename T>
 bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index);
 
@@ -293,6 +319,11 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // map-like
   else if constexpr (detail::is_mappish<T>::value) {
     from_bytes_to_map(output, bytes, byte_index);
+  }
+  // set, unordered_set
+  else if constexpr (detail::is_specialization<T, std::set>::value ||
+                     detail::is_specialization<T, std::unordered_set>::value) {
+    from_bytes_to_set(output, bytes, byte_index);
   }
   // tuple
   else if constexpr (detail::is_tuple<T>::value) {
@@ -370,6 +401,24 @@ bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
   return true;
 }
 
+// Specialization for set
+
+template <typename T>
+bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
+                       std::size_t &current_index) {
+  // current byte is the size of the set
+  std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
+
+  // read `size` bytes and save to value
+  for (std::size_t i = 0; i < size; ++i) {
+    typename T::value_type value{};
+    from_bytes_router(value, bytes, current_index);
+    set.insert(value);
+  }
+
+  return true;
+}
+
 // Specialization for tuple
 
 template <typename T, std::size_t index>
@@ -409,7 +458,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
   return true;
 }
 
-}
+} // namespace detail
 
 template <typename T, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
@@ -440,7 +489,7 @@ template <typename T> T deserialize(const std::vector<uint8_t> &bytes) {
 /// I -> field to start from
 template <typename T, std::size_t N, std::size_t I>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                  std::size_t byte_index) {
+                 std::size_t byte_index) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
@@ -460,4 +509,4 @@ T deserialize(const std::vector<uint8_t> &bytes) {
   return object;
 }
 
-}
+} // namespace structbyte

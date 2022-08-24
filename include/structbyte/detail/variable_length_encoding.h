@@ -170,4 +170,4 @@ decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
 
 } // namespace detail
 
-}
+} // namespace structbyte

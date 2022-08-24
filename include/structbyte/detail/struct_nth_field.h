@@ -10718,4 +10718,4 @@ constexpr decltype(auto) get(type &value) noexcept {
 }
 } // namespace detail
 
-}
+} // namespace structbyte
