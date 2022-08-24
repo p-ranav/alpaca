@@ -20,7 +20,7 @@ using namespace alpaca;
 struct MyStruct {
   char a;
   int b;
-  uint64_t c;  
+  uint64_t c;
   float d;
   bool e;
 };
@@ -60,15 +60,11 @@ struct MyStruct {
 
 int main() {
 
-  MyStruct s{
-      {1, 2, 3},
-      {{3.14, 1.61}, {2.71, -1}},
-      {"Hello"}
-  };
+  MyStruct s{{1, 2, 3}, {{3.14, 1.61}, {2.71, -1}}, {"Hello"}};
 
   // Serialize
   auto bytes = serialize(s); // 28 bytes
-  
+
   // Deserialize
   auto recovered = deserialize<MyStruct>(bytes);
 }
@@ -101,16 +97,12 @@ struct MyStruct {
 
 int main() {
 
-  MyStruct s{
-        {
-          {"red", std::make_tuple(255, 0, 0)},
-          {"green", std::make_tuple(0, 255, 0)},
-          {"blue", std::make_tuple(0, 0, 255)}
-        },
-        {1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4}
-  };
+  MyStruct s{{{"red", std::make_tuple(255, 0, 0)},
+              {"green", std::make_tuple(0, 255, 0)},
+              {"blue", std::make_tuple(0, 0, 255)}},
+             {1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4}};
 
-  // Serialize                                                                                           
+  // Serialize
   auto bytes = serialize(s); // 30 bytes
 
   // Deserialize
