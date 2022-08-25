@@ -38,11 +38,11 @@ int main() {
 
 // bytes:
 // {
-//   0x61,                           // char 'a'
-//   0x05,                           // int 5
-//   0xb9, 0x60,                     // uint 12345
-//   0xc3, 0xf5, 0x48, 0x40,         // float 3.14f
-//   0x01                            // bool true
+//   0x61                  // char 'a'
+//   0x05                  // int 5
+//   0xb9 0x60             // uint 12345
+//   0xc3 0xf5 0x48 0x40   // float 3.14f
+//   0x01                  // bool true
 // }
 ```
 
@@ -71,16 +71,16 @@ int main() {
 
 // bytes:
 // {
-//   0x01, 0x02, 0x03,             // array {1, 2, 3}
-//   0x02,                         // 2-element vector
-//   0x02,                         // 2-element (inner) vector
-//   0xc3, 0xf5, 0x48, 0x40,       // vector[0][0] = 3.14
-//   0x7b, 0x14, 0xce, 0x3f,       // vector[0][1] = 1.61
-//   0x02,                         // 2-element (inner) vector
-//   0xa4, 0x70, 0x2d, 0x40,       // vector[1][0] = 2.71
-//   0x00, 0x00, 0x80, 0xbf,       // vector[1][1] = -1
-//   0x05,                         // start of 5-byte string
-//   0x48, 0x65, 0x6c, 0x6c, 0x6f  // string "Hello"
+//   0x01 0x02 0x03            // array {1, 2, 3}
+//   0x02                      // 2-element vector
+//   0x02                      // 2-element (inner) vector
+//   0xc3 0xf5 0x48 0x40       // vector[0][0] = 3.14
+//   0x7b 0x14 0xce 0x3f       // vector[0][1] = 1.61
+//   0x02                      // 2-element (inner) vector
+//   0xa4 0x70 0x2d 0x40       // vector[1][0] = 2.71
+//   0x00 0x00 0x80 0xbf       // vector[1][1] = -1
+//   0x05                      // start of 5-byte string
+//   0x48 0x65 0x6c 0x6c 0x6f  // string "Hello"
 // }
 ```
 
@@ -111,18 +111,18 @@ int main() {
 
 // bytes:
 // {
-//   0x03,                          // 3-element map
-//   0x04,                          // start of 4-byte string
-//   0x62, 0x6c, 0x75, 0x65,        // string "blue"
-//   0x00, 0x00, 0xff,              // tuple {0, 0, 255}
-//   0x05,                          // start of 5-byte string
-//   0x67, 0x72, 0x65, 0x65, 0x6e,  // string "green"
-//   0x00, 0xff, 0x00,              // tuple {0, 255, 0}
-//   0x03,                          // 3-byte string
-//   0x72, 0x65, 0x64,              // string "red"
-//   0xff, 0x00, 0x00,              // tuple {255, 0, 0}
-//   0x04,                          // 4-element set
-//   0x01, 0x02, 0x03, 0x04         // set {1, 2, 3, 4}
+//   0x03                      // 3-element map
+//   0x04                      // start of 4-byte string
+//   0x62 0x6c 0x75 0x65       // string "blue"
+//   0x00 0x00 0xff            // tuple {0, 0, 255}
+//   0x05                      // start of 5-byte string
+//   0x67 0x72 0x65 0x65 0x6e  // string "green"
+//   0x00 0xff 0x00            // tuple {0, 255, 0}
+//   0x03                      // 3-byte string
+//   0x72 0x65 0x64            // string "red"
+//   0xff 0x00 0x00            // tuple {255, 0, 0}
+//   0x04                      // 4-element set
+//   0x01 0x02 0x03 0x04       // set {1, 2, 3, 4}
 // }
 ```
 
@@ -170,17 +170,17 @@ int main() {
 
 // bytes:
 // {
-//   0x71, 0x3d, 0x0a, 0xd7, 0xa3, 0x90, 0x44, 0x40,  // double 41.13
-//   0xcd, 0xcc, 0xcc, 0xcc, 0xcc, 0x6c, 0x52, 0xc0,  // double -73.70
-//   0xe0, 0x01,                                      // uint 480
-//   0x54, 0x01,                                      // uint 340
-//   0x17,                                            // 23-byte string
-//   0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f,  // "https://"
-//   0x66, 0x6f, 0x6f, 0x2f,                          // "foo/"
-//   0x62, 0x61, 0x72, 0x2f,                          // "bar/"
-//   0x62, 0x61, 0x7a,                                // "baz"
-//   0x2e, 0x6a, 0x70, 0x67,                          // ".jpg"
-//   0x01                                             // enum value 1
+//   0x71 0x3d 0x0a 0xd7 0xa3 0x90 0x44 0x40  // double 41.13
+//   0xcd 0xcc 0xcc 0xcc 0xcc 0x6c 0x52 0xc0  // double -73.70
+//   0xe0 0x01                                // uint 480
+//   0x54 0x01                                // uint 340
+//   0x17                                     // 23-byte string
+//   0x68 0x74 0x74 0x70 0x73 0x3a 0x2f 0x2f  // "https://"
+//   0x66 0x6f 0x6f 0x2f                      // "foo/"
+//   0x62 0x61 0x72 0x2f                      // "bar/"
+//   0x62 0x61 0x7a                           // "baz"
+//   0x2e 0x6a 0x70 0x67                      // ".jpg"
+//   0x01                                     // enum value 1
 // }
 ```
 
