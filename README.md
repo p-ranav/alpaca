@@ -7,7 +7,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 ## Table of Contents
 
 *    [Highlights](#highlights)
-*    [Motivating Examples](#motivating-examples)
+*    [Examples](#examples)
      *    [Fundamental types](#fundamental-types)
      *    [Sequence containers: arrays, vectors, and strings](#sequence-containers-arrays-vectors-and-strings)
      *    [Associative containers: map and set](#associative-containers-map-and-set)
@@ -25,7 +25,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 * Requires `C++17`
 * MIT License
 
-## Motivating Examples
+## Examples
 
 ### Fundamental types
 
