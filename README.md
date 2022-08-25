@@ -184,7 +184,9 @@ int main() {
 // }
 ```
 
-### Optional values
+### Special case: Optional values using `std::optional`
+
+`alpaca` fails at detecting the number of fields in a struct when an `std::optional` is used. So, for this to work correctly, use `serialize<T, N>` and specify the number of fields in the struct (`N`) manually. Don't use `std::optional` in nested structs since (1) there is no way to currently specify the number of fields in nested structs, and (2) the library fails at correctly identifying the number of fields.
 
 ```cpp
 #include <alpaca/alpaca.h>
