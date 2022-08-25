@@ -16,6 +16,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
      *    [Type-safe unions: `std::variant<...>`](#type-safe-unions-stdvariant)
      *    [Pointers: `std::unique_ptr<T>`](#pointers-stdunique_ptrt)
 *    [Supported Types](#supported-types)
+*    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
 
 ## Highlights
