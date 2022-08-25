@@ -7,6 +7,7 @@
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_traits.h>
 #include <alpaca/detail/variable_length_encoding.h>
+#include <alpaca/detail/variant_nth_field.h>
 
 namespace alpaca {
 
@@ -374,6 +375,14 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // tuple
   else if constexpr (detail::is_tuple<T>::value) {
     from_bytes_to_tuple(output, bytes, byte_index);
+  }
+  // variant
+  else if constexpr (detail::is_specialization<T, std::variant>::value) {
+    // current byte is the index of the variant value
+    std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
+
+    // read bytes as value_type = variant@index
+    detail::set_variant_value<T>(output, index, bytes, byte_index);
   }
   // vector
   else if constexpr (detail::is_vector<T>::value) {
