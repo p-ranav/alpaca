@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
 #include <alpaca/detail/aggregate_arity.h>
+#include <cstdint>
 
 namespace alpaca {
 
