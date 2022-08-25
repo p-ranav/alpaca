@@ -48,7 +48,7 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
   }
 
   {
-    auto tree = deserialize<Node<int>, 3>(bytes);
+    auto tree = deserialize<Node<int>>(bytes);
     REQUIRE(tree.data == 5);
     auto &left_subtree_0 = *(tree.left);
     REQUIRE(left_subtree_0.data == 3);

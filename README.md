@@ -224,7 +224,7 @@ int main() {
 // }
 ```
 
-### Type-safe unions: `std::variant`
+### Type-safe unions: `std::variant<...>`
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -274,6 +274,84 @@ int main() {
 //   0x6d 0x6f 0x74 0x6f 0x72 0x5f 0x73 0x74 0x61 0x74 0x65              // string "motor_state"
 //   0x0d                                                                // 13-byte string
 //   0x62 0x61 0x74 0x74 0x65 0x72 0x79 0x5f 0x73 0x74 0x61 0x74 0x65    // string "battery_state"
+```
+
+### Pointers: `std::unique_ptr<T>`
+
+```cpp
+#include <alpaca/alpaca.h>
+using namespace alpaca;
+
+template <class T> struct Node {
+  T data;
+  std::unique_ptr<Node<T>> left;
+  std::unique_ptr<Node<T>> right;
+
+  Node(const T &data = T(), std::unique_ptr<Node<T>> lhs = nullptr,
+       std::unique_ptr<Node<T>> rhs = nullptr)
+      : data(data), left(std::move(lhs)), right(std::move(rhs)) {}
+
+  Node(const Node &n) {
+    data = n.data;
+    left = n.left ? std::unique_ptr<Node<T>>{new Node<T>{*n.left}} : nullptr;
+    right = n.right ? std::unique_ptr<Node<T>>{new Node<T>{*n.right}} : nullptr;
+  }
+};
+
+template <class T>
+auto make_node(T const &value, std::unique_ptr<Node<T>> lhs = nullptr,
+               std::unique_ptr<Node<T>> rhs = nullptr) {
+  return std::unique_ptr<Node<T>>(
+      new Node<T>{value, std::move(lhs), std::move(rhs)});
+}
+
+int main() {
+
+  /*
+    Binary Tree:
+
+          5
+         / \
+        3   4
+       / \
+      1   2
+  */
+
+  auto const root = make_node(
+      5, 
+      make_node(
+          3, 
+          make_node(1), 
+          make_node(2)
+      ), 
+      make_node(4)
+  );  
+
+  // serialize
+  auto bytes = serialize<Node<int>>(*root); // 15 bytes
+
+  // deserialize
+  auto tree = deserialize<Node<int>>(bytes);
+}
+
+// bytes:
+// {
+//   0x05 // root = 5
+//   0x01 // 5.has_left = true
+//   0x03 // 5.left = 3
+//   0x01 // 3.has_left = true
+//   0x01 // 3.left = 1
+//   0x00 // 1.left = null
+//   0x00 // 1.right = null
+//   0x01 // 3.has_right = true
+//   0x02 // 3.right = 2
+//   0x00 // 2.has_left = false
+//   0x00 // 2.has_right = false
+//   0x01 // 5.has_right = true
+//   0x04 // 5.right = 4
+//   0x00 // 4.has_left = false
+//   0x00 // 4.has_right = false
+// }
 ```
 
 ## Supported Types
