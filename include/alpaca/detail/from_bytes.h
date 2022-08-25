@@ -1,7 +1,7 @@
 #pragma once
+#include <alpaca/detail/variable_length_encoding.h>
 #include <cstdint>
 #include <string>
-#include <alpaca/detail/variable_length_encoding.h>
 #include <vector>
 
 namespace alpaca {

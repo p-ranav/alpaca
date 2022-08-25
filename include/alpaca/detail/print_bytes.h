@@ -13,7 +13,7 @@ static inline void print_bytes(const std::vector<uint8_t> &bytes) {
   std::cout << "bytes[" << bytes.size() << "]:\n  ";
 
   for (std::size_t i = 0; i < bytes.size(); ++i) {
-    const auto& b = bytes[i];
+    const auto &b = bytes[i];
     std::cout << std::hex << "0x" << std::setfill('0') << std::setw(2) << (int)b
               << " ";
     if (i > 0 && (i + 1) % 8 == 0) {

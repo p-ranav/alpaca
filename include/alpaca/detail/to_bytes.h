@@ -1,8 +1,8 @@
 #pragma once
-#include <cstring>
-#include <iterator>
 #include <alpaca/detail/type_traits.h>
 #include <alpaca/detail/variable_length_encoding.h>
+#include <cstring>
+#include <iterator>
 
 namespace alpaca {
 

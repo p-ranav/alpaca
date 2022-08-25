@@ -89,6 +89,17 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   else if constexpr (detail::is_tuple<T>::value) {
     to_bytes_from_tuple_type<T>(input, bytes);
   }
+  // variant
+  else if constexpr (detail::is_specialization<T, std::variant>::value) {
+    std::size_t index = input.index();
+
+    // save index of variant
+    to_bytes_router<std::size_t>(index, bytes);
+
+    // save value of variant
+    const auto visitor = [&bytes](auto &&arg) { to_bytes_router(arg, bytes); };
+    std::visit(visitor, input);
+  }
   // vector
   else if constexpr (detail::is_vector<T>::value) {
     to_bytes_from_list_type<T>(input, bytes);
@@ -198,7 +209,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
   constexpr static auto max_index =
       detail::aggregate_arity<std::remove_cv_t<T>>::size();
   if constexpr (index < max_index) {
-    const auto& ref = s;
+    const auto &ref = s;
     decltype(auto) field = detail::get<index, decltype(ref)>(ref);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
@@ -223,7 +234,7 @@ template <typename T> std::vector<uint8_t> serialize(const T &s) {
 template <typename T, std::size_t N, std::size_t I>
 void serialize(const T &s, std::vector<uint8_t> &bytes) {
   if constexpr (I < N) {
-    const auto& ref = s;
+    const auto &ref = s;
     decltype(auto) field = detail::get<I, decltype(ref), N>(ref);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
