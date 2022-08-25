@@ -305,7 +305,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
       using element_type = typename T::element_type;
       element_type value;
       from_bytes_router(value, bytes, byte_index);
-      output = std::make_unique<element_type>(value);
+      output = std::unique_ptr<element_type>(new element_type{value});
     }
     else {
       output = nullptr;

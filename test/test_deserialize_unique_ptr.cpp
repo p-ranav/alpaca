@@ -10,6 +10,17 @@ struct Node
     T data;
     std::unique_ptr<Node<T>> left;
     std::unique_ptr<Node<T>> right;
+
+    Node(const T& data = T(), std::unique_ptr<Node<T>>lhs = nullptr, std::unique_ptr<Node<T>> rhs = nullptr) :
+        data(data),
+        left(std::move(lhs)),
+        right(std::move(rhs)) {}
+
+    Node(const Node& n) {
+        data = n.data;
+        left = n.left ? std::unique_ptr<Node<T>>{new Node<T>{*n.left}} : nullptr; 
+        right = n.right ? std::unique_ptr<Node<T>>{new Node<T>{*n.right}} : nullptr; 
+    }
 };
 
 template<class T>
@@ -43,6 +54,7 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
         );
 
         bytes = serialize<Node<int>>(*root); // 15 bytes
+        detail::print_bytes(bytes);
     }
 
     {
@@ -59,7 +71,7 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
         REQUIRE(left_subtree_1.left == nullptr);
         REQUIRE(left_subtree_1.right == nullptr);
         const auto& right_subtree_1 = *(left_subtree_0.right);
-        REQUIRE(right_subtree_1.data == 1);
+        REQUIRE(right_subtree_1.data == 2);
         REQUIRE(right_subtree_1.left == nullptr);
         REQUIRE(right_subtree_1.right == nullptr);
     }
