@@ -29,6 +29,22 @@ auto make_node(T const& value, std::unique_ptr<Node<T>>lhs = nullptr, std::uniqu
     return std::unique_ptr<Node<T>>(new Node<T>{value, std::move(lhs), std::move(rhs)});    
 }
 
+template<class T>
+void print_tree(Node<T> const& node)
+{
+    std::cout << "{ ";
+    std::cout << node.data;
+    if (node.left) {
+        std::cout << ", "; 
+        print_tree(*(node.left));
+    }
+    if (node.right) {
+        std::cout << ", "; 
+        print_tree(*(node.right));
+    }
+    std::cout << " }";
+}
+
 TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
 
     std::vector<uint8_t> bytes;
@@ -59,6 +75,7 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
 
     {
         auto tree = deserialize<Node<int>>(bytes);
+        print_tree(tree);
         REQUIRE(tree.data == 5);
         auto& left_subtree_0 = *(tree.left);
         REQUIRE(left_subtree_0.data == 3);

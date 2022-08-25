@@ -295,6 +295,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
 template <typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index) {
+  std::cout << "Checking byte: " << (int)bytes[byte_index] << "\n";
   // unique_ptr
   if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
     // current byte is the `has_value` byte
