@@ -12,7 +12,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
      *    [Sequence containers: `std::array`, `std::vector`, and `std::string`](#sequence-containers-arrays-vectors-and-strings)
      *    [Associative containers: `std::map` and `std::set`](#associative-containers-map-and-set)
      *    [Nested structures: `struct`](#nested-structures)
-     *    [Optional values: `std::optional`](#optional-values)
+     *    [Optional values: `std::optional`](#optional-values-stdoptionalt)
      *    [Type-safe unions: `std::variant`](#type-safe-unions-stdvariant)
      *    [Pointers: `std::unique_ptr`](#pointers-stdunique_ptrt)
 *    [Supported Types](#supported-types)
