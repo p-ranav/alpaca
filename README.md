@@ -179,7 +179,7 @@ int main() {
 //   0x66, 0x6f, 0x6f, 0x2f,                          // "foo/"
 //   0x62, 0x61, 0x72, 0x2f,                          // "bar/"
 //   0x62, 0x61, 0x7a,                                // "baz"
-//   0x2e, 0x6a, 0x70, 0x67,                          // "jpg"
+//   0x2e, 0x6a, 0x70, 0x67,                          // ".jpg"
 //   0x01                                             // enum value 1
 // }
 ```
