@@ -39,6 +39,7 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_serialize_map.cpp
 	test_serialize_set.cpp
 	test_serialize_optional.cpp
+	test_serialize_unique_ptr.cpp
 	test_deserialize_uint.cpp
 	test_deserialize_int.cpp
 	test_deserialize_string.cpp

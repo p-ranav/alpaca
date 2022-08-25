@@ -38,10 +38,26 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
+  // unique_ptr
+  if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
+    auto has_value = false;
+    if (input) {
+      has_value = true;
+    }
+
+    // save if ptr has value
+    to_bytes_router<bool>(has_value, bytes);
+
+    // save value
+    if (has_value) {
+      using element_type = typename T::element_type;
+      to_bytes_router<element_type>(*input, bytes);
+    }
+  }
   // unsigned or signed integer types
   // char, bool
   // float, double
-  if constexpr (std::is_arithmetic_v<T>) {
+  else if constexpr (std::is_arithmetic_v<T>) {
     // use variable-length encoding if possible
     detail::to_bytes(input, bytes);
   }

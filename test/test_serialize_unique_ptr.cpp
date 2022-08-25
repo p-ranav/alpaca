@@ -39,7 +39,6 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
     );
 
     auto bytes = serialize<Node<int>>(*root);
-    detail::print_bytes(bytes);
     REQUIRE(bytes.size() == 15);
     REQUIRE(bytes[0] == static_cast<uint8_t>(5));  // root = 5
     REQUIRE(bytes[1] == static_cast<uint8_t>(1));  // 5.has_left = true

@@ -1,8 +1,10 @@
 #pragma once
 #include <array>
 #include <map>
+#include <memory>
 #include <optional>
 #include <set>
+#include <unordered_set>
 #include <string>
 #include <tuple>
 #include <unordered_map>
