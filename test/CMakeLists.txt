@@ -40,6 +40,7 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_serialize_set.cpp
 	test_serialize_optional.cpp
 	test_serialize_variant.cpp
+	test_serialize_unique_ptr.cpp
 	test_deserialize_uint.cpp
 	test_deserialize_int.cpp
 	test_deserialize_string.cpp
@@ -53,6 +54,7 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_deserialize_set.cpp
 	test_deserialize_enum_class.cpp
 	test_deserialize_optional.cpp
+	test_deserialize_unique_ptr.cpp
 )
 set_source_files_properties(main.cpp
     PROPERTIES

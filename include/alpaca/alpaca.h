@@ -38,10 +38,26 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
+  // unique_ptr
+  if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
+    auto has_value = false;
+    if (input) {
+      has_value = true;
+    }
+
+    // save if ptr has value
+    to_bytes_router<bool>(has_value, bytes);
+
+    // save value
+    if (has_value) {
+      using element_type = typename T::element_type;
+      to_bytes_router<element_type>(*input, bytes);
+    }
+  }
   // unsigned or signed integer types
   // char, bool
   // float, double
-  if constexpr (std::is_arithmetic_v<T>) {
+  else if constexpr (std::is_arithmetic_v<T>) {
     // use variable-length encoding if possible
     detail::to_bytes(input, bytes);
   }
@@ -256,7 +272,7 @@ std::vector<uint8_t> serialize(const T &s) {
 // Forward declares
 template <typename T, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t byte_index);
+                 std::size_t &byte_index);
 
 namespace detail {
 
@@ -290,11 +306,26 @@ bool from_bytes_to_vector(std::vector<T> &value,
 template <typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index) {
+  // unique_ptr
+  if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
+    // current byte is the `has_value` byte
+    bool has_value = false;
+    detail::read_bytes<bool, bool>(has_value, bytes, byte_index);
 
+    if (has_value) {
+      // read value of unique_ptr
+      using element_type = typename T::element_type;
+      element_type value;
+      from_bytes_router(value, bytes, byte_index);
+      output = std::unique_ptr<element_type>(new element_type{value});
+    } else {
+      output = nullptr;
+    }
+  }
   // unsigned or signed integer types
   // char, bool
   // float, double
-  if constexpr (std::is_arithmetic_v<T>) {
+  else if constexpr (std::is_arithmetic_v<T>) {
     detail::from_bytes(output, bytes, byte_index);
   }
   // array
@@ -316,7 +347,8 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // optional
   else if constexpr (detail::is_specialization<T, std::optional>::value) {
     // current byte is the `has_value` byte
-    bool has_value = detail::decode_varint<bool>(bytes, byte_index);
+    bool has_value = false;
+    detail::read_bytes<bool, bool>(has_value, bytes, byte_index);
 
     if (has_value) {
       // read value of optional
@@ -350,7 +382,6 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // nested struct
   else if constexpr (std::is_class_v<T>) {
     deserialize<T, 0>(output, bytes, byte_index);
-    byte_index++;
   } else {
     throw std::invalid_argument("unsupported type");
   }
@@ -475,7 +506,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
 
 template <typename T, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t byte_index) {
+                 std::size_t &byte_index) {
   constexpr static auto max_index =
       detail::aggregate_arity<std::remove_cv_t<T>>::size();
   if constexpr (index < max_index) {
@@ -492,7 +523,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
 
 template <typename T> T deserialize(const std::vector<uint8_t> &bytes) {
   T object{};
-  deserialize<T, 0>(object, bytes, 0);
+  std::size_t byte_index = 0;
+  deserialize<T, 0>(object, bytes, byte_index);
   return object;
 }
 
@@ -502,7 +534,7 @@ template <typename T> T deserialize(const std::vector<uint8_t> &bytes) {
 /// I -> field to start from
 template <typename T, std::size_t N, std::size_t I>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t byte_index) {
+                 std::size_t &byte_index) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
@@ -518,7 +550,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
 template <typename T, std::size_t N, std::size_t I = 0>
 T deserialize(const std::vector<uint8_t> &bytes) {
   T object{};
-  deserialize<T, N, I>(object, bytes, 0);
+  std::size_t byte_index = 0;
+  deserialize<T, N, I>(object, bytes, byte_index);
   return object;
 }
 
