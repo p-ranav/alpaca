@@ -4,13 +4,9 @@
 
 Pack C++ structs into a compact byte-array without any macros or boilerplate code.
 
-* Header-only library
-* No external dependencies
-* Requires `C++17`
-* MIT License
-
 ## Table of Contents
 
+*    [Highlights](#highlights)
 *    [Motivating Examples](#motivating-examples)
      *    [Fundamental types](#fundamental-types)
      *    [Sequence containers: arrays, vectors, and strings](#sequence-containers-arrays-vectors-and-strings)
@@ -21,6 +17,13 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
      *    [Pointers: `std::unique_ptr<T>`](#pointers-stdunique_ptrt)
 *    [Supported Types](#supported-types)
 *    [License](#license)
+
+## Highlights
+
+* Header-only library
+* No external dependencies
+* Requires `C++17`
+* MIT License
 
 ## Motivating Examples
 
