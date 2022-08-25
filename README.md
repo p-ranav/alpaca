@@ -410,7 +410,8 @@ git clone https://github.com/p-ranav/alpaca
 cd alpaca
 
 # Build
-mkdir build && cd build
+mkdir build
+cd build
 cmake -DALPACA_BUILD_TESTS=on ..
 make
 
