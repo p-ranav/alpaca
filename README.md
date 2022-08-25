@@ -405,11 +405,19 @@ struct
 ## Building, Installing, and Testing
 
 ```bash
+# Clone
 git clone https://github.com/p-ranav/alpaca
 cd alpaca
+
+# Build
 mkdir build && cd build
 cmake -DALPACA_BUILD_TESTS=on ..
 make
+
+# Test
+./test/tests
+
+# Install 
 make install
 ```
 
