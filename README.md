@@ -16,7 +16,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
      *    [Sequence containers: arrays, vectors, and strings](#sequence-containers-arrays-vectors-and-strings)
      *    [Associative containers: map and set](#associative-containers-map-and-set)
      *    [Nested structures](#nested-structures)
-     *    [Optional values](#optional-values)
+     *    [Optional values: `std::optional<T>`](#optional-values)
      *    [Type-safe unions: `std::variant<...>`](#type-safe-unions-stdvariant)
      *    [Pointers: `std::unique_ptr<T>`](#pointers-stdunique_ptrt)
 *    [Supported Types](#supported-types)
@@ -197,7 +197,7 @@ int main() {
 // }
 ```
 
-### Optional values
+### Optional values: `std::optional<T>`
 
 ```cpp
 #include <alpaca/alpaca.h>
