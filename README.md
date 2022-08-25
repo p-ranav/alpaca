@@ -9,12 +9,12 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 *    [Highlights](#highlights)
 *    [Examples](#examples)
      *    [Fundamental types](#fundamental-types)
-     *    [Sequence containers: `std::array`, `std::vector`, and `std::string`](#sequence-containers-arrays-vectors-and-strings)
-     *    [Associative containers: `std::map` and `std::set`](#associative-containers-map-and-set)
-     *    [Nested structures: `struct`](#nested-structures)
-     *    [Optional values: `std::optional`](#optional-values-stdoptionalt)
-     *    [Type-safe unions: `std::variant`](#type-safe-unions-stdvariant)
-     *    [Pointers: `std::unique_ptr`](#pointers-stdunique_ptrt)
+     *    [Sequence containers: arrays, vectors, strings](#sequence-containers-arrays-vectors-and-strings)
+     *    [Associative containers: maps, sets](#associative-containers-map-and-set)
+     *    [Nested structures: structs](#nested-structures)
+     *    [Optional values](#optional-values-stdoptionalt)
+     *    [Type-safe unions: variant](#type-safe-unions-stdvariant)
+     *    [Smart Pointers: unique_ptr](#smart-pointers-stdunique_ptrt)
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
@@ -293,7 +293,7 @@ int main() {
 //   0x62 0x61 0x74 0x74 0x65 0x72 0x79 0x5f 0x73 0x74 0x61 0x74 0x65    // string "battery_state"
 ```
 
-### Pointers: `std::unique_ptr<T>`
+### Smart Pointers: `std::unique_ptr<T>`
 
 ```cpp
 #include <alpaca/alpaca.h>
