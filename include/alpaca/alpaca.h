@@ -295,11 +295,26 @@ bool from_bytes_to_vector(std::vector<T> &value,
 template <typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index) {
+  // unique_ptr
+  if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
+    // current byte is the `has_value` byte
+    bool has_value = detail::decode_varint<bool>(bytes, byte_index);
 
+    if (has_value) {
+      // read value of unique_ptr
+      using element_type = typename T::element_type;
+      element_type value;
+      from_bytes_router(value, bytes, byte_index);
+      output = std::make_unique<element_type>(value);
+    }
+    else {
+      output = nullptr;
+    }
+  }
   // unsigned or signed integer types
   // char, bool
   // float, double
-  if constexpr (std::is_arithmetic_v<T>) {
+  else if constexpr (std::is_arithmetic_v<T>) {
     detail::from_bytes(output, bytes, byte_index);
   }
   // array
