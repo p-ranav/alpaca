@@ -7,6 +7,9 @@ namespace alpaca {
 
 namespace detail {
 
+template <typename T>
+void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+
 template <typename T, std::size_t index>
 void save_tuple_value(const T &tuple, std::vector<uint8_t> &bytes) {
   constexpr auto max_index = std::tuple_size<T>::value;
@@ -26,6 +29,10 @@ template <typename T, typename... U>
 void append(T &bytes, const std::tuple<U...> &input) {
     to_bytes_from_tuple_type(input, bytes);
 }
+
+template <typename T>
+void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+                       std::size_t &byte_index, std::error_code &error_code);
 
 template <typename T, std::size_t index>
 void load_tuple_value(T &tuple, const std::vector<uint8_t> &bytes,

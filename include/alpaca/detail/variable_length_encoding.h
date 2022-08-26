@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <utility>
-#include <tuple>
 #include <vector>
 
 namespace alpaca {
@@ -55,11 +54,12 @@ void encode_varint_6(int_t value, std::vector<uint8_t> &output) {
 }
 
 template <typename int_t = uint64_t>
-std::tuple<int_t, bool, bool>
+int_t
 decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
-                          std::size_t &current_index) {
+                          std::size_t &current_index,
+                          bool& negative, 
+                          bool& multibyte) {
   int octet = 0;
-  bool negative = false, multibyte = false;
   int_t current = input[current_index];
   if (CHECK_BIT(current, 7)) {
     // negative number
@@ -72,7 +72,7 @@ decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
   }
 
   octet |= input[current_index++] & 63;
-  return {static_cast<int_t>(octet), negative, multibyte};
+  return static_cast<int_t>(octet);
 }
 
 template <typename int_t = uint64_t>
@@ -153,8 +153,9 @@ typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
                         int_t>::type
 decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
   // decode first byte
-  auto [ret, is_negative, multibyte] =
-      decode_varint_firstbyte_6<int_t>(input, current_index);
+  bool is_negative = false, multibyte = false;
+  auto ret =
+      decode_varint_firstbyte_6<int_t>(input, current_index, is_negative, multibyte);
 
   // decode rest of the bytes
   // if continuation bit is set

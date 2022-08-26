@@ -9,7 +9,6 @@
 #include <alpaca/detail/type_traits.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <alpaca/detail/variant_nth_field.h>
-#include <alpaca/types/tuple.h>
 #include <system_error>
 
 namespace alpaca {

@@ -8,6 +8,9 @@ namespace alpaca {
 namespace detail {
 
 template <typename T>
+void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+
+template <typename T>
 void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes) {
   using decayed_value_type = typename std::decay<typename T::value_type>::type;
 
@@ -16,6 +19,10 @@ void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes) {
     to_bytes_router<decayed_value_type>(v, bytes);
   }
 }
+
+template <typename T>
+void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+                       std::size_t &byte_index, std::error_code &error_code);
 
 template <typename T>
 void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
