@@ -59,11 +59,12 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_deserialize_unique_ptr.cpp
 	test_deserialize_variant.cpp
 	test_deserialize_with_crc32.cpp
-	test_deserialize_int_different_width.cpp
 
 	test_deserialize_error_crc32.cpp
 	test_deserialize_error_set.cpp
 	test_deserialize_error_vector.cpp
+
+	test_integer_compatibility.cpp
 )
 set_source_files_properties(main.cpp
     PROPERTIES

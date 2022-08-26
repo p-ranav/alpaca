@@ -36,6 +36,26 @@ TEST_CASE("Deserialize uint8_t" * test_suite("unsigned_integer")) {
   }
 }
 
+TEST_CASE("Deserialize uint8_t - error message_size" *
+          test_suite("signed_integer")) {
+
+  std::vector<uint8_t> bytes{};
+
+  // deserialize
+  {
+    struct my_new_struct {
+      uint8_t value;
+    };
+
+    std::error_code ec;
+    deserialize<my_new_struct>(bytes, ec);
+    REQUIRE((bool)ec == true);
+    REQUIRE(ec.value() ==
+            static_cast<int>(
+                std::errc::message_size)); // 1 byte expected for uint8_t
+  }
+}
+
 TEST_CASE("Deserialize uint16_t (stored as uint8_t)" *
           test_suite("unsigned_integer")) {
   struct my_struct {

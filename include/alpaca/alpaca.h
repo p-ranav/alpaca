@@ -597,6 +597,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       if (trailing_crc == computed_crc) {
         // message is good!
         // copy over all bytes except last 4
+        // TODO: Should this function accept a non-const vector?
+        // If it did, it could just remove the last 4 bytes
         const std::vector<uint8_t> bytes_without_crc(bytes.begin(),
                                                      bytes.begin() + index);
         deserialize<T, N, I>(s, bytes_without_crc, byte_index, error_code);
