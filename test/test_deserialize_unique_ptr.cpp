@@ -48,7 +48,9 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
   }
 
   {
-    auto tree = deserialize<Node<int>>(bytes);
+    std::error_code ec;
+    auto tree = deserialize<Node<int>>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(tree.data == 5);
     auto &left_subtree_0 = *(tree.left);
     REQUIRE(left_subtree_0.data == 3);

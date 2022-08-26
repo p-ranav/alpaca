@@ -254,7 +254,7 @@ std::vector<uint8_t> serialize(const T &s) {
 // Forward declares
 template <typename T, std::size_t N, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index);
+                 std::size_t &byte_index, std::error_code &error_code);
 
 namespace detail {
 
@@ -262,32 +262,36 @@ namespace detail {
 
 template <typename T>
 bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
-                         std::size_t &current_index);
+                         std::size_t &current_index,
+                         std::error_code &error_code);
 
 template <typename T>
 bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
-                        std::size_t &current_index);
+                        std::size_t &current_index,
+                        std::error_code &error_code);
 
 template <typename T>
 bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index);
+                       std::size_t &current_index, std::error_code &error_code);
 
 template <typename T>
 bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index);
+                       std::size_t &current_index, std::error_code &error_code);
 
 template <typename T>
 bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
-                         std::size_t &current_index);
+                         std::size_t &current_index,
+                         std::error_code &error_code);
 
 template <typename T>
 bool from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
-                          std::size_t &current_index);
+                          std::size_t &current_index,
+                          std::error_code &error_code);
 
 template <typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
-                       std::size_t &byte_index) {
+                       std::size_t &byte_index, std::error_code &error_code) {
   // unique_ptr
   if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
     // current byte is the `has_value` byte
@@ -298,7 +302,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
       // read value of unique_ptr
       using element_type = typename T::element_type;
       element_type value;
-      from_bytes_router(value, bytes, byte_index);
+      from_bytes_router(value, bytes, byte_index, error_code);
       output = std::unique_ptr<element_type>(new element_type{value});
     } else {
       output = nullptr;
@@ -312,19 +316,20 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   }
   // array
   else if constexpr (detail::is_array<T>::value) {
-    from_bytes_to_array(output, bytes, byte_index);
+    from_bytes_to_array(output, bytes, byte_index, error_code);
   }
   // enum class
   else if constexpr (std::is_enum<T>::value) {
     using underlying_type = typename std::underlying_type<T>::type;
     underlying_type underlying_value;
-    from_bytes_router<underlying_type>(underlying_value, bytes, byte_index);
+    from_bytes_router<underlying_type>(underlying_value, bytes, byte_index,
+                                       error_code);
     output = static_cast<T>(underlying_value);
     byte_index += 1;
   }
   // pair
   else if constexpr (detail::is_pair<T>::value) {
-    from_bytes_to_pair(output, bytes, byte_index);
+    from_bytes_to_pair(output, bytes, byte_index, error_code);
   }
   // optional
   else if constexpr (detail::is_specialization<T, std::optional>::value) {
@@ -336,7 +341,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
       // read value of optional
       using value_type = typename T::value_type;
       value_type value;
-      from_bytes_router(value, bytes, byte_index);
+      from_bytes_router(value, bytes, byte_index, error_code);
       output = value;
     }
   }
@@ -346,16 +351,16 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   }
   // map-like
   else if constexpr (detail::is_mappish<T>::value) {
-    from_bytes_to_map(output, bytes, byte_index);
+    from_bytes_to_map(output, bytes, byte_index, error_code);
   }
   // set, unordered_set
   else if constexpr (detail::is_specialization<T, std::set>::value ||
                      detail::is_specialization<T, std::unordered_set>::value) {
-    from_bytes_to_set(output, bytes, byte_index);
+    from_bytes_to_set(output, bytes, byte_index, error_code);
   }
   // tuple
   else if constexpr (detail::is_tuple<T>::value) {
-    from_bytes_to_tuple(output, bytes, byte_index);
+    from_bytes_to_tuple(output, bytes, byte_index, error_code);
   }
   // variant
   else if constexpr (detail::is_specialization<T, std::variant>::value) {
@@ -363,16 +368,16 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
 
     // read bytes as value_type = variant@index
-    detail::set_variant_value<T>(output, index, bytes, byte_index);
+    detail::set_variant_value<T>(output, index, bytes, byte_index, error_code);
   }
   // vector
   else if constexpr (detail::is_vector<T>::value) {
-    from_bytes_to_vector(output, bytes, byte_index);
+    from_bytes_to_vector(output, bytes, byte_index, error_code);
   }
   // nested struct
   else if constexpr (std::is_class_v<T>) {
     deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
-        output, bytes, byte_index);
+        output, bytes, byte_index, error_code);
   } else {
     throw std::invalid_argument("unsupported type");
   }
@@ -382,7 +387,8 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
 
 template <typename T>
 bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
-                         std::size_t &current_index) {
+                         std::size_t &current_index,
+                         std::error_code &error_code) {
 
   using decayed_value_type = typename std::decay<typename T::value_type>::type;
 
@@ -391,7 +397,7 @@ bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     decayed_value_type v{};
-    from_bytes_router(v, bytes, current_index);
+    from_bytes_router(v, bytes, current_index, error_code);
     value[i] = v;
   }
 
@@ -402,15 +408,16 @@ bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
 
 template <typename T>
 void load_pair_value(T &pair, const std::vector<uint8_t> &bytes,
-                     std::size_t &current_index) {
-  from_bytes_router(pair.first, bytes, current_index);
-  from_bytes_router(pair.second, bytes, current_index);
+                     std::size_t &current_index, std::error_code &error_code) {
+  from_bytes_router(pair.first, bytes, current_index, error_code);
+  from_bytes_router(pair.second, bytes, current_index, error_code);
 }
 
 template <typename T>
 bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
-                        std::size_t &current_index) {
-  load_pair_value<T>(pair, bytes, current_index);
+                        std::size_t &current_index,
+                        std::error_code &error_code) {
+  load_pair_value<T>(pair, bytes, current_index, error_code);
   return true;
 }
 
@@ -418,17 +425,18 @@ bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
 
 template <typename T>
 bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index) {
+                       std::size_t &current_index,
+                       std::error_code &error_code) {
   // current byte is the size of the map
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
 
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     typename T::key_type key{};
-    from_bytes_router(key, bytes, current_index);
+    from_bytes_router(key, bytes, current_index, error_code);
 
     typename T::mapped_type value{};
-    from_bytes_router(value, bytes, current_index);
+    from_bytes_router(value, bytes, current_index, error_code);
 
     map.insert(std::make_pair(key, value));
   }
@@ -440,14 +448,15 @@ bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
 
 template <typename T>
 bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index) {
+                       std::size_t &current_index,
+                       std::error_code &error_code) {
   // current byte is the size of the set
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
 
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     typename T::value_type value{};
-    from_bytes_router(value, bytes, current_index);
+    from_bytes_router(value, bytes, current_index, error_code);
     set.insert(value);
   }
 
@@ -458,18 +467,19 @@ bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
 
 template <typename T, std::size_t index>
 void load_tuple_value(T &tuple, const std::vector<uint8_t> &bytes,
-                      std::size_t &current_index) {
+                      std::size_t &current_index, std::error_code &error_code) {
   constexpr auto max_index = std::tuple_size<T>::value;
   if constexpr (index < max_index) {
-    from_bytes_router(std::get<index>(tuple), bytes, current_index);
-    load_tuple_value<T, index + 1>(tuple, bytes, current_index);
+    from_bytes_router(std::get<index>(tuple), bytes, current_index, error_code);
+    load_tuple_value<T, index + 1>(tuple, bytes, current_index, error_code);
   }
 }
 
 template <typename T>
 bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
-                         std::size_t &current_index) {
-  load_tuple_value<T, 0>(tuple, bytes, current_index);
+                         std::size_t &current_index,
+                         std::error_code &error_code) {
+  load_tuple_value<T, 0>(tuple, bytes, current_index, error_code);
   return true;
 }
 
@@ -478,7 +488,8 @@ bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
 template <typename T>
 bool from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
-                          std::size_t &current_index) {
+                          std::size_t &current_index,
+                          std::error_code &error_code) {
 
   // current byte is the size of the vector
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
@@ -486,7 +497,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     T v{};
-    from_bytes_router(v, bytes, current_index);
+    from_bytes_router(v, bytes, current_index, error_code);
     value.push_back(v);
   }
 
@@ -501,26 +512,27 @@ template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index) {
+                 std::size_t &byte_index, std::error_code &error_code) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // load current field
-    detail::from_bytes_router<decayed_field_type>(field, bytes, byte_index);
+    detail::from_bytes_router<decayed_field_type>(field, bytes, byte_index,
+                                                  error_code);
 
     // go to next field
-    deserialize<T, N, I + 1>(s, bytes, byte_index);
+    deserialize<T, N, I + 1>(s, bytes, byte_index, error_code);
   }
 }
 
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
-T deserialize(const std::vector<uint8_t> &bytes) {
+T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
   T object{};
   std::size_t byte_index = 0;
-  deserialize<T, N, I>(object, bytes, byte_index);
+  deserialize<T, N, I>(object, bytes, byte_index, error_code);
   return object;
 }
 

@@ -18,8 +18,10 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
       REQUIRE(bytes.size() == 2);
     }
     {
+      std::error_code ec;
       auto result = deserialize<my_struct>(
-          bytes); // fail, number of fields in struct deduced as 0
+          bytes, ec); // fail, number of fields in struct deduced as 0
+      REQUIRE((bool)ec == false);
       REQUIRE(result.value.has_value() == false);
     }
   }
@@ -33,8 +35,10 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
       REQUIRE(bytes.size() == 2);
     }
     {
+      std::error_code ec;
       auto result = deserialize<my_struct, 1>(
-          bytes); // number of fields in struct specified
+          bytes, ec); // number of fields in struct specified
+      REQUIRE((bool)ec == false);
       REQUIRE(result.value.has_value() == true);
       REQUIRE(result.value.value() == 5);
     }
@@ -49,8 +53,10 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
       REQUIRE(bytes.size() == 1);
     }
     {
+      std::error_code ec;
       auto result = deserialize<my_struct, 1>(
-          bytes); // number of fields in struct specified
+          bytes, ec); // number of fields in struct specified
+      REQUIRE((bool)ec == false);
       REQUIRE(result.value.has_value() == false);
     }
   }
@@ -74,8 +80,9 @@ TEST_CASE("Deserialize optional sandwiched by regular types" *
     }
     {
       // number of fields in struct needs to be specified
-      auto result = deserialize<my_struct, 3>(bytes);
-
+      std::error_code ec;
+      auto result = deserialize<my_struct, 3>(bytes, ec);
+      REQUIRE((bool)ec == false);
       REQUIRE(result.before == true);
       REQUIRE(result.value.has_value() == true);
       REQUIRE(result.value.value() == 5);

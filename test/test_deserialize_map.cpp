@@ -17,7 +17,9 @@ TEST_CASE("Deserialize map<char, int>" * test_suite("map")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value.size() == 3);
     REQUIRE(result.value.at('x') == 1);
     REQUIRE(result.value.at('y') == 2);
@@ -39,7 +41,9 @@ TEST_CASE("Deserialize unordered_map<string, vector<int>>" *
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value.size() == 2);
     REQUIRE((result.value.at("time") == std::vector<int>{0, 1, 2, 3, 4}));
     REQUIRE((result.value.at("x") == std::vector<int>{5, 10, 15}));
@@ -60,7 +64,9 @@ TEST_CASE("Deserialize unordered_map<string, vector<int>>" *
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value.size() == 2);
     REQUIRE(
         (result.value.at("time") == std::map<int, double>{{0, 1.1}, {1, 2.2}}));

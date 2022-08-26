@@ -15,7 +15,9 @@ TEST_CASE("Deserialize float" * test_suite("float")) {
     bytes = serialize(s);
   }
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 3.14f);
   }
 }
@@ -31,7 +33,9 @@ TEST_CASE("Deserialize double" * test_suite("float")) {
     bytes = serialize(s);
   }
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 2.71828);
   }
 }

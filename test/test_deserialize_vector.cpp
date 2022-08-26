@@ -18,7 +18,9 @@ TEST_CASE("Deserialize vector<char>" * test_suite("vector")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE((result.values == std::vector<char>{'x', 'y', 'z'}));
   }
 }
@@ -37,7 +39,9 @@ TEST_CASE("Deserialize vector<size_t>" * test_suite("vector")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE((result.values == std::vector<uint64_t>{1, 2, 3, 4, 5, 6}));
   }
 }
@@ -56,7 +60,9 @@ TEST_CASE("Deserialize vector<int>" * test_suite("vector")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE((result.values == std::vector<int>{1, 2, 3, 4, 5, 6}));
   }
 }
@@ -74,7 +80,9 @@ TEST_CASE("Deserialize vector<vector<char>>" * test_suite("vector")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE((result.values ==
              std::vector<std::vector<char>>{{'a', 'b', 'c'}, {'d', 'e', 'f'}}));
   }
@@ -99,7 +107,9 @@ TEST_CASE("Deserialize vector<nested_struct>" * test_suite("vector")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE((result.values == std::vector<double>{1.23, 4.56, 7.89}));
     REQUIRE(result.nested_values.size() == 3);
     REQUIRE(result.nested_values[0].value == 1);

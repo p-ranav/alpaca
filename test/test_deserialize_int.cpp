@@ -19,7 +19,9 @@ TEST_CASE("Deserialize int8_t" * test_suite("signed_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
 }
@@ -40,7 +42,9 @@ TEST_CASE("Deserialize int16_t (stored as int8_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 99);
   }
 }
@@ -60,7 +64,9 @@ TEST_CASE("Deserialize int16_t" * test_suite("signed_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 512);
   }
 }
@@ -81,7 +87,9 @@ TEST_CASE("Deserialize int32_t (packed as int8_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
 }
@@ -102,7 +110,9 @@ TEST_CASE("Deserialize int32_t (packed as int16_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 1600);
   }
 }
@@ -122,7 +132,9 @@ TEST_CASE("Deserialize int32_t" * test_suite("signed_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 75535);
   }
 }
@@ -143,7 +155,9 @@ TEST_CASE("Deserialize int64_t (packed as int8_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
 }
@@ -164,7 +178,9 @@ TEST_CASE("Deserialize int64_t (packed as int16_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345);
   }
 }
@@ -185,7 +201,9 @@ TEST_CASE("Deserialize int64_t (packed as int32_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345678);
   }
 }
@@ -205,7 +223,9 @@ TEST_CASE("Deserialize int64_t" * test_suite("signed_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5294967295);
   }
 }
@@ -225,7 +245,9 @@ TEST_CASE("Deserialize int64_t (big positive)" * test_suite("signed_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345678910111314);
   }
 }
@@ -245,7 +267,9 @@ TEST_CASE("Deserialize int64_t (big negative)" * test_suite("signed_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == -12345678910111314);
   }
 }
@@ -268,7 +292,9 @@ TEST_CASE("Deserialize signed integer types" * test_suite("integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.a == -5);
     REQUIRE(result.b == -12345);
     REQUIRE(result.c == -12345678);
@@ -300,7 +326,9 @@ TEST_CASE("Deserialize signed and unsigned integer types" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.a == -5);
     REQUIRE(result.b == -12345);
     REQUIRE(result.c == -12345678);

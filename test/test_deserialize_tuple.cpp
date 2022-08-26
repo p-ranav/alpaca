@@ -15,7 +15,9 @@ TEST_CASE("Deserialize tuple<int, float, bool>" * test_suite("tuple")) {
     bytes = serialize(s);
   }
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(std::get<0>(result.values) == 5);
     REQUIRE(std::get<1>(result.values) == 3.14f);
     REQUIRE(std::get<2>(result.values) == true);
@@ -39,7 +41,9 @@ TEST_CASE("Deserialize tuple<std::vector<int>, std::vector<tuple>>" *
     bytes = serialize(s);
   }
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE((std::get<0>(result.values) == std::vector<int>{1, 2, 3}));
     REQUIRE((std::get<1>(result.values) ==
              std::vector<std::tuple<int, float>>{std::make_tuple(4, 5.5),

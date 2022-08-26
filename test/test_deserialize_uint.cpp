@@ -29,7 +29,9 @@ TEST_CASE("Deserialize uint8_t" * test_suite("unsigned_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
 }
@@ -51,7 +53,9 @@ TEST_CASE("Deserialize uint16_t (stored as uint8_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 99);
   }
 }
@@ -72,7 +76,9 @@ TEST_CASE("Deserialize uint16_t" * test_suite("unsigned_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 512);
   }
 }
@@ -94,7 +100,9 @@ TEST_CASE("Deserialize uint32_t (packed as uint8_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
 }
@@ -116,7 +124,9 @@ TEST_CASE("Deserialize uint32_t (packed as uint16_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 1600);
   }
 }
@@ -137,7 +147,9 @@ TEST_CASE("Deserialize uint32_t" * test_suite("unsigned_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 75535);
   }
 }
@@ -159,7 +171,9 @@ TEST_CASE("Deserialize uint64_t (packed as uint8_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
 }
@@ -181,7 +195,9 @@ TEST_CASE("Deserialize uint64_t (packed as uint16_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345);
   }
 }
@@ -203,7 +219,9 @@ TEST_CASE("Deserialize uint64_t (packed as uint32_t)" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345678);
   }
 }
@@ -224,7 +242,9 @@ TEST_CASE("Deserialize uint64_t" * test_suite("unsigned_integer")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5294967295);
   }
 }
@@ -248,7 +268,9 @@ TEST_CASE("Deserialize unsigned integer types" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.a == 5);
     REQUIRE(result.b == 12345);
     REQUIRE(result.c == 12345678);
@@ -276,7 +298,9 @@ TEST_CASE("Deserialize unsigned integer types" *
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.e == 5);
     REQUIRE(result.f == 12345);
     REQUIRE(result.g == 12345678);

@@ -105,7 +105,7 @@ const uint32_t Crc32Lookup[MaxSlice][256] = {
     //}
     //// ... and the following slicing-by-8 algorithm (from Intel):
     ////
-    ///http://www.intel.com/technology/comms/perfnet/download/CRC_generators.pdf
+    /// http://www.intel.com/technology/comms/perfnet/download/CRC_generators.pdf
     //// http://sourceforge.net/projects/slicing-by-8/
     // for (int slice = 1; slice < MaxSlice; slice++)
     //  Crc32Lookup[slice][i] = (Crc32Lookup[slice - 1][i] >> 8) ^

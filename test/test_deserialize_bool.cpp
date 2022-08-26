@@ -17,7 +17,9 @@ TEST_CASE("Deserialize bool (true)" * test_suite("bool")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == true);
   }
 }
@@ -35,7 +37,9 @@ TEST_CASE("Deserialize bool (true)" * test_suite("bool")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == false);
   }
 }

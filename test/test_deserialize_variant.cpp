@@ -16,7 +16,9 @@ TEST_CASE("Deserialize variant" * test_suite("variant")) {
       bytes = serialize(s);
     }
     {
-      auto result = deserialize<my_struct>(bytes);
+      std::error_code ec;
+      auto result = deserialize<my_struct>(bytes, ec);
+      REQUIRE((bool)ec == false);
       REQUIRE(std::get<0>(result.value) == 5);
     }
   }
@@ -28,7 +30,9 @@ TEST_CASE("Deserialize variant" * test_suite("variant")) {
       bytes = serialize(s);
     }
     {
-      auto result = deserialize<my_struct>(bytes);
+      std::error_code ec;
+      auto result = deserialize<my_struct>(bytes, ec);
+      REQUIRE((bool)ec == false);
       REQUIRE(std::get<1>(result.value) == "Hello");
     }
   }
@@ -52,7 +56,9 @@ TEST_CASE("Deserialize map<string, variant>" * test_suite("variant")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.config.size() == 4);
     auto &value = result.config.at("keepalive");
     REQUIRE(std::get<2>(value) == true);

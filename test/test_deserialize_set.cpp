@@ -17,7 +17,9 @@ TEST_CASE("Deserialize set<int>" * test_suite("map")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value.size() == 4);
     REQUIRE(result.value.find(1) != result.value.end());
     REQUIRE(result.value.find(2) != result.value.end());

@@ -17,7 +17,9 @@ TEST_CASE("Deserialize pair<int, double>" * test_suite("pair")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value.first == 5);
     REQUIRE(result.value.second == 3.14);
   }
@@ -38,7 +40,9 @@ TEST_CASE("Deserialize pair<std::vector<int>, std::vector<float>>" *
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE((result.value.first == std::vector<int>{1, 2, 3}));
     REQUIRE(result.value.second == std::vector<float>{1.1, 2.2, 3.3});
   }

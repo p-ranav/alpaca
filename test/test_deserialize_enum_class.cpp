@@ -18,7 +18,9 @@ TEST_CASE("Deserialize enum class" * test_suite("enum_class")) {
   }
 
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == my_struct::color::blue);
   }
 }

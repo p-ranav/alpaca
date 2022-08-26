@@ -28,7 +28,9 @@ TEST_CASE("Deserialize std::string" * test_suite("string")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.value == std::string{"Hello World!"});
   }
 }
@@ -49,7 +51,9 @@ TEST_CASE("Deserialize int and std::string" * test_suite("string")) {
 
   // deserialize
   {
-    auto result = deserialize<my_struct>(bytes);
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
     REQUIRE(result.index == 5);
     REQUIRE(result.value == std::string{"Hello World!"});
   }
