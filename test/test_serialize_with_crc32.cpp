@@ -9,27 +9,22 @@ TEST_CASE("Serialize vector<char>" * test_suite("vector")) {
     int value;
   };
 
-  // sender:
-
   my_struct s{5};
-  auto bytes = serialize(s);
-
-  const auto crc32 = crc32_fast(bytes.data(), bytes.size());
-
-  // append crc32
-  detail::append(crc32, bytes);
+  auto bytes = serialize(s, /*generate_crc = */ true);
 
   REQUIRE(bytes.size() == 5);
 
-  // receiver:
-
-  // compute crc32 of "received" bytes
-  auto received = bytes;
-  uint32_t crc32_received;
-  std::size_t index = received.size() - 4;
-  detail::read_bytes<uint32_t, uint32_t>(crc32_received, received,
-                                         index); // last 4 bytes
-
-  // check
-  REQUIRE(crc32_received == crc32_fast(received.data(), received.size() - 4));
+  REQUIRE(bytes[0] == static_cast<uint32_t>(0x05));
+  if (detail::is_system_little_endian()) {
+    // 0x02 0x1b 0x68 0xa2
+    REQUIRE(bytes[1] == static_cast<uint32_t>(0x02));
+    REQUIRE(bytes[2] == static_cast<uint32_t>(0x1b));
+    REQUIRE(bytes[3] == static_cast<uint32_t>(0x68));
+    REQUIRE(bytes[4] == static_cast<uint32_t>(0xa2));
+  } else {
+    REQUIRE(bytes[1] == static_cast<uint32_t>(0xa2));
+    REQUIRE(bytes[2] == static_cast<uint32_t>(0x68));
+    REQUIRE(bytes[3] == static_cast<uint32_t>(0x1b));
+    REQUIRE(bytes[4] == static_cast<uint32_t>(0x02));
+  }
 }

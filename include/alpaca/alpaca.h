@@ -251,6 +251,31 @@ std::vector<uint8_t> serialize(const T &s) {
   return bytes;
 }
 
+// Overloads that append CRC32 of bytes
+
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
+void serialize(const T &s, std::vector<uint8_t> &bytes, bool generate_crc) {
+  serialize<T, N, I>(s, bytes);
+
+  if (N > 0 && generate_crc) {
+    // calculate crc32 for byte array and
+    // append uint32_t to the end
+    uint32_t crc = crc32_fast(bytes.data(), bytes.size());
+    detail::append(crc, bytes);
+  }
+}
+
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
+std::vector<uint8_t> serialize(const T &s, bool generate_crc) {
+  std::vector<uint8_t> bytes{};
+  serialize<T, N, I>(s, bytes, generate_crc);
+  return bytes;
+}
+
 // Forward declares
 template <typename T, std::size_t N, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
