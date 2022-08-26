@@ -25,9 +25,6 @@ template <typename T>
 void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
-void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes);
-
-template <typename T>
 void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
@@ -40,6 +37,13 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
 // incidentally, also works for std::pair
 template <typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type 
+append(T &bytes, const U &input) {
+  serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
+      input, bytes);
+}
+
+template <typename T, typename U>
+typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>, void>::type 
 append(T &bytes, const U &input) {
   serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
       input, bytes);
@@ -83,10 +87,6 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   // std::string
   else if constexpr (detail::is_string::detect<T>) {
     detail::to_bytes(input, bytes);
-  }
-  // map-like
-  else if constexpr (detail::is_mappish<T>::value) {
-    to_bytes_from_map_type<T>(input, bytes);
   }
   // set, unordered_set
   else if constexpr (detail::is_specialization<T, std::set>::value ||
@@ -217,10 +217,6 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
                          std::error_code &error_code);
 
 template <typename T>
-void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index, std::error_code &error_code);
-
-template <typename T>
 void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index, std::error_code &error_code);
 
@@ -238,6 +234,16 @@ void from_bytes_to_vector(std::vector<T> &value,
 // version for nested struct/class types
 template <typename T>
 typename std::enable_if<std::is_aggregate_v<T>, bool>::type 
+read_bytes(T &value, const std::vector<uint8_t> &bytes,
+            std::size_t &byte_index,
+            std::error_code &error_code) {
+  deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
+      value, bytes, byte_index, error_code);
+  return true;
+}
+
+template <typename T>
+typename std::enable_if<!std::is_aggregate_v<T> && std::is_class_v<T>, bool>::type 
 read_bytes(T &value, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
@@ -286,10 +292,6 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // std::string
   else if constexpr (detail::is_string::detect<T>) {
     detail::from_bytes(output, bytes, byte_index, error_code);
-  }
-  // map-like
-  else if constexpr (detail::is_mappish<T>::value) {
-    from_bytes_to_map(output, bytes, byte_index, error_code);
   }
   // set, unordered_set
   else if constexpr (detail::is_specialization<T, std::set>::value ||

@@ -1,4 +1,5 @@
 #pragma once
+#include <alpaca/detail/variable_length_encoding.h>
 #include <map>
 #include <system_error>
 #include <unordered_map>
@@ -9,9 +10,12 @@ namespace alpaca {
 namespace detail {
 
 template <typename T>
+void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+
+template <typename T>
 void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
   // save map size
-  detail::to_bytes(input.size(), bytes);
+  to_bytes_router<std::size_t>(input.size(), bytes);
 
   // save key,value pairs in map
   for (const auto &[key, value] : input) {
@@ -23,6 +27,20 @@ void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
     to_bytes_router<decayed_value_type>(value, bytes);
   }
 }
+
+template <typename T, typename K, typename V>
+void append(T &bytes, const std::map<K, V> &input) {
+  to_bytes_from_map_type(input, bytes);
+}
+
+template <typename T, typename K, typename V>
+void append(T &bytes, const std::unordered_map<K, V> &input) {
+  to_bytes_from_map_type(input, bytes);
+}
+
+template <typename T>
+void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+                       std::size_t &byte_index, std::error_code &error_code);
 
 template <typename T>
 void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
@@ -43,7 +61,21 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
   }
 }
 
+template <typename K, typename V>
+bool read_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
+            std::size_t &byte_index,
+            std::error_code &error_code) {
+    from_bytes_to_map(output, bytes, byte_index, error_code);
+    return true;
+}
 
+template <typename K, typename V>
+bool read_bytes(std::unordered_map<K, V> &output, const std::vector<uint8_t> &bytes,
+            std::size_t &byte_index,
+            std::error_code &error_code) {
+    from_bytes_to_map(output, bytes, byte_index, error_code);
+    return true;
+}
 
 }
 
