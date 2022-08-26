@@ -4,10 +4,10 @@ using namespace alpaca;
 
 using doctest::test_suite;
 
-TEST_CASE("Deserialize vector<int> error - size value_too_large" *
+TEST_CASE("Deserialize set<int> error - size value_too_large" *
           test_suite("vector")) {
   struct my_struct {
-    std::vector<int> values;
+    std::set<int> values;
   };
 
   {

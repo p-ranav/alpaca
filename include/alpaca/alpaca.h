@@ -400,8 +400,6 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
     from_bytes_router(v, bytes, current_index, error_code);
     value[i] = v;
   }
-
-  
 }
 
 // Specialization for pair
@@ -418,7 +416,6 @@ void from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
                         std::size_t &current_index,
                         std::error_code &error_code) {
   load_pair_value<T>(pair, bytes, current_index, error_code);
-  
 }
 
 // Specialization for map
@@ -440,8 +437,6 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
 
     map.insert(std::make_pair(key, value));
   }
-
-  
 }
 
 // Specialization for set
@@ -453,14 +448,20 @@ void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
   // current byte is the size of the set
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
 
+  if (size > bytes.size() - current_index) {
+    // size is greater than the number of bytes remaining
+    error_code = std::make_error_code(std::errc::value_too_large);
+
+    // stop here
+    return;
+  }
+
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     typename T::value_type value{};
     from_bytes_router(value, bytes, current_index, error_code);
     set.insert(value);
   }
-
-  
 }
 
 // Specialization for tuple
@@ -480,7 +481,6 @@ void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index,
                          std::error_code &error_code) {
   load_tuple_value<T, 0>(tuple, bytes, current_index, error_code);
-  
 }
 
 // Specialization for vector
@@ -508,8 +508,6 @@ void from_bytes_to_vector(std::vector<T> &value,
     from_bytes_router(v, bytes, current_index, error_code);
     value.push_back(v);
   }
-
-  
 }
 
 } // namespace detail
@@ -532,8 +530,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
     if (error_code) {
       // stop here
       return;
-    }
-    else {
+    } else {
       // go to next field
       deserialize<T, N, I + 1>(s, bytes, byte_index, error_code);
     }
