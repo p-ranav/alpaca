@@ -1,5 +1,6 @@
 #pragma once
 #include <alpaca/detail/aggregate_arity.h>
+#include <alpaca/detail/crc32.h>
 #include <alpaca/detail/endian.h>
 #include <alpaca/detail/from_bytes.h>
 #include <alpaca/detail/print_bytes.h>
@@ -12,7 +13,7 @@
 namespace alpaca {
 
 // Forward declares
-template <typename T, std::size_t index>
+template <typename T, std::size_t N, std::size_t I>
 void serialize(const T &s, std::vector<uint8_t> &bytes);
 
 namespace detail {
@@ -123,7 +124,8 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   }
   // nested struct
   else if constexpr (std::is_class_v<T>) {
-    serialize<T, 0>(input, bytes);
+    serialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
+        input, bytes);
   } else {
     throw std::invalid_argument("unsupported type");
   }
@@ -221,34 +223,11 @@ void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
 
 } // namespace detail
 
-template <typename T, std::size_t index>
-void serialize(const T &s, std::vector<uint8_t> &bytes) {
-  constexpr static auto max_index =
-      detail::aggregate_arity<std::remove_cv_t<T>>::size();
-  if constexpr (index < max_index) {
-    const auto &ref = s;
-    decltype(auto) field = detail::get<index, decltype(ref)>(ref);
-    using decayed_field_type = typename std::decay<decltype(field)>::type;
-
-    // serialize field
-    detail::to_bytes_router<decayed_field_type>(field, bytes);
-
-    // go to next field
-    serialize<T, index + 1>(s, bytes);
-  }
-}
-
-template <typename T> std::vector<uint8_t> serialize(const T &s) {
-  std::vector<uint8_t> bytes{};
-  serialize<T, 0>(s, bytes);
-  return bytes;
-}
-
-// Overload of serialize where the number of fields in struct is SPECIFIED
-
 /// N -> number of fields in struct
 /// I -> field to start from
-template <typename T, std::size_t N, std::size_t I>
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
 void serialize(const T &s, std::vector<uint8_t> &bytes) {
   if constexpr (I < N) {
     const auto &ref = s;
@@ -263,7 +242,9 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <typename T, std::size_t N, std::size_t I = 0>
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
 std::vector<uint8_t> serialize(const T &s) {
   std::vector<uint8_t> bytes{};
   serialize<T, N, I>(s, bytes);
@@ -271,7 +252,7 @@ std::vector<uint8_t> serialize(const T &s) {
 }
 
 // Forward declares
-template <typename T, std::size_t index>
+template <typename T, std::size_t N, std::size_t index>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
                  std::size_t &byte_index);
 
@@ -390,7 +371,8 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   }
   // nested struct
   else if constexpr (std::is_class_v<T>) {
-    deserialize<T, 0>(output, bytes, byte_index);
+    deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
+        output, bytes, byte_index);
   } else {
     throw std::invalid_argument("unsupported type");
   }
@@ -513,35 +495,11 @@ bool from_bytes_to_vector(std::vector<T> &value,
 
 } // namespace detail
 
-template <typename T, std::size_t index>
-void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index) {
-  constexpr static auto max_index =
-      detail::aggregate_arity<std::remove_cv_t<T>>::size();
-  if constexpr (index < max_index) {
-    decltype(auto) field = detail::get<index>(s);
-    using decayed_field_type = typename std::decay<decltype(field)>::type;
-
-    // load current field
-    detail::from_bytes_router<decayed_field_type>(field, bytes, byte_index);
-
-    // go to next field
-    deserialize<T, index + 1>(s, bytes, byte_index);
-  }
-}
-
-template <typename T> T deserialize(const std::vector<uint8_t> &bytes) {
-  T object{};
-  std::size_t byte_index = 0;
-  deserialize<T, 0>(object, bytes, byte_index);
-  return object;
-}
-
-// Overload of deserialize where the number of struct fields is SPECIFIED
-
 /// N -> number of fields in struct
 /// I -> field to start from
-template <typename T, std::size_t N, std::size_t I>
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
                  std::size_t &byte_index) {
   if constexpr (I < N) {
@@ -556,7 +514,9 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
   }
 }
 
-template <typename T, std::size_t N, std::size_t I = 0>
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
 T deserialize(const std::vector<uint8_t> &bytes) {
   T object{};
   std::size_t byte_index = 0;

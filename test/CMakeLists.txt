@@ -56,6 +56,8 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_deserialize_optional.cpp
 	test_deserialize_unique_ptr.cpp
 	test_deserialize_variant.cpp
+
+	test_serialize_with_crc32.cpp
 )
 set_source_files_properties(main.cpp
     PROPERTIES
