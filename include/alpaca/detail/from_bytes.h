@@ -10,21 +10,16 @@ namespace alpaca {
 
 namespace detail {
 
-template <typename T, typename U>
-// T is the type of field in the struct
-// U is the type of data in the byte array
-// e.g.,
-//    T could be an int32_t, U could be a uint8_t
-//    value = 5 is stored as a single byte even if the struct field is an
-//    int32_t
-bool read_bytes(T &value, const std::vector<uint8_t> &bytes,
-                std::size_t &current_index,
-                std::error_code &error_code) {
-  constexpr auto num_bytes_to_read = sizeof(U);
+template <typename T>
+typename std::enable_if<std::is_arithmetic_v<T>, bool>::type
+read_bytes(T &value, const std::vector<uint8_t> &bytes,
+          std::size_t &current_index,
+          std::error_code &error_code) {
+  constexpr auto num_bytes_to_read = sizeof(T);
   if (bytes.size() < num_bytes_to_read) {
     return false;
   }
-  value = *(reinterpret_cast<const U *>(bytes.data() + current_index));
+  value = *(reinterpret_cast<const T *>(bytes.data() + current_index));
   current_index += num_bytes_to_read;
   return true;
 }
@@ -34,7 +29,7 @@ typename std::enable_if<std::is_same_v<T, bool>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
-  return read_bytes<bool, bool>(value, bytes, current_index, error_code);
+  return read_bytes<bool>(value, bytes, current_index, error_code);
 }
 
 template <typename T>
@@ -42,7 +37,7 @@ typename std::enable_if<std::is_same_v<T, char>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
-  return read_bytes<char, char>(value, bytes, current_index, error_code);
+  return read_bytes<char>(value, bytes, current_index, error_code);
 }
 
 template <typename T>
@@ -79,7 +74,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
       return false;
     }
   }
-  return read_bytes<T, T>(value, bytes, current_index, error_code);
+  return read_bytes<T>(value, bytes, current_index, error_code);
 }
 
 template <typename T>
@@ -87,7 +82,7 @@ typename std::enable_if<std::is_same_v<T, float> || std::is_same_v<T, double>,
                         bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
-  return read_bytes<T, T>(value, bytes, current_index, error_code);
+  return read_bytes<T>(value, bytes, current_index, error_code);
 }
 
 static inline bool from_bytes(std::string &value,

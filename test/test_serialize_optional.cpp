@@ -1,3 +1,4 @@
+#include <alpaca/types/optional.h>
 #include <alpaca/alpaca.h>
 #include <doctest.hpp>
 using namespace alpaca;
