@@ -261,30 +261,30 @@ namespace detail {
 // Start of deserialization functions
 
 template <typename T>
-bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
+void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index,
                          std::error_code &error_code);
 
 template <typename T>
-bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
+void from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
                         std::size_t &current_index,
                         std::error_code &error_code);
 
 template <typename T>
-bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
+void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index, std::error_code &error_code);
 
 template <typename T>
-bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
+void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index, std::error_code &error_code);
 
 template <typename T>
-bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
+void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index,
                          std::error_code &error_code);
 
 template <typename T>
-bool from_bytes_to_vector(std::vector<T> &value,
+void from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
                           std::size_t &current_index,
                           std::error_code &error_code);
@@ -386,7 +386,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
 // Specialization for array
 
 template <typename T>
-bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
+void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index,
                          std::error_code &error_code) {
 
@@ -401,7 +401,7 @@ bool from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
     value[i] = v;
   }
 
-  return true;
+  
 }
 
 // Specialization for pair
@@ -414,17 +414,17 @@ void load_pair_value(T &pair, const std::vector<uint8_t> &bytes,
 }
 
 template <typename T>
-bool from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
+void from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
                         std::size_t &current_index,
                         std::error_code &error_code) {
   load_pair_value<T>(pair, bytes, current_index, error_code);
-  return true;
+  
 }
 
 // Specialization for map
 
 template <typename T>
-bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
+void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index,
                        std::error_code &error_code) {
   // current byte is the size of the map
@@ -441,13 +441,13 @@ bool from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
     map.insert(std::make_pair(key, value));
   }
 
-  return true;
+  
 }
 
 // Specialization for set
 
 template <typename T>
-bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
+void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index,
                        std::error_code &error_code) {
   // current byte is the size of the set
@@ -460,7 +460,7 @@ bool from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
     set.insert(value);
   }
 
-  return true;
+  
 }
 
 // Specialization for tuple
@@ -476,23 +476,31 @@ void load_tuple_value(T &tuple, const std::vector<uint8_t> &bytes,
 }
 
 template <typename T>
-bool from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
+void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index,
                          std::error_code &error_code) {
   load_tuple_value<T, 0>(tuple, bytes, current_index, error_code);
-  return true;
+  
 }
 
 // Specialization for vector
 
 template <typename T>
-bool from_bytes_to_vector(std::vector<T> &value,
+void from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
                           std::size_t &current_index,
                           std::error_code &error_code) {
 
   // current byte is the size of the vector
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
+
+  if (size > bytes.size() - current_index) {
+    // size is greater than the number of bytes remaining
+    error_code = std::make_error_code(std::errc::value_too_large);
+
+    // stop here
+    return;
+  }
 
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
@@ -501,7 +509,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
     value.push_back(v);
   }
 
-  return true;
+  
 }
 
 } // namespace detail
@@ -521,8 +529,14 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
     detail::from_bytes_router<decayed_field_type>(field, bytes, byte_index,
                                                   error_code);
 
-    // go to next field
-    deserialize<T, N, I + 1>(s, bytes, byte_index, error_code);
+    if (error_code) {
+      // stop here
+      return;
+    }
+    else {
+      // go to next field
+      deserialize<T, N, I + 1>(s, bytes, byte_index, error_code);
+    }
   }
 }
 

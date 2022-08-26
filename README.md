@@ -50,7 +50,11 @@ int main() {
   auto bytes = serialize(s); // 9 bytes
 
   // Deserialize
-  auto recovered = deserialize<MyStruct>(bytes);
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec);
+  if (!ec) {
+    // use object
+  }
 }
 
 // bytes:
@@ -83,7 +87,11 @@ int main() {
   auto bytes = serialize(s); // 28 bytes
 
   // Deserialize
-  auto recovered = deserialize<MyStruct>(bytes);
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec);
+  if (!ec) {
+    // use object
+  }
 }
 
 // bytes:
@@ -123,7 +131,11 @@ int main() {
   auto bytes = serialize(s); // 30 bytes
 
   // Deserialize
-  auto recovered = deserialize<MyStruct>(bytes);
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec);
+  if (!ec) {
+    // use object
+  }
 }
 
 // bytes:
@@ -182,7 +194,11 @@ int main() {
   auto bytes = serialize(s); // 45 bytes
 
   // Deserialize
-  auto recovered = deserialize<MyStruct>(bytes);
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec);
+  if (!ec) {
+    // use object
+  }
 }
 
 // bytes:
@@ -225,7 +241,11 @@ int main() {
                      //    alpaca fails at correctly detecting this due to the nature of std::optional
 
   // Deserialize
-  auto recovered = deserialize<MyStruct>(bytes);
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec);
+  if (!ec) {
+    // use object
+  }
 }
 
 // bytes:
@@ -264,7 +284,11 @@ int main() {
   auto bytes = serialize(s); // 87 bytes
   
   // deserialize
-  auto recovered = deserialize<MyStruct>(bytes);
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec);
+  if (!ec) {
+    // use object
+  }
 }
 
 // bytes:
@@ -348,7 +372,11 @@ int main() {
   auto bytes = serialize<Node<int>>(*root); // 15 bytes
 
   // deserialize
-  auto tree = deserialize<Node<int>>(bytes);
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec);
+  if (!ec) {
+    // use object
+  }
 }
 
 // bytes:
