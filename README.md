@@ -419,10 +419,10 @@ int main() {
 
   MyStruct s{'m', 54321, -987.654};
 
-  // Serialize with CRC32
+  // Serialize and append CRC32 hash
   auto bytes = serialize<MyStruct>(s, /*generate_crc*/ true); // 11 bytes
 
-  // Deserialize
+  // Check CRC32 hash and deserialize
   std::error_code ec;
   auto object = deserialize<MyStruct>(bytes, ec, /*check_crc*/ true);
   if (!ec) {
@@ -439,6 +439,7 @@ int main() {
 // }
 //
 // crc32({6d,31,d4,db,e9,76,c4}) => 1985278628
+// source: https://crccalc.com/
 ```
 
 ## Supported Types
