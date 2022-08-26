@@ -497,7 +497,7 @@ make install
 
 ```console
 pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/alpaca_benchmark --benchmark_counters_tabular=true
-2022-08-26T09:48:58-07:00
+2022-08-26T10:19:56-07:00
 Running ./benchmark/alpaca_benchmark
 Run on (8 X 2592.01 MHz CPU s)
 CPU Caches:
@@ -505,20 +505,40 @@ CPU Caches:
   L1 Instruction 32 KiB (x8)
   L2 Unified 256 KiB (x8)
   L3 Unified 9216 KiB (x8)
-Load Average: 0.47, 0.76, 1.35
--------------------------------------------------------------------------------------------------------------
-Benchmark                                                       Time             CPU   Iterations BytesOutput
--------------------------------------------------------------------------------------------------------------
-BM_alpaca_vector_of_struct<uint64_t>/50                     43454 ns        43397 ns        15796      6.913k
-BM_alpaca_vector_of_struct<uint64_t>/100                    97690 ns        97656 ns         6995     13.527k
-BM_alpaca_vector_of_struct<uint64_t>/1000                 2170184 ns      2165325 ns          337    136.928k
-BM_alpaca_vector_of_struct<uint64_t>/10000               10804735 ns     10801301 ns           57    1.38847M
-BM_alpaca_vector_of_struct<uint64_t>/100000             115553954 ns    115279009 ns            6    13.9007M
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/50          47208 ns        47094 ns        14797      6.917k
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100        104160 ns       103783 ns         6628     13.531k
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/1000      1030749 ns      1030367 ns          666    136.932k
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/10000    11404306 ns     11326736 ns           62    1.38847M
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100000  125632541 ns    125138427 ns            5    13.9007M
+Load Average: 0.60, 0.44, 0.42
+------------------------------------------------------------------------------------------------------------------------------
+Benchmark                                                                        Time             CPU   Iterations BytesOutput
+------------------------------------------------------------------------------------------------------------------------------
+BM_alpaca_vector_of_struct_serialize/50                                      11558 ns        11556 ns        59652      6.913k
+BM_alpaca_vector_of_struct_serialize/100                                     22383 ns        22335 ns        31413     13.527k
+BM_alpaca_vector_of_struct_serialize/1000                                  1079995 ns      1077831 ns          632    136.928k
+BM_alpaca_vector_of_struct_serialize/10000                                 2716393 ns      2686343 ns          257    1.38847M
+BM_alpaca_vector_of_struct_serialize/100000                               27417990 ns     27360366 ns           25    13.9007M
+BM_alpaca_vector_of_struct_serialize_with_crc32/50                           11737 ns        11602 ns        59500      6.913k
+BM_alpaca_vector_of_struct_serialize_with_crc32/100                          22437 ns        22388 ns        30926     13.527k
+BM_alpaca_vector_of_struct_serialize_with_crc32/1000                        241777 ns       240649 ns         2898    136.928k
+BM_alpaca_vector_of_struct_serialize_with_crc32/10000                      2625555 ns      2616876 ns          267    1.38847M
+BM_alpaca_vector_of_struct_serialize_with_crc32/100000                    30517769 ns     30263048 ns           22    13.9007M
+BM_alpaca_vector_of_struct_deserialize/50                                    30373 ns        30373 ns        23183      6.913k
+BM_alpaca_vector_of_struct_deserialize/100                                   70594 ns        70231 ns         9340     13.527k
+BM_alpaca_vector_of_struct_deserialize/1000                                 713181 ns       708923 ns          934    136.928k
+BM_alpaca_vector_of_struct_deserialize/10000                               7657302 ns      7606986 ns           91    1.38847M
+BM_alpaca_vector_of_struct_deserialize/100000                             86292769 ns     86002907 ns            8    13.9007M
+BM_alpaca_vector_of_struct_deserialize_with_crc32/50                         33281 ns        33168 ns        21098      6.917k
+BM_alpaca_vector_of_struct_deserialize_with_crc32/100                        74126 ns        73987 ns         8708     13.531k
+BM_alpaca_vector_of_struct_deserialize_with_crc32/1000                      760520 ns       752602 ns          898    136.932k
+BM_alpaca_vector_of_struct_deserialize_with_crc32/10000                    8164708 ns      8135634 ns           87    1.38847M
+BM_alpaca_vector_of_struct_deserialize_with_crc32/100000                  92153955 ns     91869163 ns            7    13.9007M
+BM_alpaca_vector_of_struct_serialize_then_deserialize/50                     42107 ns        41750 ns        16223      6.913k
+BM_alpaca_vector_of_struct_serialize_then_deserialize/100                    95638 ns        95125 ns         7172     13.527k
+BM_alpaca_vector_of_struct_serialize_then_deserialize/1000                  958554 ns       957858 ns          705    136.928k
+BM_alpaca_vector_of_struct_serialize_then_deserialize/10000               10474296 ns     10447974 ns           66    1.38847M
+BM_alpaca_vector_of_struct_serialize_then_deserialize/100000             114676225 ns    113828808 ns            6    13.9007M
+BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32/50          46545 ns        46467 ns        15251      6.917k
+BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32/100        102370 ns       102355 ns         6689     13.531k
+BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32/1000      1023823 ns      1022826 ns          670    136.932k
+BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32/10000    11126741 ns     11070996 ns           62    1.38847M
+BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32/100000  125196931 ns    124463948 ns            5    13.9007M
 ```
 
 ## License

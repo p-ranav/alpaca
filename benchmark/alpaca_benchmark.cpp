@@ -129,7 +129,97 @@ std::vector<Monster> createMonsters(size_t count) {
   return res;
 }
 
-static void BM_alpaca_vector_of_struct(benchmark::State &state) {
+static void BM_alpaca_vector_of_struct_serialize(benchmark::State &state) {
+  {
+    struct my_struct {
+      std::vector<Monster> values;
+    };
+
+    std::size_t data_size = 0;
+    my_struct s{createMonsters(state.range(0))};
+
+    for (auto _ : state) {
+      // This code gets timed
+      // serialize
+      auto bytes = serialize(s);
+
+      data_size = bytes.size();
+    }
+
+    state.counters["BytesOutput"] = data_size;
+  }
+}
+
+static void BM_alpaca_vector_of_struct_serialize_with_crc32(benchmark::State &state) {
+  {
+    struct my_struct {
+      std::vector<Monster> values;
+    };
+
+    std::size_t data_size = 0;
+    my_struct s{createMonsters(state.range(0))};
+
+    for (auto _ : state) {
+      // This code gets timed
+      // serialize
+      auto bytes = serialize(s);
+
+      data_size = bytes.size();
+    }
+
+    state.counters["BytesOutput"] = data_size;
+  }
+}
+
+static void BM_alpaca_vector_of_struct_deserialize(benchmark::State &state) {
+  {
+    struct my_struct {
+      std::vector<Monster> values;
+    };
+
+    std::size_t data_size = 0;
+    my_struct s{createMonsters(state.range(0))};
+    // serialize
+    auto bytes = serialize(s);
+
+    data_size = bytes.size();
+
+    for (auto _ : state) {
+      // This code gets timed
+      // deserialize
+      std::error_code ec;
+      auto recovered = deserialize<my_struct>(bytes, ec);
+    }
+
+    state.counters["BytesOutput"] = data_size;
+  }
+}
+
+static void BM_alpaca_vector_of_struct_deserialize_with_crc32(benchmark::State &state) {
+  {
+    struct my_struct {
+      std::vector<Monster> values;
+    };
+
+    std::size_t data_size = 0;
+    my_struct s{createMonsters(state.range(0))};
+    // serialize
+    auto bytes = serialize(s, true);
+
+    data_size = bytes.size();
+
+    for (auto _ : state) {
+      // This code gets timed
+      // deserialize
+      std::error_code ec;
+      auto recovered = deserialize<my_struct>(bytes, ec, true);
+    }
+
+    state.counters["BytesOutput"] = data_size;
+  }
+}
+
+static void BM_alpaca_vector_of_struct_serialize_then_deserialize(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -154,7 +244,7 @@ static void BM_alpaca_vector_of_struct(benchmark::State &state) {
   }
 }
 
-static void BM_alpaca_vector_of_struct_with_crc32(benchmark::State &state) {
+static void BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -179,8 +269,12 @@ static void BM_alpaca_vector_of_struct_with_crc32(benchmark::State &state) {
   }
 }
 
-BENCHMARK(BM_alpaca_vector_of_struct)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_vector_of_struct_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_vector_of_struct_serialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_vector_of_struct_serialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_vector_of_struct_deserialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_vector_of_struct_deserialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_vector_of_struct_serialize_then_deserialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
 
 // Run the benchmark
 BENCHMARK_MAIN();
