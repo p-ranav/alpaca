@@ -2,7 +2,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <variant>
@@ -34,11 +33,6 @@ constexpr bool is_stringlike(tag_t<std::basic_string<T, A>>) {
 template <class T>
 constexpr bool detect = is_stringlike(tag<T>); // enable ADL extension
 } // namespace is_string
-
-// tuple
-template <typename> struct is_tuple : std::false_type {};
-
-template <typename... T> struct is_tuple<std::tuple<T...>> : std::true_type {};
 
 // vector
 template <typename T> struct is_vector : public std::false_type {};

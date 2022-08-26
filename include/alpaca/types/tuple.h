@@ -22,6 +22,11 @@ void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes) {
   save_tuple_value<T, 0>(input, bytes);
 }
 
+template <typename T, typename... U>
+void append(T &bytes, const std::tuple<U...> &input) {
+    to_bytes_from_tuple_type(input, bytes);
+}
+
 template <typename T, std::size_t index>
 void load_tuple_value(T &tuple, const std::vector<uint8_t> &bytes,
                       std::size_t &current_index, std::error_code &error_code) {
@@ -37,6 +42,14 @@ void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
                          std::size_t &current_index,
                          std::error_code &error_code) {
   load_tuple_value<T, 0>(tuple, bytes, current_index, error_code);
+}
+
+template <typename... T>
+bool read_bytes(std::tuple<T...> &output, const std::vector<uint8_t> &bytes,
+            std::size_t &byte_index,
+            std::error_code &error_code) {
+    from_bytes_to_tuple(output, bytes, byte_index, error_code);
+    return true;
 }
 
 }

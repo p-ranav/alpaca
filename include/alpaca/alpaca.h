@@ -9,6 +9,7 @@
 #include <alpaca/detail/type_traits.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <alpaca/detail/variant_nth_field.h>
+#include <alpaca/types/tuple.h>
 #include <system_error>
 
 namespace alpaca {
@@ -26,9 +27,6 @@ void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
 void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes);
-
-template <typename T>
-void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
 void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
@@ -92,10 +90,6 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   else if constexpr (detail::is_specialization<T, std::set>::value ||
                      detail::is_specialization<T, std::unordered_set>::value) {
     to_bytes_from_set_type<T>(input, bytes);
-  }
-  // tuple
-  else if constexpr (detail::is_tuple<T>::value) {
-    to_bytes_from_tuple_type<T>(input, bytes);
   }
   // variant
   else if constexpr (detail::is_specialization<T, std::variant>::value) {
@@ -221,11 +215,6 @@ void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index, std::error_code &error_code);
 
 template <typename T>
-void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
-                         std::size_t &current_index,
-                         std::error_code &error_code);
-
-template <typename T>
 void from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
                           std::size_t &current_index,
@@ -297,10 +286,6 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   else if constexpr (detail::is_specialization<T, std::set>::value ||
                      detail::is_specialization<T, std::unordered_set>::value) {
     from_bytes_to_set(output, bytes, byte_index, error_code);
-  }
-  // tuple
-  else if constexpr (detail::is_tuple<T>::value) {
-    from_bytes_to_tuple(output, bytes, byte_index, error_code);
   }
   // variant
   else if constexpr (detail::is_specialization<T, std::variant>::value) {
