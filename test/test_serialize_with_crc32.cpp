@@ -4,7 +4,7 @@ using namespace alpaca;
 
 using doctest::test_suite;
 
-TEST_CASE("Serialize vector<char>" * test_suite("vector")) {
+TEST_CASE("Serialize int with crc32" * test_suite("crc32")) {
   struct my_struct {
     int value;
   };

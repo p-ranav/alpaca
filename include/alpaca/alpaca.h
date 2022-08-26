@@ -572,4 +572,55 @@ T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
   return object;
 }
 
+// Overloads to check crc in bytes
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
+void deserialize(T &s, const std::vector<uint8_t> &bytes,
+                 std::size_t &byte_index, std::error_code &error_code,
+                 bool check_crc) {
+  if (check_crc) {
+    // bytes must be at least 4 bytes long
+    if (bytes.size() < 4) {
+      error_code = std::make_error_code(std::errc::invalid_argument);
+      return;
+    } else {
+      // check crc bytes
+      uint32_t trailing_crc;
+      std::size_t index = bytes.size() - 4;
+      detail::read_bytes<uint32_t, uint32_t>(trailing_crc, bytes,
+                                             index); // last 4 bytes
+
+      auto computed_crc = crc32_fast(bytes.data(), bytes.size() - 4);
+
+      if (trailing_crc == computed_crc) {
+        // message is good!
+        // copy over all bytes except last 4
+        const std::vector<uint8_t> bytes_without_crc(bytes.begin(),
+                                                     bytes.begin() + index);
+        deserialize<T, N, I>(s, bytes_without_crc, byte_index, error_code);
+      } else {
+        // message is bad
+        error_code = std::make_error_code(std::errc::bad_message);
+        return;
+      }
+    }
+  } else {
+    // bytes does not have any CRC
+    // just deserialize everything into type T
+    deserialize<T, N, I>(s, bytes, byte_index, error_code);
+  }
+}
+
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t I = 0>
+T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code,
+              bool check_crc) {
+  T object{};
+  std::size_t byte_index = 0;
+  deserialize<T, N, I>(object, bytes, byte_index, error_code, check_crc);
+  return object;
+}
+
 } // namespace alpaca
