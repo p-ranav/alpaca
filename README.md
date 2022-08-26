@@ -269,7 +269,9 @@ using namespace alpaca;
 
 struct MyStruct {
   std::map<std::string, 
-           std::variant<uint16_t, std::string, bool,
+           std::variant<uint16_t, 
+                        std::string, 
+                        bool,
                         std::vector<std::string>>
           > value;
 };
