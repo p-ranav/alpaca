@@ -2,6 +2,7 @@
 #include <alpaca/detail/variable_length_encoding.h>
 #include <cstdint>
 #include <string>
+#include <system_error>
 #include <vector>
 
 namespace alpaca {
@@ -29,7 +30,7 @@ bool read_bytes(T &value, const std::vector<uint8_t> &bytes,
 template <typename T>
 typename std::enable_if<std::is_same_v<T, bool>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index) {
+           std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
   return read_bytes<bool, bool>(value, bytes, current_index);
 }
@@ -37,7 +38,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 template <typename T>
 typename std::enable_if<std::is_same_v<T, char>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index) {
+           std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
   return read_bytes<char, char>(value, bytes, current_index);
 }
@@ -49,7 +50,7 @@ typename std::enable_if<
         std::is_same_v<T, int64_t>,
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index) {
+           std::size_t &current_index, std::error_code &error_code) {
   value = decode_varint<T>(bytes, current_index);
   return true;
 }
@@ -61,7 +62,21 @@ typename std::enable_if<
         std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t>,
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index) {
+           std::size_t &current_index, std::error_code &error_code) {
+  if constexpr (std::is_same_v<T, uint8_t> || std::is_same_v<T, int8_t>) {
+    // there should be at least 1 byte
+    if (bytes.size() - current_index < 1) {
+      error_code = std::make_error_code(std::errc::message_size);
+      return false;
+    }
+  } else if constexpr (std::is_same_v<T, uint16_t> ||
+                       std::is_same_v<T, int16_t>) {
+    // there should be at least 2 bytes
+    if (bytes.size() - current_index < 2) {
+      error_code = std::make_error_code(std::errc::message_size);
+      return false;
+    }
+  }
   return read_bytes<T, T>(value, bytes, current_index);
 }
 
@@ -69,13 +84,14 @@ template <typename T>
 typename std::enable_if<std::is_same_v<T, float> || std::is_same_v<T, double>,
                         bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index) {
+           std::size_t &current_index, std::error_code &error_code) {
   return read_bytes<T, T>(value, bytes, current_index);
 }
 
 static inline bool from_bytes(std::string &value,
                               const std::vector<uint8_t> &bytes,
-                              std::size_t &current_index) {
+                              std::size_t &current_index,
+                              std::error_code &error_code) {
 
   // current byte is the length of the string
   std::size_t size = decode_varint<std::size_t>(bytes, current_index);

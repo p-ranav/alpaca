@@ -9,6 +9,7 @@
 #include <alpaca/detail/type_traits.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <alpaca/detail/variant_nth_field.h>
+#include <system_error>
 
 namespace alpaca {
 
@@ -337,7 +338,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // char, bool
   // float, double
   else if constexpr (std::is_arithmetic_v<T>) {
-    detail::from_bytes(output, bytes, byte_index);
+    detail::from_bytes(output, bytes, byte_index, error_code);
   }
   // array
   else if constexpr (detail::is_array<T>::value) {
@@ -372,7 +373,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   }
   // std::string
   else if constexpr (detail::is_string::detect<T>) {
-    detail::from_bytes(output, bytes, byte_index);
+    detail::from_bytes(output, bytes, byte_index, error_code);
   }
   // map-like
   else if constexpr (detail::is_mappish<T>::value) {
