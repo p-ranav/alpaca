@@ -129,7 +129,7 @@ std::vector<Monster> createMonsters(size_t count) {
   return res;
 }
 
-static void BM_alpaca_vector_of_struct_serialize(benchmark::State &state) {
+static void BM_alpaca_serialize(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -150,7 +150,7 @@ static void BM_alpaca_vector_of_struct_serialize(benchmark::State &state) {
   }
 }
 
-static void BM_alpaca_vector_of_struct_serialize_with_crc32(benchmark::State &state) {
+static void BM_alpaca_serialize_with_crc32(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -171,7 +171,7 @@ static void BM_alpaca_vector_of_struct_serialize_with_crc32(benchmark::State &st
   }
 }
 
-static void BM_alpaca_vector_of_struct_deserialize(benchmark::State &state) {
+static void BM_alpaca_deserialize(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -195,7 +195,7 @@ static void BM_alpaca_vector_of_struct_deserialize(benchmark::State &state) {
   }
 }
 
-static void BM_alpaca_vector_of_struct_deserialize_with_crc32(benchmark::State &state) {
+static void BM_alpaca_deserialize_with_crc32(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -219,7 +219,7 @@ static void BM_alpaca_vector_of_struct_deserialize_with_crc32(benchmark::State &
   }
 }
 
-static void BM_alpaca_vector_of_struct_serialize_then_deserialize(benchmark::State &state) {
+static void BM_alpaca_serialize_then_deserialize(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -244,7 +244,7 @@ static void BM_alpaca_vector_of_struct_serialize_then_deserialize(benchmark::Sta
   }
 }
 
-static void BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32(benchmark::State &state) {
+static void BM_alpaca_serialize_then_deserialize_with_crc32(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -269,12 +269,10 @@ static void BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32(ben
   }
 }
 
-BENCHMARK(BM_alpaca_vector_of_struct_serialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_vector_of_struct_serialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_vector_of_struct_deserialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_vector_of_struct_deserialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_vector_of_struct_serialize_then_deserialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_vector_of_struct_serialize_then_deserialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_serialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_serialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_deserialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_deserialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
 
 // Run the benchmark
 BENCHMARK_MAIN();
