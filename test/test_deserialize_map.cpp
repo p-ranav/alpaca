@@ -1,4 +1,5 @@
 #include <alpaca/alpaca.h>
+#include <alpaca/types/map.h>
 #include <doctest.hpp>
 using namespace alpaca;
 

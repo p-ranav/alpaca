@@ -1,11 +1,9 @@
 #pragma once
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <tuple>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <variant>
@@ -21,12 +19,6 @@ struct is_specialization : std::false_type {};
 
 template <template <typename...> class Ref, typename... Args>
 struct is_specialization<Ref<Args...>, Ref> : std::true_type {};
-
-// pair
-template <typename> struct is_pair : std::false_type {};
-
-template <typename T, typename U>
-struct is_pair<std::pair<T, U>> : std::true_type {};
 
 // map
 
