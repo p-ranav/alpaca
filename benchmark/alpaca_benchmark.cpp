@@ -151,7 +151,7 @@ static void BM_alpaca_vector_of_struct(benchmark::State &state) {
       auto recovered = deserialize<my_struct>(bytes, ec);
     }
 
-    state.counters["Data size (bytes)"] = data_size;
+    state.counters["BytesOutput"] = data_size;
   }
 }
 
@@ -177,7 +177,7 @@ static void BM_alpaca_vector_of_struct_with_crc32(benchmark::State &state) {
       auto recovered = deserialize<my_struct>(bytes, ec, true);
     }
 
-    state.counters["Data size (bytes)"] = data_size;
+    state.counters["BytesOutput"] = data_size;
   }
 }
 
