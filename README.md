@@ -483,7 +483,7 @@ cd alpaca
 # Build
 mkdir build
 cd build
-cmake -DALPACA_BUILD_TESTS=on ..
+cmake -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DCMAKE_BUILD_TYPE=Release ..
 make
 
 # Test
@@ -493,6 +493,31 @@ make
 make install
 ```
 
+## Performance
+
+```console
+pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/alpaca_benchmark 
+2022-08-26T09:33:57-07:00
+Running ./benchmark/alpaca_benchmark
+Run on (8 X 2592.01 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 256 KiB (x8)
+  L3 Unified 9216 KiB (x8)
+Load Average: 4.62, 3.70, 2.47
+-------------------------------------------------------------------------------------------------
+Benchmark                                                       Time             CPU   Iterations
+-------------------------------------------------------------------------------------------------
+BM_alpaca_vector_of_struct<uint64_t>/100                    98221 ns        98132 ns         6917
+BM_alpaca_vector_of_struct<uint64_t>/1000                 1807749 ns      1799230 ns          366
+BM_alpaca_vector_of_struct<uint64_t>/10000               11086581 ns     11078904 ns           55
+BM_alpaca_vector_of_struct<uint64_t>/100000             139770234 ns    139376631 ns            5
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100        105421 ns       104706 ns         6598
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/1000      1081011 ns      1075632 ns          651
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/10000    11847739 ns     11778238 ns           56
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100000  130050827 ns    128743988 ns            5
+```
 
 ## License
 

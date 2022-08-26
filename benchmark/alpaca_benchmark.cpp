@@ -129,13 +129,14 @@ std::vector<Monster> createMonsters(size_t count) {
   return res;
 }
 
-static void BM_alpaca_monster_struct(benchmark::State &state) {
+template<typename T>
+static void BM_alpaca_vector_of_struct(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
     };
 
-    my_struct s{createMonsters(50)};
+    my_struct s{createMonsters(state.range(0))};
 
     for (auto _ : state) {
       // This code gets timed
@@ -145,20 +146,18 @@ static void BM_alpaca_monster_struct(benchmark::State &state) {
       // deserialize
       std::error_code ec;
       auto recovered = deserialize<my_struct>(bytes, ec);
-
-      // check result
-      assert(bytes == serialize(recovered));
     }
   }
 }
 
-static void BM_alpaca_monster_struct_with_crc32(benchmark::State &state) {
+template<typename T>
+static void BM_alpaca_vector_of_struct_with_crc32(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
     };
 
-    my_struct s{createMonsters(50)};
+    my_struct s{createMonsters(state.range(0))};
 
     for (auto _ : state) {
       // This code gets timed
@@ -168,15 +167,12 @@ static void BM_alpaca_monster_struct_with_crc32(benchmark::State &state) {
       // deserialize
       std::error_code ec;
       auto recovered = deserialize<my_struct>(bytes, ec, true);
-
-      // check result
-      assert(bytes == serialize(recovered, true));
     }
   }
 }
 
-BENCHMARK(BM_alpaca_monster_struct);
-BENCHMARK(BM_alpaca_monster_struct_with_crc32);
+BENCHMARK_TEMPLATE(BM_alpaca_vector_of_struct, uint64_t)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK_TEMPLATE(BM_alpaca_vector_of_struct_with_crc32, uint64_t)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
 
 // Run the benchmark
 BENCHMARK_MAIN();
