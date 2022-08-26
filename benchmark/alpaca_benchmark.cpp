@@ -136,6 +136,7 @@ static void BM_alpaca_vector_of_struct(benchmark::State &state) {
       std::vector<Monster> values;
     };
 
+    std::size_t data_size = 0;
     my_struct s{createMonsters(state.range(0))};
 
     for (auto _ : state) {
@@ -143,10 +144,14 @@ static void BM_alpaca_vector_of_struct(benchmark::State &state) {
       // serialize
       auto bytes = serialize(s);
 
+      data_size = bytes.size();
+
       // deserialize
       std::error_code ec;
       auto recovered = deserialize<my_struct>(bytes, ec);
     }
+
+    state.counters["Data size (bytes)"] = data_size;
   }
 }
 
@@ -157,6 +162,7 @@ static void BM_alpaca_vector_of_struct_with_crc32(benchmark::State &state) {
       std::vector<Monster> values;
     };
 
+    std::size_t data_size = 0;
     my_struct s{createMonsters(state.range(0))};
 
     for (auto _ : state) {
@@ -164,15 +170,19 @@ static void BM_alpaca_vector_of_struct_with_crc32(benchmark::State &state) {
       // serialize
       auto bytes = serialize(s, true);
 
+      data_size = bytes.size();
+
       // deserialize
       std::error_code ec;
       auto recovered = deserialize<my_struct>(bytes, ec, true);
     }
+
+    state.counters["Data size (bytes)"] = data_size;
   }
 }
 
-BENCHMARK_TEMPLATE(BM_alpaca_vector_of_struct, uint64_t)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK_TEMPLATE(BM_alpaca_vector_of_struct_with_crc32, uint64_t)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK_TEMPLATE(BM_alpaca_vector_of_struct, uint64_t)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK_TEMPLATE(BM_alpaca_vector_of_struct_with_crc32, uint64_t)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
 
 // Run the benchmark
 BENCHMARK_MAIN();

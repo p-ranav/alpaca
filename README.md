@@ -493,11 +493,10 @@ make
 make install
 ```
 
-## Performance
+## Performance Benchmark
 
 ```console
-pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/alpaca_benchmark 
-2022-08-26T09:33:57-07:00
+2022-08-26T09:46:20-07:00
 Running ./benchmark/alpaca_benchmark
 Run on (8 X 2592.01 MHz CPU s)
 CPU Caches:
@@ -505,18 +504,21 @@ CPU Caches:
   L1 Instruction 32 KiB (x8)
   L2 Unified 256 KiB (x8)
   L3 Unified 9216 KiB (x8)
-Load Average: 4.62, 3.70, 2.47
--------------------------------------------------------------------------------------------------
-Benchmark                                                       Time             CPU   Iterations
--------------------------------------------------------------------------------------------------
-BM_alpaca_vector_of_struct<uint64_t>/100                    98221 ns        98132 ns         6917
-BM_alpaca_vector_of_struct<uint64_t>/1000                 1807749 ns      1799230 ns          366
-BM_alpaca_vector_of_struct<uint64_t>/10000               11086581 ns     11078904 ns           55
-BM_alpaca_vector_of_struct<uint64_t>/100000             139770234 ns    139376631 ns            5
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100        105421 ns       104706 ns         6598
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/1000      1081011 ns      1075632 ns          651
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/10000    11847739 ns     11778238 ns           56
-BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100000  130050827 ns    128743988 ns            5
+Load Average: 0.52, 0.94, 1.51
+-----------------------------------------------------------------------------------------------------------------
+Benchmark                                                       Time             CPU   Iterations UserCounters...
+-----------------------------------------------------------------------------------------------------------------
+BM_alpaca_vector_of_struct<uint64_t>/50                     42678 ns        42532 ns        16439 Data size (bytes)=6.913k
+BM_alpaca_vector_of_struct<uint64_t>/100                    98133 ns        97465 ns         7071 Data size (bytes)=13.527k
+BM_alpaca_vector_of_struct<uint64_t>/1000                 2132903 ns      2122931 ns          361 Data size (bytes)=136.928k
+BM_alpaca_vector_of_struct<uint64_t>/10000               10646745 ns     10546833 ns           58 Data size (bytes)=1.38847M
+BM_alpaca_vector_of_struct<uint64_t>/100000             161135895 ns    160266586 ns            4 Data size (bytes)=13.9007M
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/50          46215 ns        46052 ns        15078 Data size (bytes)=6.917k
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100        105005 ns       104141 ns         6582 Data size (bytes)=13.531k
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/1000      1060019 ns      1057091 ns          664 Data size (bytes)=136.932k
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/10000    11369085 ns     11340229 ns           61 Data size (bytes)=1.38847M
+BM_alpaca_vector_of_struct_with_crc32<uint64_t>/100000  126277071 ns    126259808 ns            5 Data size (bytes)=13.9007M
+
 ```
 
 ## License
