@@ -65,7 +65,7 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
     detail::to_bytes(input, bytes);
   }
   // array
-  else if constexpr (detail::is_array<T>::value) {
+  else if constexpr (std::is_array_v<T>) {
     to_bytes_from_array_type<T>(input, bytes);
   }
   // enum class
@@ -312,7 +312,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     detail::from_bytes(output, bytes, byte_index, error_code);
   }
   // array
-  else if constexpr (detail::is_array<T>::value) {
+  else if constexpr (std::is_array_v<T>) {
     from_bytes_to_array(output, bytes, byte_index, error_code);
   }
   // enum class
