@@ -128,7 +128,7 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
     serialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
         input, bytes);
   } else {
-    throw std::invalid_argument("unsupported type");
+    detail::append(input, bytes);
   }
 }
 
@@ -405,7 +405,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
         output, bytes, byte_index, error_code);
   } else {
-    throw std::invalid_argument("unsupported type");
+    detail::read_bytes(output, bytes, byte_index);
   }
 }
 
