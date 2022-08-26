@@ -25,9 +25,6 @@ template <typename T>
 void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
-void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes);
-
-template <typename T>
 void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
@@ -38,6 +35,15 @@ void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T>
 void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
+
+// version for nested struct/class types
+// incidentally, also works for std::pair
+template <typename T, typename U>
+typename std::enable_if<std::is_class_v<U>, void>::type 
+append(T &bytes, const U &input) {
+  serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
+      input, bytes);
+}
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
@@ -87,10 +93,6 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
       to_bytes_router<value_type>(input.value(), bytes);
     }
   }
-  // pair
-  else if constexpr (detail::is_pair<T>::value) {
-    to_bytes_from_pair_type<T>(input, bytes);
-  }
   // std::string
   else if constexpr (detail::is_string::detect<T>) {
     detail::to_bytes(input, bytes);
@@ -123,27 +125,10 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   else if constexpr (detail::is_vector<T>::value) {
     to_bytes_from_list_type<T>(input, bytes);
   }
-  // nested struct
-  else if constexpr (std::is_class_v<T>) {
-    serialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
-        input, bytes);
-  } else {
-    detail::append(input, bytes);
+  // everything else
+  else {
+    detail::append(bytes, input);
   }
-}
-
-// Specialization for pair
-
-template <typename T>
-void save_pair_value(const T &pair, std::vector<uint8_t> &bytes) {
-  to_bytes_router(pair.first, bytes);
-  to_bytes_router(pair.second, bytes);
-}
-
-template <typename T>
-void to_bytes_from_pair_type(const T &input, std::vector<uint8_t> &bytes) {
-  // value of each element
-  save_pair_value<T>(input, bytes);
 }
 
 // Specialization for map
@@ -235,7 +220,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes, bool generate_crc) {
     // calculate crc32 for byte array and
     // append uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), bytes.size());
-    detail::append(crc, bytes);
+    detail::append(bytes, crc);
   }
 }
 
@@ -263,11 +248,6 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
                          std::error_code &error_code);
 
 template <typename T>
-void from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
-                        std::size_t &current_index,
-                        std::error_code &error_code);
-
-template <typename T>
 void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index, std::error_code &error_code);
 
@@ -293,7 +273,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
     // current byte is the `has_value` byte
     bool has_value = false;
-    detail::read_bytes<bool, bool>(has_value, bytes, byte_index);
+    detail::read_bytes<bool, bool>(has_value, bytes, byte_index, error_code);
 
     if (has_value) {
       // read value of unique_ptr
@@ -323,15 +303,11 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                                        error_code);
     output = static_cast<T>(underlying_value);
   }
-  // pair
-  else if constexpr (detail::is_pair<T>::value) {
-    from_bytes_to_pair(output, bytes, byte_index, error_code);
-  }
   // optional
   else if constexpr (detail::is_specialization<T, std::optional>::value) {
     // current byte is the `has_value` byte
     bool has_value = false;
-    detail::read_bytes<bool, bool>(has_value, bytes, byte_index);
+    detail::read_bytes<bool, bool>(has_value, bytes, byte_index, error_code);
 
     if (has_value) {
       // read value of optional
@@ -375,24 +351,8 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
         output, bytes, byte_index, error_code);
   } else {
-    detail::read_bytes(output, bytes, byte_index);
+    detail::read_bytes(output, bytes, byte_index, error_code);
   }
-}
-
-// Specialization for pair
-
-template <typename T>
-void load_pair_value(T &pair, const std::vector<uint8_t> &bytes,
-                     std::size_t &current_index, std::error_code &error_code) {
-  from_bytes_router(pair.first, bytes, current_index, error_code);
-  from_bytes_router(pair.second, bytes, current_index, error_code);
-}
-
-template <typename T>
-void from_bytes_to_pair(T &pair, const std::vector<uint8_t> &bytes,
-                        std::size_t &current_index,
-                        std::error_code &error_code) {
-  load_pair_value<T>(pair, bytes, current_index, error_code);
 }
 
 // Specialization for map
@@ -526,7 +486,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       uint32_t trailing_crc;
       std::size_t index = bytes.size() - 4;
       detail::read_bytes<uint32_t, uint32_t>(trailing_crc, bytes,
-                                             index); // last 4 bytes
+                                             index,
+                                             error_code); // last 4 bytes
 
       auto computed_crc = crc32_fast(bytes.data(), bytes.size() - 4);
 

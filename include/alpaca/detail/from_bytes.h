@@ -18,7 +18,8 @@ template <typename T, typename U>
 //    value = 5 is stored as a single byte even if the struct field is an
 //    int32_t
 bool read_bytes(T &value, const std::vector<uint8_t> &bytes,
-                std::size_t &current_index) {
+                std::size_t &current_index,
+                std::error_code &error_code) {
   constexpr auto num_bytes_to_read = sizeof(U);
   if (bytes.size() < num_bytes_to_read) {
     return false;
@@ -33,7 +34,7 @@ typename std::enable_if<std::is_same_v<T, bool>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
-  return read_bytes<bool, bool>(value, bytes, current_index);
+  return read_bytes<bool, bool>(value, bytes, current_index, error_code);
 }
 
 template <typename T>
@@ -41,7 +42,7 @@ typename std::enable_if<std::is_same_v<T, char>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
-  return read_bytes<char, char>(value, bytes, current_index);
+  return read_bytes<char, char>(value, bytes, current_index, error_code);
 }
 
 template <typename T>
@@ -78,7 +79,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
       return false;
     }
   }
-  return read_bytes<T, T>(value, bytes, current_index);
+  return read_bytes<T, T>(value, bytes, current_index, error_code);
 }
 
 template <typename T>
@@ -86,7 +87,7 @@ typename std::enable_if<std::is_same_v<T, float> || std::is_same_v<T, double>,
                         bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
-  return read_bytes<T, T>(value, bytes, current_index);
+  return read_bytes<T, T>(value, bytes, current_index, error_code);
 }
 
 static inline bool from_bytes(std::string &value,
