@@ -15,6 +15,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
      *    [Optional values](#optional-values-stdoptionalt)
      *    [Type-safe unions: variant](#type-safe-unions-stdvariant)
      *    [Smart Pointers: unique_ptr](#smart-pointers-stdunique_ptrt)
+     *    [Appending CRC32 hash](#appending-crc32-hash)
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
@@ -317,6 +318,7 @@ int main() {
 //   0x6d 0x6f 0x74 0x6f 0x72 0x5f 0x73 0x74 0x61 0x74 0x65              // string "motor_state"
 //   0x0d                                                                // 13-byte string
 //   0x62 0x61 0x74 0x74 0x65 0x72 0x79 0x5f 0x73 0x74 0x61 0x74 0x65    // string "battery_state"
+// }
 ```
 
 ### Smart Pointers: `std::unique_ptr<T>`
@@ -399,6 +401,44 @@ int main() {
 //   0x00 // 4.has_left = false
 //   0x00 // 4.has_right = false
 // }
+```
+
+### Appending CRC32 hash
+
+```cpp
+#include <alpaca/alpaca.h>
+using namespace alpaca;
+
+struct MyStruct {
+  char a;
+  uint16_t b;
+  float c;
+};
+
+int main() {
+
+  MyStruct s{'m', 54321, -987.654};
+
+  // Serialize with CRC32
+  auto bytes = serialize<MyStruct>(s, /*generate_crc*/ true); // 11 bytes
+
+  // Deserialize
+  std::error_code ec;
+  auto object = deserialize<MyStruct>(bytes, ec, /*check_crc*/ true);
+  if (!ec) {
+    // use object
+  }
+}
+
+// bytes:
+// {
+//   0x6d                   // char 'm'
+//   0x31 0xd4              // uint 54321
+//   0xdb 0xe9 0x76 0xc4    // float -987.654
+//   0xa4 0xf2 0x54 0x76    // crc32 1985278628
+// }
+//
+// crc32({6d,31,d4,db,e9,76,c4}) => 1985278628
 ```
 
 ## Supported Types
