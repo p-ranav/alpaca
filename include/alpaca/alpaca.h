@@ -351,7 +351,6 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     from_bytes_router<underlying_type>(underlying_value, bytes, byte_index,
                                        error_code);
     output = static_cast<T>(underlying_value);
-    byte_index += 1;
   }
   // pair
   else if constexpr (detail::is_pair<T>::value) {
@@ -532,6 +531,10 @@ void from_bytes_to_vector(std::vector<T> &value,
   for (std::size_t i = 0; i < size; ++i) {
     T v{};
     from_bytes_router(v, bytes, current_index, error_code);
+    if (error_code) {
+      // something went wrong
+      return;
+    }
     value.push_back(v);
   }
 }

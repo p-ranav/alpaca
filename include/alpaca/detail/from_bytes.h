@@ -1,6 +1,7 @@
 #pragma once
 #include <alpaca/detail/variable_length_encoding.h>
 #include <cstdint>
+#include <iostream>
 #include <string>
 #include <system_error>
 #include <vector>
@@ -95,6 +96,14 @@ static inline bool from_bytes(std::string &value,
 
   // current byte is the length of the string
   std::size_t size = decode_varint<std::size_t>(bytes, current_index);
+
+  if (size > bytes.size() - current_index) {
+    // size is greater than the number of bytes remaining
+    error_code = std::make_error_code(std::errc::value_too_large);
+
+    // stop here
+    return false;
+  }
 
   // read `size` bytes and save to value
   value.reserve(size);

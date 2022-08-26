@@ -30,7 +30,8 @@ TEST_CASE("Deserialize uint8_t into int8_t" * test_suite("signed_integer")) {
   }
 }
 
-TEST_CASE("Deserialize uint8_t into int8_t (overflow)" * test_suite("signed_integer")) {
+TEST_CASE("Deserialize uint8_t into int8_t (overflow)" *
+          test_suite("signed_integer")) {
 
   std::vector<uint8_t> bytes;
 
@@ -82,7 +83,8 @@ TEST_CASE("Deserialize uint16_t into int8_t" * test_suite("signed_integer")) {
   }
 }
 
-TEST_CASE("Deserialize uint16_t into int8_t (truncation)" * test_suite("signed_integer")) {
+TEST_CASE("Deserialize uint16_t into int8_t (truncation)" *
+          test_suite("signed_integer")) {
 
   std::vector<uint8_t> bytes;
 
@@ -104,7 +106,8 @@ TEST_CASE("Deserialize uint16_t into int8_t (truncation)" * test_suite("signed_i
     std::error_code ec;
     auto result = deserialize<my_new_struct>(bytes, ec);
     REQUIRE((bool)ec == false); // no error reported
-    REQUIRE(result.value == static_cast<int8_t>(bytes[0])); // value will be truncated
+    REQUIRE(result.value ==
+            static_cast<int8_t>(bytes[0])); // value will be truncated
   }
 }
 
@@ -134,7 +137,8 @@ TEST_CASE("Deserialize uint32_t into int8_t" * test_suite("signed_integer")) {
   }
 }
 
-TEST_CASE("Deserialize uint32_t into int8_t (truncation)" * test_suite("signed_integer")) {
+TEST_CASE("Deserialize uint32_t into int8_t (truncation)" *
+          test_suite("signed_integer")) {
 
   std::vector<uint8_t> bytes;
 
@@ -156,7 +160,8 @@ TEST_CASE("Deserialize uint32_t into int8_t (truncation)" * test_suite("signed_i
     std::error_code ec;
     auto result = deserialize<my_new_struct>(bytes, ec);
     REQUIRE((bool)ec == false); // no error reported
-    REQUIRE(result.value == static_cast<int8_t>(bytes[0])); // value will be truncated
+    REQUIRE(result.value ==
+            static_cast<int8_t>(bytes[0])); // value will be truncated
   }
 }
 
@@ -186,7 +191,8 @@ TEST_CASE("Deserialize uint64_t into int8_t" * test_suite("signed_integer")) {
   }
 }
 
-TEST_CASE("Deserialize uint64_t into int8_t (truncation)" * test_suite("signed_integer")) {
+TEST_CASE("Deserialize uint64_t into int8_t (truncation)" *
+          test_suite("signed_integer")) {
 
   std::vector<uint8_t> bytes;
 
@@ -208,7 +214,8 @@ TEST_CASE("Deserialize uint64_t into int8_t (truncation)" * test_suite("signed_i
     std::error_code ec;
     auto result = deserialize<my_new_struct>(bytes, ec);
     REQUIRE((bool)ec == false); // no error reported
-    REQUIRE(result.value == static_cast<int8_t>(bytes[0])); // value will be truncated
+    REQUIRE(result.value ==
+            static_cast<int8_t>(bytes[0])); // value will be truncated
   }
 }
 
@@ -292,7 +299,6 @@ TEST_CASE("Deserialize uint8_t into int64_t" * test_suite("signed_integer")) {
     REQUIRE(result.value == 5);
   }
 }
-
 
 TEST_CASE("Deserialize int8_t into int16_t" * test_suite("signed_integer")) {
 
