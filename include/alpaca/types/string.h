@@ -9,10 +9,13 @@ namespace alpaca {
 
 namespace detail {
 
+template <typename T>
+void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+
 static inline void to_bytes(const std::string &input,
                             std::vector<uint8_t> &bytes) {
   // save string length
-  to_bytes(input.size(), bytes);
+  to_bytes_router(input.size(), bytes);
 
   for (auto &c : input) {
     append(bytes, c);

@@ -13,7 +13,7 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 template <typename T>
 void to_bytes_from_vector_type(const T &input, std::vector<uint8_t> &bytes) {
   // save vector size
-  detail::to_bytes(input.size(), bytes);
+  to_bytes_router<std::size_t>(input.size(), bytes);
 
   // value of each element in list
   for (const auto &v : input) {

@@ -15,7 +15,7 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 template <typename T>
 void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes) {
   // save set size
-  to_bytes(input.size(), bytes);
+  to_bytes_router(input.size(), bytes);
 
   // save values in set
   for (const auto &value : input) {

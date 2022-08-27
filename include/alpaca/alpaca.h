@@ -29,30 +29,14 @@ append(T &bytes, const U &input) {
                                                                         bytes);
 }
 
-// template <typename T, typename U>
-// typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
-//                         void>::type
-// append(T &bytes, const U &input);
+template <typename T, typename U>
+typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
+                        void>::type
+append(T &bytes, const U &input);
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
-  // unsigned or signed integer types
-  // char, bool
-  // float, double
-  if constexpr (std::is_arithmetic_v<T>) {
-    // use variable-length encoding if possible
-    detail::to_bytes(input, bytes);
-  }
-  // enum class
-  else if constexpr (std::is_enum<T>::value) {
-    using underlying_type = typename std::underlying_type<T>::type;
-    to_bytes_router<underlying_type>(static_cast<underlying_type>(input),
-                                     bytes);
-  }
-  // everything else
-  else {
-    detail::append(bytes, input);
-  }
+  append(bytes, input);
 }
 
 } // namespace detail
