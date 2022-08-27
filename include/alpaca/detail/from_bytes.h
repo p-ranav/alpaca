@@ -9,9 +9,9 @@ namespace alpaca {
 namespace detail {
 
 // unpack arithmetic value from bytearray
-static inline bool 
-unpack_crc32(uint32_t &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index, std::error_code &) {
+static inline bool unpack_crc32(uint32_t &value,
+                                const std::vector<uint8_t> &bytes,
+                                std::size_t &current_index, std::error_code &) {
   constexpr auto num_bytes_to_read = 4;
 
   if (bytes.size() < num_bytes_to_read) {
@@ -25,8 +25,8 @@ unpack_crc32(uint32_t &value, const std::vector<uint8_t> &bytes,
 // unpack arithmetic value from bytearray
 template <typename T>
 typename std::enable_if<std::is_arithmetic_v<T>, bool>::type
-unpack(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index, std::error_code &) {
+unpack(T &value, const std::vector<uint8_t> &bytes, std::size_t &current_index,
+       std::error_code &) {
   constexpr auto num_bytes_to_read = sizeof(T);
   if (bytes.size() < num_bytes_to_read) {
     return false;

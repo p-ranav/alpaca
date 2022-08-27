@@ -7,7 +7,18 @@
 #include <alpaca/detail/struct_nth_field.h>
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_traits.h>
+#include <alpaca/detail/types/array.h>
+#include <alpaca/detail/types/map.h>
+#include <alpaca/detail/types/optional.h>
+#include <alpaca/detail/types/pair.h>
+#include <alpaca/detail/types/set.h>
+#include <alpaca/detail/types/string.h>
+#include <alpaca/detail/types/tuple.h>
+#include <alpaca/detail/types/unique_ptr.h>
+#include <alpaca/detail/types/variant.h>
+#include <alpaca/detail/types/vector.h>
 #include <alpaca/detail/variable_length_encoding.h>
+
 #include <system_error>
 
 namespace alpaca {
@@ -107,7 +118,7 @@ namespace detail {
 template <typename T>
 typename std::enable_if<std::is_aggregate_v<T>, bool>::type
 unpack(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
-           std::error_code &error_code) {
+       std::error_code &error_code) {
   deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
       value, bytes, byte_index, error_code);
   return true;
@@ -135,8 +146,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     from_bytes_router<underlying_type>(underlying_value, bytes, byte_index,
                                        error_code);
     output = static_cast<T>(underlying_value);
-  }
-  else {
+  } else {
     detail::unpack(output, bytes, byte_index, error_code);
   }
 }
