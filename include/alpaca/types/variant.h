@@ -13,7 +13,7 @@ template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T, typename... U>
-void append(T &bytes, const std::variant<U...> &input) {
+void pack(T &bytes, const std::variant<U...> &input) {
     std::size_t index = input.index();
 
     // save index of variant
@@ -25,7 +25,7 @@ void append(T &bytes, const std::variant<U...> &input) {
 }
 
 template <typename... T>
-bool read_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     // current byte is the index of the variant value

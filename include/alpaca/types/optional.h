@@ -12,7 +12,7 @@ template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T, typename U>
-void append(T &bytes, const std::optional<U> &input) {
+void pack(T &bytes, const std::optional<U> &input) {
     const auto has_value = input.has_value();
 
     // save if optional has value
@@ -29,7 +29,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
 template <typename T>
-bool read_bytes(std::optional<T> &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::optional<T> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
 

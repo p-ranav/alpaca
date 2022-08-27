@@ -9,9 +9,23 @@ namespace alpaca {
 namespace detail {
 
 // unpack arithmetic value from bytearray
+static inline bool 
+unpack_crc32(uint32_t &value, const std::vector<uint8_t> &bytes,
+           std::size_t &current_index, std::error_code &) {
+  constexpr auto num_bytes_to_read = 4;
+
+  if (bytes.size() < num_bytes_to_read) {
+    return false;
+  }
+  value = *(reinterpret_cast<const uint32_t *>(bytes.data() + current_index));
+  current_index += num_bytes_to_read;
+  return true;
+}
+
+// unpack arithmetic value from bytearray
 template <typename T>
 typename std::enable_if<std::is_arithmetic_v<T>, bool>::type
-read_bytes(T &value, const std::vector<uint8_t> &bytes,
+unpack(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &) {
   constexpr auto num_bytes_to_read = sizeof(T);
   if (bytes.size() < num_bytes_to_read) {
@@ -28,7 +42,7 @@ typename std::enable_if<std::is_same_v<T, bool>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
-  return read_bytes<bool>(value, bytes, current_index, error_code);
+  return unpack<bool>(value, bytes, current_index, error_code);
 }
 
 // char
@@ -37,7 +51,7 @@ typename std::enable_if<std::is_same_v<T, char>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
   // current byte is the value
-  return read_bytes<char>(value, bytes, current_index, error_code);
+  return unpack<char>(value, bytes, current_index, error_code);
 }
 
 // larger ints - 32bit, 64bit
@@ -75,7 +89,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
       return false;
     }
   }
-  return read_bytes<T>(value, bytes, current_index, error_code);
+  return unpack<T>(value, bytes, current_index, error_code);
 }
 
 // float and double
@@ -84,7 +98,7 @@ typename std::enable_if<std::is_same_v<T, float> || std::is_same_v<T, double>,
                         bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
-  return read_bytes<T>(value, bytes, current_index, error_code);
+  return unpack<T>(value, bytes, current_index, error_code);
 }
 
 } // namespace detail

@@ -29,12 +29,12 @@ void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
 }
 
 template <typename T, typename K, typename V>
-void append(T &bytes, const std::map<K, V> &input) {
+void pack(T &bytes, const std::map<K, V> &input) {
   to_bytes_from_map_type(input, bytes);
 }
 
 template <typename T, typename K, typename V>
-void append(T &bytes, const std::unordered_map<K, V> &input) {
+void pack(T &bytes, const std::unordered_map<K, V> &input) {
   to_bytes_from_map_type(input, bytes);
 }
 
@@ -62,7 +62,7 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
 }
 
 template <typename K, typename V>
-bool read_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_to_map(output, bytes, byte_index, error_code);
@@ -70,7 +70,7 @@ bool read_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
 }
 
 template <typename K, typename V>
-bool read_bytes(std::unordered_map<K, V> &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::unordered_map<K, V> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_to_map(output, bytes, byte_index, error_code);

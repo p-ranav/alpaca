@@ -18,12 +18,12 @@ static inline void to_bytes(const std::string &input,
   to_bytes_router(input.size(), bytes);
 
   for (auto &c : input) {
-    append(bytes, c);
+    pack(bytes, c);
   }
 }
 
 template <typename T>
-void append(T &bytes, const std::string &input) {
+void pack(T &bytes, const std::string &input) {
   to_bytes(input, bytes);
 }
 
@@ -55,7 +55,7 @@ static inline bool from_bytes(std::string &value,
 }
 
 static inline
-bool read_bytes(std::string &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::string &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes(output, bytes, byte_index, error_code);

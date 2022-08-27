@@ -25,12 +25,12 @@ void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes) {
 }
 
 template <typename T, typename U>
-void append(T &bytes, const std::set<U> &input) {
+void pack(T &bytes, const std::set<U> &input) {
   to_bytes_from_set_type(input, bytes);
 }
 
 template <typename T, typename U>
-void append(T &bytes, const std::unordered_set<U> &input) {
+void pack(T &bytes, const std::unordered_set<U> &input) {
   to_bytes_from_set_type(input, bytes);
 }
 
@@ -62,7 +62,7 @@ void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
 }
 
 template <typename T>
-bool read_bytes(std::set<T> &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::set<T> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_to_set(output, bytes, byte_index, error_code);
@@ -70,7 +70,7 @@ bool read_bytes(std::set<T> &output, const std::vector<uint8_t> &bytes,
 }
 
 template <typename T>
-bool read_bytes(std::unordered_set<T> &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::unordered_set<T> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_to_set(output, bytes, byte_index, error_code);

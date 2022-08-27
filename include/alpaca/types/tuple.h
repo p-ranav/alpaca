@@ -26,7 +26,7 @@ void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes) {
 }
 
 template <typename T, typename... U>
-void append(T &bytes, const std::tuple<U...> &input) {
+void pack(T &bytes, const std::tuple<U...> &input) {
     to_bytes_from_tuple_type(input, bytes);
 }
 
@@ -52,7 +52,7 @@ void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
 }
 
 template <typename... T>
-bool read_bytes(std::tuple<T...> &output, const std::vector<uint8_t> &bytes,
+bool unpack(std::tuple<T...> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_to_tuple(output, bytes, byte_index, error_code);
