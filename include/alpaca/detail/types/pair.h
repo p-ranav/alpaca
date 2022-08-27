@@ -11,7 +11,7 @@ template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T, typename U, typename V>
-void pack(T &bytes, const std::pair<U, V> &input) {
+void to_bytes(T &bytes, const std::pair<U, V> &input) {
     to_bytes_router(input.first, bytes);
     to_bytes_router(input.second, bytes);
 }
@@ -21,7 +21,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
 template <typename T, typename U>
-bool unpack(std::pair<T, U> &output, const std::vector<uint8_t> &bytes,
+bool from_bytes(std::pair<T, U> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_router(output.first, bytes, byte_index, error_code);

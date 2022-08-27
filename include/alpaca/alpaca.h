@@ -35,7 +35,7 @@ namespace detail {
 // incidentally, also works for std::pair
 template <typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type
-pack(T &bytes, const U &input) {
+to_bytes(T &bytes, const U &input) {
   serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(input,
                                                                         bytes);
 }
@@ -43,11 +43,11 @@ pack(T &bytes, const U &input) {
 template <typename T, typename U>
 typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
                         void>::type
-pack(T &bytes, const U &input);
+to_bytes(T &bytes, const U &input);
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
-  pack(bytes, input);
+  to_bytes(bytes, input);
 }
 
 } // namespace detail
@@ -92,7 +92,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes, bool generate_crc) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), bytes.size());
-    detail::pack_crc32(bytes, crc);
+    detail::to_bytes_crc32(bytes, crc);
   }
 }
 
@@ -117,7 +117,7 @@ namespace detail {
 // version for nested struct/class types
 template <typename T>
 typename std::enable_if<std::is_aggregate_v<T>, bool>::type
-unpack(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
        std::error_code &error_code) {
   deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
       value, bytes, byte_index, error_code);
@@ -127,7 +127,7 @@ unpack(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
 // template <typename T>
 // typename std::enable_if<!std::is_aggregate_v<T> && std::is_class_v<T>,
 //                         bool>::type
-// unpack(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+// from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
 //            std::error_code &error_code);
 
 template <typename T>
@@ -147,7 +147,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                                        error_code);
     output = static_cast<T>(underlying_value);
   } else {
-    detail::unpack(output, bytes, byte_index, error_code);
+    detail::from_bytes(output, bytes, byte_index, error_code);
   }
 }
 
@@ -204,7 +204,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       // check crc bytes
       uint32_t trailing_crc;
       std::size_t index = bytes.size() - 4;
-      detail::unpack_crc32(trailing_crc, bytes, index,
+      detail::from_bytes_crc32(trailing_crc, bytes, index,
                            error_code); // last 4 bytes
 
       auto computed_crc = crc32_fast(bytes.data(), bytes.size() - 4);

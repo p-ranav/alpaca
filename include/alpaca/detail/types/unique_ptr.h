@@ -12,7 +12,7 @@ template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
 template <typename T, typename U>
-void pack(T &bytes, const std::unique_ptr<U> &input) {
+void to_bytes(T &bytes, const std::unique_ptr<U> &input) {
     auto has_value = false;
     if (input) {
       has_value = true;
@@ -32,7 +32,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
 template <typename T>
-bool unpack(std::unique_ptr<T> &output, const std::vector<uint8_t> &bytes,
+bool from_bytes(std::unique_ptr<T> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
 

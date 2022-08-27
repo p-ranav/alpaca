@@ -21,7 +21,7 @@ void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes) {
 }
 
 template <typename T, typename U, std::size_t N>
-void pack(T &bytes, const std::array<U, N> &input) {
+void to_bytes(T &bytes, const std::array<U, N> &input) {
   to_bytes_from_array_type(input, bytes);
 }
 
@@ -47,7 +47,7 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
 }
 
 template <typename U, std::size_t N>
-bool unpack(std::array<U, N> &output, const std::vector<uint8_t> &bytes,
+bool from_bytes(std::array<U, N> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_to_array(output, bytes, byte_index, error_code);

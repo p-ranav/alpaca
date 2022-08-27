@@ -24,7 +24,7 @@ void to_bytes_from_vector_type(const T &input, std::vector<uint8_t> &bytes) {
 }
 
 template <typename T, typename U>
-void pack(T &bytes, const std::vector<U> &input) {
+void to_bytes(T &bytes, const std::vector<U> &input) {
   to_bytes_from_vector_type(input, bytes);
 }
 
@@ -62,7 +62,7 @@ void from_bytes_to_vector(std::vector<T> &value,
 }
 
 template <typename T>
-bool unpack(std::vector<T> &output, const std::vector<uint8_t> &bytes,
+bool from_bytes(std::vector<T> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
     from_bytes_to_vector(output, bytes, byte_index, error_code);
