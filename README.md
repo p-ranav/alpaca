@@ -15,6 +15,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
      *    [Optional values](#optional-values-stdoptionalt)
      *    [Type-safe unions: variant](#type-safe-unions-stdvariant)
      *    [Smart Pointers: unique_ptr](#smart-pointers-stdunique_ptrt)
+     *    [Checking Version](#checking-version)
      *    [Appending Checksum](#appending-checksum)
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
@@ -401,6 +402,41 @@ int main() {
 //   0x00 // 4.has_left = false
 //   0x00 // 4.has_right = false
 // }
+```
+
+### Checking Version
+
+```cpp
+#include <alpaca/alpaca.h>
+using namespace alpaca;
+
+int main() {
+
+  std::vector<uint8_t> bytes;
+
+  // serialize
+  {
+    struct MyStruct {
+      int a;
+    };
+
+    MyStruct s{5};
+    bytes = serialize<MyStruct, options::with_version>(s);
+  }
+
+  // deserialize
+  {
+    struct MyStruct {
+      int a;
+      float b;
+      char c;
+    };
+
+    std::error_code ec;
+    auto object = deserialize<MyStruct, options::with_version>(bytes, ec);
+    // ec.value() == std::errc::invalid_argument here
+  }
+}
 ```
 
 ### Appending Checksum

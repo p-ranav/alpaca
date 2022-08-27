@@ -7,6 +7,7 @@
 #include <alpaca/detail/print_bytes.h>
 #include <alpaca/detail/struct_nth_field.h>
 #include <alpaca/detail/to_bytes.h>
+#include <alpaca/detail/type_info.h>
 #include <alpaca/detail/types/array.h>
 #include <alpaca/detail/types/map.h>
 #include <alpaca/detail/types/optional.h>
@@ -22,6 +23,63 @@
 #include <system_error>
 
 namespace alpaca {
+
+#if defined(_MSC_VER)
+#define ALPACA_FUNCTION_SIGNATURE __FUNCSIG__
+#elif defined(__clang__) || defined(__GNUC__)
+#define ALPACA_FUNCTION_SIGNATURE __PRETTY_FUNCTION__
+#else
+#error unsupported compiler
+#endif
+
+namespace detail {
+
+template <typename T, std::size_t N>
+typename std::enable_if<std::is_aggregate_v<T>, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
+
+template <typename T, std::size_t N, std::size_t I>
+void type_info_helper(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  if constexpr (I < N) {
+    T ref{};
+    decltype(auto) field = detail::get<I, T, N>(ref);
+    using decayed_field_type = typename std::decay<decltype(field)>::type;
+
+    // save type of field in struct
+    type_info<decayed_field_type>(typeids, struct_visitor_map);
+
+    // go to next field
+    type_info_helper<T, N, I + 1>(typeids, struct_visitor_map);
+  }
+}
+
+// for aggregates
+template <typename T, std::size_t N>
+typename std::enable_if<std::is_aggregate_v<T>, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  typeids.push_back(static_cast<uint8_t>(N));         // todo: could overflow
+  typeids.push_back(static_cast<uint8_t>(sizeof(T))); // todo: could overflow
+
+  // store num fields in struct
+  // store size of struct
+  // if already visited before, store index in struct_visitor_map
+  // else, visit the struct and store its field types
+  std::string_view name = ALPACA_FUNCTION_SIGNATURE;
+  auto it = struct_visitor_map.find(name);
+  if (it != struct_visitor_map.end()) {
+    // store index in struct_visitor_map
+    typeids.push_back(it->second);
+  }
+  else {
+    struct_visitor_map[name] = struct_visitor_map.size() + 1;  
+    type_info_helper<T, N, 0>(typeids, struct_visitor_map);
+  }
+}
+
+}
 
 // Forward declares
 template <typename T, std::size_t N, std::size_t I>
@@ -90,6 +148,15 @@ std::vector<uint8_t> serialize(const T &s) {
 template <typename T, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 void serialize(const T &s, std::vector<uint8_t> &bytes) {
+  if constexpr (N > 0 && enum_has_flag<options, O, options::with_version>()) {
+    // calculate typeid hash and save it to the bytearray
+    std::vector<uint8_t> typeids;
+    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
+    detail::type_info<T, N>(typeids, struct_visitor_map);
+    uint32_t version = crc32_fast(typeids.data(), typeids.size());
+    detail::to_bytes_crc32(bytes, version);
+  }
+
   serialize_helper<T, N, 0>(s, bytes);
 
   if constexpr (N > 0 && enum_has_flag<options, O, options::with_checksum>()) {
@@ -196,6 +263,38 @@ template <typename T, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
                  std::size_t &byte_index, std::error_code &error_code) {
+
+  if constexpr (N > 0 && enum_has_flag<options, O, options::with_version>()) {
+
+    // calculate typeid hash and save it to the bytearray
+    std::vector<uint8_t> typeids;
+    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
+    detail::type_info<T, N>(typeids, struct_visitor_map);
+    uint32_t computed_version = crc32_fast(typeids.data(), typeids.size());
+
+    // check computed version with version in input
+    // there should be at least 4 bytes in input
+    if (bytes.size() < 4) {
+      error_code = std::make_error_code(std::errc::invalid_argument);
+      return;
+    }
+    else {
+      std::vector<uint8_t> version_bytes{};
+      for (std::size_t i = 0; i < 4; ++i) {
+        version_bytes.push_back(bytes[byte_index++]);
+      }
+      uint32_t version = 0;
+      std::size_t index = 0;
+      detail::from_bytes_crc32(version, bytes, index,
+                               error_code); // first 4 bytes
+
+      if (version != computed_version) {
+        error_code = std::make_error_code(std::errc::invalid_argument);
+        return;
+      }
+    }
+  }
+
   if constexpr (enum_has_flag<options, O, options::with_checksum>()) {
     // bytes must be at least 4 bytes long
     if (bytes.size() < 4) {

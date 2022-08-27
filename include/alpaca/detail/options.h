@@ -3,7 +3,7 @@
 
 namespace alpaca {
 
-enum class options { none, with_checksum };
+enum class options { none, with_version, with_checksum };
 
 template <typename E> struct enable_bitmask_operators {
   static constexpr bool enable = false;
