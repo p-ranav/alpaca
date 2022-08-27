@@ -27,34 +27,30 @@ namespace alpaca {
 template <typename T, std::size_t N, std::size_t I>
 void serialize_helper(const T &s, std::vector<uint8_t> &bytes);
 
-enum class options {
-  none,
-  with_checksum
+enum class options { none, with_checksum };
+
+template <typename E> struct enable_bitmask_operators {
+  static constexpr bool enable = false;
 };
 
-template<typename E>
-struct enable_bitmask_operators{
-    static constexpr bool enable=false;
-};
-
-template<typename E>
-typename std::enable_if<enable_bitmask_operators<E>::enable,E>::type
-operator|(E lhs,E rhs){
-    using underlying = typename std::underlying_type<E>::type;
-    return static_cast<E>(
-        static_cast<underlying>(lhs) | static_cast<underlying>(rhs));
+template <typename E>
+typename std::enable_if<enable_bitmask_operators<E>::enable, E>::type
+operator|(E lhs, E rhs) {
+  using underlying = typename std::underlying_type<E>::type;
+  return static_cast<E>(static_cast<underlying>(lhs) |
+                        static_cast<underlying>(rhs));
 }
 
-template<typename E>
+template <typename E>
 typename std::enable_if<enable_bitmask_operators<E>::enable, bool>::type
 enum_has_flag(E value, E flag) {
   using underlying = typename std::underlying_type<E>::type;
-  return (static_cast<underlying>(value) & static_cast<underlying>(flag)) == static_cast<underlying>(flag);
+  return (static_cast<underlying>(value) & static_cast<underlying>(flag)) ==
+         static_cast<underlying>(flag);
 }
 
-template<>
-struct enable_bitmask_operators<options>{
-    static constexpr bool enable=true;
+template <> struct enable_bitmask_operators<options> {
+  static constexpr bool enable = true;
 };
 
 namespace detail {
@@ -66,8 +62,8 @@ namespace detail {
 template <typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type
 to_bytes(T &bytes, const U &input) {
-  serialize_helper<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(input,
-                                                                        bytes);
+  serialize_helper<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
+      input, bytes);
 }
 
 template <typename T, typename U>
@@ -103,10 +99,26 @@ void serialize_helper(const T &s, std::vector<uint8_t> &bytes) {
 
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-void serialize(const T &s, std::vector<uint8_t> &bytes, options options = options::none) {
+void serialize(const T &s, std::vector<uint8_t> &bytes) {
+  serialize_helper<T, N, 0>(s, bytes);
+}
+
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+std::vector<uint8_t> serialize(const T &s) {
+  std::vector<uint8_t> bytes{};
+  serialize<T, N>(s, bytes);
+  return bytes;
+}
+
+// overloads taking options template parameter
+
+template <typename T, options O,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+void serialize(const T &s, std::vector<uint8_t> &bytes) {
   serialize_helper<T, N, 0>(s, bytes);
 
-  if (N > 0 && enum_has_flag(options, options::with_checksum)) {
+  if (N > 0 && enum_has_flag(O, options::with_checksum)) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), bytes.size());
@@ -114,18 +126,18 @@ void serialize(const T &s, std::vector<uint8_t> &bytes, options options = option
   }
 }
 
-template <typename T,
+template <typename T, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-std::vector<uint8_t> serialize(const T &s, options options = options::none) {
+std::vector<uint8_t> serialize(const T &s) {
   std::vector<uint8_t> bytes{};
-  serialize<T, N>(s, bytes, options);
+  serialize<T, O, N>(s, bytes);
   return bytes;
 }
 
 // Forward declares
 template <typename T, std::size_t N, std::size_t index>
 void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index, std::error_code &error_code);
+                        std::size_t &byte_index, std::error_code &error_code);
 
 namespace detail {
 
@@ -135,9 +147,9 @@ namespace detail {
 template <typename T>
 typename std::enable_if<std::is_aggregate_v<T>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
-       std::error_code &error_code) {
-  deserialize_helper<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
-      value, bytes, byte_index, error_code);
+           std::error_code &error_code) {
+  deserialize_helper<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+                     0>(value, bytes, byte_index, error_code);
   return true;
 }
 
@@ -170,7 +182,7 @@ template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
 void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index, std::error_code &error_code) {
+                        std::size_t &byte_index, std::error_code &error_code) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
@@ -189,13 +201,28 @@ void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
   }
 }
 
-// Overloads to check crc in bytes
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index, std::error_code &error_code,
-                 options options = options::none) {
-  if (enum_has_flag(options, options::with_checksum)) {
+                 std::size_t &byte_index, std::error_code &error_code) {
+  deserialize_helper<T, N, 0>(s, bytes, byte_index, error_code);
+}
+
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
+  T object{};
+  std::size_t byte_index = 0;
+  deserialize<T, N>(object, bytes, byte_index, error_code);
+  return object;
+}
+
+// Overloads to check crc in bytes
+template <typename T, options O,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+void deserialize(T &s, const std::vector<uint8_t> &bytes,
+                 std::size_t &byte_index, std::error_code &error_code) {
+  if (enum_has_flag(O, options::with_checksum)) {
     // bytes must be at least 4 bytes long
     if (bytes.size() < 4) {
       error_code = std::make_error_code(std::errc::invalid_argument);
@@ -205,7 +232,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       uint32_t trailing_crc;
       std::size_t index = bytes.size() - 4;
       detail::from_bytes_crc32(trailing_crc, bytes, index,
-                           error_code); // last 4 bytes
+                               error_code); // last 4 bytes
 
       auto computed_crc = crc32_fast(bytes.data(), bytes.size() - 4);
 
@@ -216,7 +243,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
         // If it did, it could just remove the last 4 bytes
         const std::vector<uint8_t> bytes_without_crc(bytes.begin(),
                                                      bytes.begin() + index);
-        deserialize_helper<T, N, 0>(s, bytes_without_crc, byte_index, error_code);
+        deserialize_helper<T, N, 0>(s, bytes_without_crc, byte_index,
+                                    error_code);
       } else {
         // message is bad
         error_code = std::make_error_code(std::errc::bad_message);
@@ -230,13 +258,12 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
   }
 }
 
-template <typename T,
+template <typename T, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code,
-              options options = options::none) {
+T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
   T object{};
   std::size_t byte_index = 0;
-  deserialize<T, N>(object, bytes, byte_index, error_code, options);
+  deserialize<T, O, N>(object, bytes, byte_index, error_code);
   return object;
 }
 

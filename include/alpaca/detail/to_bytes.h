@@ -8,7 +8,7 @@ namespace alpaca {
 namespace detail {
 
 static inline void to_bytes_crc32(std::vector<uint8_t> &bytes,
-                              const uint32_t &value) {
+                                  const uint32_t &value) {
   std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
             static_cast<const char *>(static_cast<const void *>(&value)) +
                 sizeof value,
