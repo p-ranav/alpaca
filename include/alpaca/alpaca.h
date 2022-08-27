@@ -7,7 +7,6 @@
 #include <alpaca/detail/print_bytes.h>
 #include <alpaca/detail/struct_nth_field.h>
 #include <alpaca/detail/to_bytes.h>
-#include <alpaca/detail/type_traits.h>
 #include <alpaca/detail/types/array.h>
 #include <alpaca/detail/types/map.h>
 #include <alpaca/detail/types/optional.h>

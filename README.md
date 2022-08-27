@@ -420,11 +420,12 @@ int main() {
   MyStruct s{'m', 54321, -987.654};
 
   // Serialize and append CRC32 hash
-  auto bytes = serialize<MyStruct>(s, options::with_checksum); // 11 bytes
+  constexpr auto OPTIONS = options::with_checksum;
+  auto bytes = serialize<MyStruct, OPTIONS>(s); // 11 bytes
 
   // Check CRC32 hash and deserialize
   std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec, options::with_checksum);
+  auto object = deserialize<MyStruct, OPTIONS>(bytes, ec);
   if (!ec) {
     // use object
   }
