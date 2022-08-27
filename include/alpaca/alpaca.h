@@ -8,7 +8,6 @@
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_traits.h>
 #include <alpaca/detail/variable_length_encoding.h>
-#include <alpaca/detail/variant_nth_field.h>
 #include <system_error>
 
 namespace alpaca {
@@ -21,9 +20,6 @@ namespace detail {
 
 // Start of serialization functions
 
-template <typename T>
-void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
-
 // version for nested struct/class types
 // incidentally, also works for std::pair
 template <typename T, typename U>
@@ -33,13 +29,10 @@ append(T &bytes, const U &input) {
                                                                         bytes);
 }
 
-template <typename T, typename U>
-typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
-                        void>::type
-append(T &bytes, const U &input) {
-  serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(input,
-                                                                        bytes);
-}
+// template <typename T, typename U>
+// typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
+//                         void>::type
+// append(T &bytes, const U &input);
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
@@ -72,39 +65,9 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
     to_bytes_router<underlying_type>(static_cast<underlying_type>(input),
                                      bytes);
   }
-  // variant
-  else if constexpr (detail::is_specialization<T, std::variant>::value) {
-    std::size_t index = input.index();
-
-    // save index of variant
-    to_bytes_router<std::size_t>(index, bytes);
-
-    // save value of variant
-    const auto visitor = [&bytes](auto &&arg) { to_bytes_router(arg, bytes); };
-    std::visit(visitor, input);
-  }
-  // vector
-  else if constexpr (detail::is_vector<T>::value) {
-    to_bytes_from_list_type<T>(input, bytes);
-  }
   // everything else
   else {
     detail::append(bytes, input);
-  }
-}
-
-// Specialization for vector
-
-template <typename T>
-void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes) {
-  // save vector size
-  detail::to_bytes(input.size(), bytes);
-
-  // value of each element in list
-  for (const auto &v : input) {
-    // check if the value_type is a nested list type
-    using decayed_value_type = typename std::decay<decltype(v)>::type;
-    to_bytes_router<decayed_value_type>(v, bytes);
   }
 }
 
@@ -172,12 +135,6 @@ namespace detail {
 
 // Start of deserialization functions
 
-template <typename T>
-void from_bytes_to_vector(std::vector<T> &value,
-                          const std::vector<uint8_t> &bytes,
-                          std::size_t &current_index,
-                          std::error_code &error_code);
-
 // version for nested struct/class types
 template <typename T>
 typename std::enable_if<std::is_aggregate_v<T>, bool>::type
@@ -188,15 +145,11 @@ read_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
   return true;
 }
 
-template <typename T>
-typename std::enable_if<!std::is_aggregate_v<T> && std::is_class_v<T>,
-                        bool>::type
-read_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
-           std::error_code &error_code) {
-  deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
-      value, bytes, byte_index, error_code);
-  return true;
-}
+// template <typename T>
+// typename std::enable_if<!std::is_aggregate_v<T> && std::is_class_v<T>,
+//                         bool>::type
+// read_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+//            std::error_code &error_code);
 
 template <typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
@@ -212,7 +165,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
       using element_type = typename T::element_type;
       element_type value;
       from_bytes_router(value, bytes, byte_index, error_code);
-      output = std::unique_ptr<element_type>(new element_type{value});
+      output = std::unique_ptr<element_type>(new element_type{std::move(value)});
     } else {
       output = nullptr;
     }
@@ -231,50 +184,8 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                                        error_code);
     output = static_cast<T>(underlying_value);
   }
-  // variant
-  else if constexpr (detail::is_specialization<T, std::variant>::value) {
-    // current byte is the index of the variant value
-    std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
-
-    // read bytes as value_type = variant@index
-    detail::set_variant_value<T>(output, index, bytes, byte_index, error_code);
-  }
-  // vector
-  else if constexpr (detail::is_vector<T>::value) {
-    from_bytes_to_vector(output, bytes, byte_index, error_code);
-  } else {
+  else {
     detail::read_bytes(output, bytes, byte_index, error_code);
-  }
-}
-
-// Specialization for vector
-
-template <typename T>
-void from_bytes_to_vector(std::vector<T> &value,
-                          const std::vector<uint8_t> &bytes,
-                          std::size_t &current_index,
-                          std::error_code &error_code) {
-
-  // current byte is the size of the vector
-  std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
-
-  if (size > bytes.size() - current_index) {
-    // size is greater than the number of bytes remaining
-    error_code = std::make_error_code(std::errc::value_too_large);
-
-    // stop here
-    return;
-  }
-
-  // read `size` bytes and save to value
-  for (std::size_t i = 0; i < size; ++i) {
-    T v{};
-    from_bytes_router(v, bytes, current_index, error_code);
-    if (error_code) {
-      // something went wrong
-      return;
-    }
-    value.push_back(v);
   }
 }
 

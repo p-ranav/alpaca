@@ -8,16 +8,6 @@ template <class T> struct Node {
   T data;
   std::unique_ptr<Node<T>> left;
   std::unique_ptr<Node<T>> right;
-
-  Node(const T &data = T(), std::unique_ptr<Node<T>> lhs = nullptr,
-       std::unique_ptr<Node<T>> rhs = nullptr)
-      : data(data), left(std::move(lhs)), right(std::move(rhs)) {}
-
-  Node(const Node &n) {
-    data = n.data;
-    left = n.left ? std::unique_ptr<Node<T>>{new Node<T>{*n.left}} : nullptr;
-    right = n.right ? std::unique_ptr<Node<T>>{new Node<T>{*n.right}} : nullptr;
-  }
 };
 
 template <class T>

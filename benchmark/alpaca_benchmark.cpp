@@ -1,5 +1,6 @@
-#include <alpaca/alpaca.h>
 #include <alpaca/types/string.h>
+#include <alpaca/types/vector.h>
+#include <alpaca/alpaca.h>
 #include <benchmark/benchmark.h>
 #include <cassert>
 #include <chrono>
