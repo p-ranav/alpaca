@@ -1,3 +1,4 @@
+#include <alpaca/types/unique_ptr.h>
 #include <alpaca/alpaca.h>
 #include <doctest.hpp>
 using namespace alpaca;

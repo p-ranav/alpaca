@@ -36,26 +36,10 @@ append(T &bytes, const U &input) {
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
-  // unique_ptr
-  if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
-    auto has_value = false;
-    if (input) {
-      has_value = true;
-    }
-
-    // save if ptr has value
-    to_bytes_router<bool>(has_value, bytes);
-
-    // save value
-    if (has_value) {
-      using element_type = typename T::element_type;
-      to_bytes_router<element_type>(*input, bytes);
-    }
-  }
   // unsigned or signed integer types
   // char, bool
   // float, double
-  else if constexpr (std::is_arithmetic_v<T>) {
+  if constexpr (std::is_arithmetic_v<T>) {
     // use variable-length encoding if possible
     detail::to_bytes(input, bytes);
   }
@@ -154,26 +138,10 @@ read_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
 template <typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code) {
-  // unique_ptr
-  if constexpr (detail::is_specialization<T, std::unique_ptr>::value) {
-    // current byte is the `has_value` byte
-    bool has_value = false;
-    detail::read_bytes<bool>(has_value, bytes, byte_index, error_code);
-
-    if (has_value) {
-      // read value of unique_ptr
-      using element_type = typename T::element_type;
-      element_type value;
-      from_bytes_router(value, bytes, byte_index, error_code);
-      output = std::unique_ptr<element_type>(new element_type{std::move(value)});
-    } else {
-      output = nullptr;
-    }
-  }
   // unsigned or signed integer types
   // char, bool
   // float, double
-  else if constexpr (std::is_arithmetic_v<T>) {
+  if constexpr (std::is_arithmetic_v<T>) {
     detail::from_bytes(output, bytes, byte_index, error_code);
   }
   // enum class
