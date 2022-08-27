@@ -14,7 +14,7 @@ TEST_CASE("Deserialize crc32 error - invalid_argument" * test_suite("crc32")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s, /*generate_crc = */ true);
+    bytes = serialize(s, options::with_checksum);
   }
 
   // deserialize
@@ -24,7 +24,7 @@ TEST_CASE("Deserialize crc32 error - invalid_argument" * test_suite("crc32")) {
     // CRC32 check requires at least 4 bytes
 
     std::error_code ec;
-    deserialize<my_struct>(received, ec, /* check_crc = */ true);
+    deserialize<my_struct>(received, ec, options::with_checksum);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::invalid_argument));
   }
@@ -40,7 +40,7 @@ TEST_CASE("Deserialize crc32 error - bad_message" * test_suite("crc32")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s, /*generate_crc = */ true);
+    bytes = serialize(s, options::with_checksum);
   }
 
   // deserialize
@@ -49,7 +49,7 @@ TEST_CASE("Deserialize crc32 error - bad_message" * test_suite("crc32")) {
     //                                        ^^^^^^^^^^^^^^^^^^^^^^ bad crc
 
     std::error_code ec;
-    deserialize<my_struct>(received, ec, /* check_crc = */ true);
+    deserialize<my_struct>(received, ec, options::with_checksum);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::bad_message));
   }

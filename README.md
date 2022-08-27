@@ -15,7 +15,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
      *    [Optional values](#optional-values-stdoptionalt)
      *    [Type-safe unions: variant](#type-safe-unions-stdvariant)
      *    [Smart Pointers: unique_ptr](#smart-pointers-stdunique_ptrt)
-     *    [Appending CRC32 hash](#appending-crc32-hash)
+     *    [Appending Checksum](#appending-checksum)
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
@@ -403,7 +403,7 @@ int main() {
 // }
 ```
 
-### Appending CRC32 hash
+### Appending Checksum
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -420,11 +420,11 @@ int main() {
   MyStruct s{'m', 54321, -987.654};
 
   // Serialize and append CRC32 hash
-  auto bytes = serialize<MyStruct>(s, /*generate_crc*/ true); // 11 bytes
+  auto bytes = serialize<MyStruct>(s, options::with_checksum); // 11 bytes
 
   // Check CRC32 hash and deserialize
   std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec, /*check_crc*/ true);
+  auto object = deserialize<MyStruct>(bytes, ec, options::with_checksum);
   if (!ec) {
     // use object
   }

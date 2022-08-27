@@ -14,13 +14,13 @@ TEST_CASE("Deserialize int with crc32" * test_suite("crc32")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s, /*generate_crc = */ true);
+    bytes = serialize(s, options::with_checksum);
   }
 
   // deserialize
   {
     std::error_code ec;
-    auto result = deserialize<my_struct>(bytes, ec, /* check_crc = */ true);
+    auto result = deserialize<my_struct>(bytes, ec, options::with_checksum);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }

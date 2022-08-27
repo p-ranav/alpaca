@@ -204,7 +204,7 @@ static void BM_alpaca_deserialize_with_crc32(benchmark::State &state) {
     std::size_t data_size = 0;
     my_struct s{createMonsters(state.range(0))};
     // serialize
-    auto bytes = serialize(s, true);
+    auto bytes = serialize(s, options::with_checksum);
 
     data_size = bytes.size();
 
@@ -212,7 +212,7 @@ static void BM_alpaca_deserialize_with_crc32(benchmark::State &state) {
       // This code gets timed
       // deserialize
       std::error_code ec;
-      auto recovered = deserialize<my_struct>(bytes, ec, true);
+      auto recovered = deserialize<my_struct>(bytes, ec, options::with_checksum);
     }
 
     state.counters["BytesOutput"] = data_size;
@@ -257,13 +257,13 @@ BM_alpaca_serialize_then_deserialize_with_crc32(benchmark::State &state) {
     for (auto _ : state) {
       // This code gets timed
       // serialize
-      auto bytes = serialize(s, true);
+      auto bytes = serialize(s, options::with_checksum);
 
       data_size = bytes.size();
 
       // deserialize
       std::error_code ec;
-      auto recovered = deserialize<my_struct>(bytes, ec, true);
+      auto recovered = deserialize<my_struct>(bytes, ec, options::with_checksum);
     }
 
     state.counters["BytesOutput"] = data_size;
