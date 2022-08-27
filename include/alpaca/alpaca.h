@@ -41,10 +41,9 @@ operator|(E lhs, E rhs) {
                         static_cast<underlying>(rhs));
 }
 
-template <typename E>
-typename std::enable_if<enable_bitmask_operators<E>::enable, bool>::type
-enum_has_flag(E value, E flag) {
-  using underlying = typename std::underlying_type<E>::type;
+template <typename T, T value, T flag>
+constexpr bool enum_has_flag() {
+  using underlying = typename std::underlying_type<T>::type;
   return (static_cast<underlying>(value) & static_cast<underlying>(flag)) ==
          static_cast<underlying>(flag);
 }
@@ -118,7 +117,7 @@ template <typename T, options O,
 void serialize(const T &s, std::vector<uint8_t> &bytes) {
   serialize_helper<T, N, 0>(s, bytes);
 
-  if (N > 0 && enum_has_flag(O, options::with_checksum)) {
+  if constexpr (N > 0 && enum_has_flag<options, O, options::with_checksum>()) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), bytes.size());
@@ -222,7 +221,7 @@ template <typename T, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
                  std::size_t &byte_index, std::error_code &error_code) {
-  if (enum_has_flag(O, options::with_checksum)) {
+  if constexpr (enum_has_flag<options, O, options::with_checksum>()) {
     // bytes must be at least 4 bytes long
     if (bytes.size() < 4) {
       error_code = std::make_error_code(std::errc::invalid_argument);
