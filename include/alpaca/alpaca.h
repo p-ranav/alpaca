@@ -22,28 +22,23 @@ namespace detail {
 // Start of serialization functions
 
 template <typename T>
-void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes);
-
-template <typename T>
-void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes);
-
-template <typename T>
 void to_bytes_from_list_type(const T &input, std::vector<uint8_t> &bytes);
 
 // version for nested struct/class types
 // incidentally, also works for std::pair
 template <typename T, typename U>
-typename std::enable_if<std::is_aggregate_v<U>, void>::type 
+typename std::enable_if<std::is_aggregate_v<U>, void>::type
 append(T &bytes, const U &input) {
-  serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
-      input, bytes);
+  serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(input,
+                                                                        bytes);
 }
 
 template <typename T, typename U>
-typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>, void>::type 
+typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
+                        void>::type
 append(T &bytes, const U &input) {
-  serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
-      input, bytes);
+  serialize<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(input,
+                                                                        bytes);
 }
 
 template <typename T>
@@ -71,24 +66,11 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
     // use variable-length encoding if possible
     detail::to_bytes(input, bytes);
   }
-  // array
-  else if constexpr (std::is_array_v<T>) {
-    to_bytes_from_array_type<T>(input, bytes);
-  }
   // enum class
   else if constexpr (std::is_enum<T>::value) {
     using underlying_type = typename std::underlying_type<T>::type;
     to_bytes_router<underlying_type>(static_cast<underlying_type>(input),
                                      bytes);
-  }
-  // std::string
-  else if constexpr (detail::is_string::detect<T>) {
-    detail::to_bytes(input, bytes);
-  }
-  // set, unordered_set
-  else if constexpr (detail::is_specialization<T, std::set>::value ||
-                     detail::is_specialization<T, std::unordered_set>::value) {
-    to_bytes_from_set_type<T>(input, bytes);
   }
   // variant
   else if constexpr (detail::is_specialization<T, std::variant>::value) {
@@ -108,20 +90,6 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
   // everything else
   else {
     detail::append(bytes, input);
-  }
-}
-
-// Specialization for set/unordered_set
-
-template <typename T>
-void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes) {
-  // save set size
-  detail::to_bytes(input.size(), bytes);
-
-  // save values in set
-  for (const auto &value : input) {
-    using decayed_key_type = typename std::decay<typename T::value_type>::type;
-    to_bytes_router<decayed_key_type>(value, bytes);
   }
 }
 
@@ -205,15 +173,6 @@ namespace detail {
 // Start of deserialization functions
 
 template <typename T>
-void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
-                         std::size_t &current_index,
-                         std::error_code &error_code);
-
-template <typename T>
-void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index, std::error_code &error_code);
-
-template <typename T>
 void from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
                           std::size_t &current_index,
@@ -221,20 +180,19 @@ void from_bytes_to_vector(std::vector<T> &value,
 
 // version for nested struct/class types
 template <typename T>
-typename std::enable_if<std::is_aggregate_v<T>, bool>::type 
-read_bytes(T &value, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
+typename std::enable_if<std::is_aggregate_v<T>, bool>::type
+read_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+           std::error_code &error_code) {
   deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
       value, bytes, byte_index, error_code);
   return true;
 }
 
 template <typename T>
-typename std::enable_if<!std::is_aggregate_v<T> && std::is_class_v<T>, bool>::type 
-read_bytes(T &value, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
+typename std::enable_if<!std::is_aggregate_v<T> && std::is_class_v<T>,
+                        bool>::type
+read_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+           std::error_code &error_code) {
   deserialize<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(), 0>(
       value, bytes, byte_index, error_code);
   return true;
@@ -265,26 +223,13 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   else if constexpr (std::is_arithmetic_v<T>) {
     detail::from_bytes(output, bytes, byte_index, error_code);
   }
-  // array
-  else if constexpr (std::is_array_v<T>) {
-    from_bytes_to_array(output, bytes, byte_index, error_code);
-  }
   // enum class
   else if constexpr (std::is_enum<T>::value) {
     using underlying_type = typename std::underlying_type<T>::type;
-    underlying_type underlying_value;
+    underlying_type underlying_value{};
     from_bytes_router<underlying_type>(underlying_value, bytes, byte_index,
                                        error_code);
     output = static_cast<T>(underlying_value);
-  }
-  // std::string
-  else if constexpr (detail::is_string::detect<T>) {
-    detail::from_bytes(output, bytes, byte_index, error_code);
-  }
-  // set, unordered_set
-  else if constexpr (detail::is_specialization<T, std::set>::value ||
-                     detail::is_specialization<T, std::unordered_set>::value) {
-    from_bytes_to_set(output, bytes, byte_index, error_code);
   }
   // variant
   else if constexpr (detail::is_specialization<T, std::variant>::value) {
@@ -297,34 +242,8 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
   // vector
   else if constexpr (detail::is_vector<T>::value) {
     from_bytes_to_vector(output, bytes, byte_index, error_code);
-  }
-  else {
+  } else {
     detail::read_bytes(output, bytes, byte_index, error_code);
-  }
-}
-
-// Specialization for set
-
-template <typename T>
-void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index,
-                       std::error_code &error_code) {
-  // current byte is the size of the set
-  std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
-
-  if (size > bytes.size() - current_index) {
-    // size is greater than the number of bytes remaining
-    error_code = std::make_error_code(std::errc::value_too_large);
-
-    // stop here
-    return;
-  }
-
-  // read `size` bytes and save to value
-  for (std::size_t i = 0; i < size; ++i) {
-    typename T::value_type value{};
-    from_bytes_router(value, bytes, current_index, error_code);
-    set.insert(value);
   }
 }
 
@@ -412,9 +331,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       // check crc bytes
       uint32_t trailing_crc;
       std::size_t index = bytes.size() - 4;
-      detail::read_bytes<uint32_t>(trailing_crc, bytes,
-                                    index,
-                                    error_code); // last 4 bytes
+      detail::read_bytes<uint32_t>(trailing_crc, bytes, index,
+                                   error_code); // last 4 bytes
 
       auto computed_crc = crc32_fast(bytes.data(), bytes.size() - 4);
 

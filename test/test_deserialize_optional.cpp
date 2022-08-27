@@ -1,5 +1,5 @@
-#include <alpaca/types/optional.h>
 #include <alpaca/alpaca.h>
+#include <alpaca/types/optional.h>
 #include <doctest.hpp>
 using namespace alpaca;
 

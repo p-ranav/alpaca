@@ -1,4 +1,5 @@
 #include <alpaca/alpaca.h>
+#include <alpaca/types/string.h>
 #include <benchmark/benchmark.h>
 #include <cassert>
 #include <chrono>
@@ -244,7 +245,8 @@ static void BM_alpaca_serialize_then_deserialize(benchmark::State &state) {
   }
 }
 
-static void BM_alpaca_serialize_then_deserialize_with_crc32(benchmark::State &state) {
+static void
+BM_alpaca_serialize_then_deserialize_with_crc32(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -270,9 +272,24 @@ static void BM_alpaca_serialize_then_deserialize_with_crc32(benchmark::State &st
 }
 
 BENCHMARK(BM_alpaca_serialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_serialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_deserialize)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
-BENCHMARK(BM_alpaca_deserialize_with_crc32)->Arg(50)->Arg(100)->Arg(1E3)->Arg(1E4)->Arg(1E5);
+BENCHMARK(BM_alpaca_serialize_with_crc32)
+    ->Arg(50)
+    ->Arg(100)
+    ->Arg(1E3)
+    ->Arg(1E4)
+    ->Arg(1E5);
+BENCHMARK(BM_alpaca_deserialize)
+    ->Arg(50)
+    ->Arg(100)
+    ->Arg(1E3)
+    ->Arg(1E4)
+    ->Arg(1E5);
+BENCHMARK(BM_alpaca_deserialize_with_crc32)
+    ->Arg(50)
+    ->Arg(100)
+    ->Arg(1E3)
+    ->Arg(1E4)
+    ->Arg(1E5);
 
 // Run the benchmark
 BENCHMARK_MAIN();

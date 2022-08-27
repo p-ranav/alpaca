@@ -1,4 +1,5 @@
 #include <alpaca/alpaca.h>
+#include <alpaca/types/set.h>
 #include <doctest.hpp>
 #include <set>
 using namespace alpaca;

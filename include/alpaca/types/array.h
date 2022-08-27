@@ -20,6 +20,11 @@ void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes) {
   }
 }
 
+template <typename T, typename U, std::size_t N>
+void append(T &bytes, const std::array<U, N> &input) {
+  to_bytes_from_array_type(input, bytes);
+}
+
 template <typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
@@ -39,6 +44,14 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
     from_bytes_router(v, bytes, current_index, error_code);
     value[i] = v;
   }
+}
+
+template <typename U, std::size_t N>
+bool read_bytes(std::array<U, N> &output, const std::vector<uint8_t> &bytes,
+            std::size_t &byte_index,
+            std::error_code &error_code) {
+    from_bytes_to_array(output, bytes, byte_index, error_code);
+    return true;
 }
 
 }

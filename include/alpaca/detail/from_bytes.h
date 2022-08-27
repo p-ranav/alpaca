@@ -1,8 +1,6 @@
 #pragma once
 #include <alpaca/detail/variable_length_encoding.h>
 #include <cstdint>
-#include <iostream>
-#include <string>
 #include <system_error>
 #include <vector>
 
@@ -10,11 +8,11 @@ namespace alpaca {
 
 namespace detail {
 
+// unpack arithmetic value from bytearray
 template <typename T>
 typename std::enable_if<std::is_arithmetic_v<T>, bool>::type
 read_bytes(T &value, const std::vector<uint8_t> &bytes,
-          std::size_t &current_index,
-          std::error_code &error_code) {
+           std::size_t &current_index, std::error_code &) {
   constexpr auto num_bytes_to_read = sizeof(T);
   if (bytes.size() < num_bytes_to_read) {
     return false;
@@ -24,6 +22,7 @@ read_bytes(T &value, const std::vector<uint8_t> &bytes,
   return true;
 }
 
+// bool
 template <typename T>
 typename std::enable_if<std::is_same_v<T, bool>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
@@ -32,6 +31,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
   return read_bytes<bool>(value, bytes, current_index, error_code);
 }
 
+// char
 template <typename T>
 typename std::enable_if<std::is_same_v<T, char>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
@@ -40,6 +40,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
   return read_bytes<char>(value, bytes, current_index, error_code);
 }
 
+// larger ints - 32bit, 64bit
 template <typename T>
 typename std::enable_if<
     std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
@@ -47,7 +48,7 @@ typename std::enable_if<
         std::is_same_v<T, int64_t>,
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index, std::error_code &error_code) {
+           std::size_t &current_index, std::error_code &) {
   value = decode_varint<T>(bytes, current_index);
   return true;
 }
@@ -77,39 +78,13 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
   return read_bytes<T>(value, bytes, current_index, error_code);
 }
 
+// float and double
 template <typename T>
 typename std::enable_if<std::is_same_v<T, float> || std::is_same_v<T, double>,
                         bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
   return read_bytes<T>(value, bytes, current_index, error_code);
-}
-
-static inline bool from_bytes(std::string &value,
-                              const std::vector<uint8_t> &bytes,
-                              std::size_t &current_index,
-                              std::error_code &error_code) {
-
-  // current byte is the length of the string
-  std::size_t size = decode_varint<std::size_t>(bytes, current_index);
-
-  if (size > bytes.size() - current_index) {
-    // size is greater than the number of bytes remaining
-    error_code = std::make_error_code(std::errc::value_too_large);
-
-    // stop here
-    return false;
-  }
-
-  // read `size` bytes and save to value
-  value.reserve(size);
-  const uint8_t *ptr = bytes.data() + current_index;
-  for (std::size_t i = 0; i < size; ++i) {
-    value += ptr[i];
-  }
-  current_index += size;
-
-  return true;
 }
 
 } // namespace detail
