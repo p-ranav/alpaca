@@ -4,10 +4,19 @@
 
 Pack C++ structs into a compact byte-array without any macros or boilerplate code.
 
+* `alpaca` is header-only serialization library for modern C++, written in C++17
+* No macros or boilerplate, no source code generation, no external dependencies
+* Simple, fast, and easy to use
+  - Call `auto bytes = serialize(s)` to pack a struct
+  - Call `auto obj = deserialize<T>(s, e)` to unpack a struct 
+* Optional data structure versioning - detects erroneous usage, e.g., serialize with `structA` and deserialize with `structB`
+* Optional integrity checking - detects data corruption during deserialization using CRC32 checksums
+* MIT license
+
 ```cpp
 #include <alpaca/alpaca.h>
 
-// Configuration struct
+// Configuration
 struct Camera {
     std::string device;
     std::pair<unsigned, unsigned> resolution;
