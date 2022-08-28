@@ -91,6 +91,7 @@ int main() {
 *    [Specification](#specification)
      *    [Supported Types](#supported-types)
      *    [Variable-length Encoding for Integers](#variable-length-encoding-for-integers)
+     * 	  [Sequence Containers](#sequence-containers)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
 
