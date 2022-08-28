@@ -92,6 +92,7 @@ int main() {
      *    [Supported Types](#supported-types)
      *    [Variable-length Encoding for Integers](#variable-length-encoding-for-integers)
      * 	  [Sequence Containers](#sequence-containers)
+     *    [Associative Containers](#associative-containers)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
 
@@ -610,19 +611,36 @@ For `std::string` and `std::vector<T>`, the general structure is as follows:
   - For vectors, each value in the vector is encoding accordingly to the rules for value_type `T`
 
 ```
-┌────────────┬───────┬───────┬───────┬─────┐
-│ size (VLQ) │ Byte0 │ Byte1 │ Byte2 │ ... │
-└────────────┴───────┴───────┴───────┴─────┘
+┌──────┬────────┬────────┬────────┬────────┬─────┐
+│ size │ value1 │ value2 │ value3 │ value4 │ ... │
+└──────┴────────┴────────┴────────┴────────┴─────┘
 ```
 
 #### Arrays
 
-For `std::array<T, N>`, since the number of elements in the array is known (both at serialization and deserialization time), this information is not stored. So, the byte array simply includes the encoding for value_type `T` for each value in the array. 
+For `std::array<T, N>`, since the (1) number of elements and (2) type of element in the array is known (both at serialization and deserialization time), this information is not stored in the byte array. 
+
+The byte array simply includes the encoding for value_type `T` for each value in the array. 
 
 ```
-┌───────┬───────┬───────┬───────┬───────┬─────┐
-│ Byte0 │ Byte1 │ Byte2 │ Byte3 │ Byte4 │ ... │
-└───────┴───────┴───────┴───────┴───────┴─────┘
+┌────────┬────────┬────────┬────────┬─────┐
+│ value1 │ value2 │ value3 │ value4 │ ... │
+└────────┴────────┴────────┴────────┴─────┘
+```
+
+### Associative Containers
+
+#### Maps
+
+For `std::map<K, V>` and `std::unordered_map<K, V>`, the structure is similar to sequence containers:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, the byte array is `K₁, V₁, K₂, V₂, K₃, V₃, ...` for each key `Kᵢ` and value `Vᵢ` in the map
+
+```
+┌──────┬──────┬────────┬──────┬────────┬──────┬────────┬─────┐
+│ size │ key1 │ value1 │ key2 │ value2 │ key3 │ value3 │ ... │
+└──────┴──────┴────────┴──────┴────────┴──────┴────────┴─────┘
 ```
 
 ## Building, Installing, and Testing
