@@ -596,41 +596,62 @@ make install
 
 ## Performance Benchmark
 
-```console
-pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/alpaca_benchmark --benchmark_counters_tabular=true
-2022-08-26T10:23:13-07:00
-Running ./benchmark/alpaca_benchmark
-Run on (8 X 2592.01 MHz CPU s)
-CPU Caches:
-  L1 Data 32 KiB (x8)
-  L1 Instruction 32 KiB (x8)
-  L2 Unified 256 KiB (x8)
-  L3 Unified 9216 KiB (x8)
-Load Average: 1.52, 0.72, 0.53
-----------------------------------------------------------------------------------------------
-Benchmark                                        Time             CPU   Iterations BytesOutput
-----------------------------------------------------------------------------------------------
-BM_alpaca_serialize/50                       11770 ns        11759 ns        58011      6.913k
-BM_alpaca_serialize/100                      22849 ns        22793 ns        31017     13.527k
-BM_alpaca_serialize/1000                   1099679 ns      1098702 ns          620    136.928k
-BM_alpaca_serialize/10000                  2772087 ns      2766379 ns          249    1.38847M
-BM_alpaca_serialize/100000                28011327 ns     27852874 ns           25    13.9007M
-BM_alpaca_serialize_with_crc32/50            11768 ns        11742 ns        58682      6.913k
-BM_alpaca_serialize_with_crc32/100           22863 ns        22749 ns        30766     13.527k
-BM_alpaca_serialize_with_crc32/1000         246552 ns       245566 ns         2852    136.928k
-BM_alpaca_serialize_with_crc32/10000       2720921 ns      2710601 ns          257    1.38847M
-BM_alpaca_serialize_with_crc32/100000     31508001 ns     31494765 ns           19    13.9007M
-BM_alpaca_deserialize/50                     29448 ns        29360 ns        22941      6.913k
-BM_alpaca_deserialize/100                    69858 ns        69344 ns         9853     13.527k
-BM_alpaca_deserialize/1000                  699213 ns       696371 ns          959    136.928k
-BM_alpaca_deserialize/10000                7489914 ns      7451575 ns           90    1.38847M
-BM_alpaca_deserialize/100000              87228571 ns     86935481 ns            8    13.9007M
-BM_alpaca_deserialize_with_crc32/50          31505 ns        31194 ns        22353      6.917k
-BM_alpaca_deserialize_with_crc32/100         74045 ns        73978 ns         9371     13.531k
-BM_alpaca_deserialize_with_crc32/1000       735344 ns       730520 ns          935    136.932k
-BM_alpaca_deserialize_with_crc32/10000     8032344 ns      8019249 ns           86    1.38847M
-BM_alpaca_deserialize_with_crc32/100000   91589497 ns     91075420 ns            7    13.9007M
+### System Details
 
+### System Details
+
+| Type            | Value                                          |
+| --------------- | ---------------------------------------------- |
+| Processor       | Dual 20-core Intel® Xeon® E5-2698 v4 2.2 GHz   |
+| Installed RAM   | 512 GB 2133 MHz DDR4                           |
+| OS              | Ubuntu 20.04 LTS                               |
+| C++ Compiler    | g++ (Ubuntu 10.3.0-1ubuntu1~20.04) 10.3.0      |
+
+```console
+(base) ➜  build git:(master) ./benchmark/alpaca_benchmark 
+2022-08-28T09:57:29-05:00
+Running ./benchmark/alpaca_benchmark
+Run on (80 X 3600 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x40)
+  L1 Instruction 32 KiB (x40)
+  L2 Unified 256 KiB (x40)
+  L3 Unified 51200 KiB (x2)
+Load Average: 2.43, 0.65, 0.28
+***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
+-----------------------------------------------------------------------------------------------------
+Benchmark                                           Time             CPU   Iterations UserCounters...
+-----------------------------------------------------------------------------------------------------
+BM_alpaca_serialize/50                          12376 ns        12373 ns        56650 BytesOutput=6.913k
+BM_alpaca_serialize/100                         24025 ns        24019 ns        29084 BytesOutput=13.527k
+BM_alpaca_serialize/1000                       350100 ns       349979 ns         1996 BytesOutput=136.928k
+BM_alpaca_serialize/10000                     2587193 ns      2586381 ns          270 BytesOutput=1.38847M
+BM_alpaca_serialize/100000                   28064845 ns     28051903 ns           24 BytesOutput=13.9007M
+BM_alpaca_serialize_with_checksum/50            14406 ns        14402 ns        48652 BytesOutput=6.917k
+BM_alpaca_serialize_with_checksum/100           28110 ns        28104 ns        24894 BytesOutput=13.531k
+BM_alpaca_serialize_with_checksum/1000         295262 ns       295170 ns         2370 BytesOutput=136.932k
+BM_alpaca_serialize_with_checksum/10000       2976304 ns      2975226 ns          236 BytesOutput=1.38847M
+BM_alpaca_serialize_with_checksum/100000     32117934 ns     32105215 ns           21 BytesOutput=13.9007M
+BM_alpaca_serialize_with_version/50             13421 ns        13417 ns        52298 BytesOutput=6.917k
+BM_alpaca_serialize_with_version/100            25145 ns        25137 ns        27952 BytesOutput=13.531k
+BM_alpaca_serialize_with_version/1000          257201 ns       257126 ns         2722 BytesOutput=136.932k
+BM_alpaca_serialize_with_version/10000        2574400 ns      2573510 ns          272 BytesOutput=1.38847M
+BM_alpaca_serialize_with_version/100000      28045113 ns     28029419 ns           25 BytesOutput=13.9007M
+BM_alpaca_deserialize/50                        35324 ns        35312 ns        20117 BytesOutput=6.913k
+BM_alpaca_deserialize/100                       78729 ns        78699 ns         8793 BytesOutput=13.527k
+BM_alpaca_deserialize/1000                     800358 ns       800088 ns          881 BytesOutput=136.928k
+BM_alpaca_deserialize/10000                   8286526 ns      8282856 ns           85 BytesOutput=1.38847M
+BM_alpaca_deserialize/100000                 86462018 ns     86425387 ns            7 BytesOutput=13.9007M
+BM_alpaca_deserialize_with_checksum/50          38158 ns        38146 ns        18416 BytesOutput=6.917k
+BM_alpaca_deserialize_with_checksum/100         83545 ns        83518 ns         8475 BytesOutput=13.531k
+BM_alpaca_deserialize_with_checksum/1000       843035 ns       842749 ns          834 BytesOutput=136.932k
+BM_alpaca_deserialize_with_checksum/10000     8802062 ns      8798439 ns           80 BytesOutput=1.38847M
+BM_alpaca_deserialize_with_checksum/100000   94538768 ns     94504174 ns            6 BytesOutput=13.9007M
+BM_alpaca_deserialize_with_version/50           35260 ns        35251 ns        18844 BytesOutput=6.917k
+BM_alpaca_deserialize_with_version/100          80021 ns        79998 ns         8784 BytesOutput=13.531k
+BM_alpaca_deserialize_with_version/1000        795625 ns       795326 ns          873 BytesOutput=136.932k
+BM_alpaca_deserialize_with_version/10000      8290284 ns      8287512 ns           85 BytesOutput=1.38847M
+BM_alpaca_deserialize_with_version/100000    85959520 ns     85928360 ns            7 BytesOutput=13.9007M
 ```
 
 ## License
