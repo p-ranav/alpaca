@@ -88,7 +88,10 @@ int main() {
      *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
      *    [Data Structure Versioning](#data-structure-versioning)
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
-*    [Supported Types](#supported-types)
+*    [Specification](#specification)
+     *    [Supported Types](#supported-types)
+     *    [uint32_t and uint64_t](#uint32_t-and-uint64_t)
+     *    [int32_t and int64_t](#int32_t-and-int64_t)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
 
@@ -545,23 +548,6 @@ int main() {
 
 ## Specification
 
-### `uint32_t` and `uint64_t`
-
-uint32_t and uint64_t are represented as variable-length quantities (VLQ) with 7-bits for data and 1-bit to represent continuation
-
-<table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td colspan="7">B₀</td><td>A</td><td colspan="7">Bₙ (n &gt; 0)</td></tr></tbody></table>
-
-* If A is 0, then this is the last VLQ octet of the integer. If A is 1, then another VLQ octet follows.
-
-### `int32_t` and `int64_t`
-
-int32_t and int64_t are represented as VLQ, similar to the unsigned version. The only difference is that the first VLQ has the sixth bit reserved to indicate whether the encoded integer is positive or negative. Any consecutive VLQ octet follows the general structure.
-
-<table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td>B</td><td colspan="6">C₀</td><td>A</td><td>B</td><td colspan="6">Cₙ (n &gt; 0)</td></tr></tbody></table>
-
-* If A is 0, then the VLQ represents a positive integer. If A is 1, then the VLQ represents a negative number.
-* If B is 0, then this is the last VLQ octet of the integer. If B is 1, then another VLQ octet follows.
-
 ### Supported Types
 
 ```cpp
@@ -592,6 +578,23 @@ std::unique_ptr<T>
 std::variant<T, U...>
 struct
 ```
+
+### `uint32_t` and `uint64_t`
+
+uint32_t and uint64_t are represented as variable-length quantities (VLQ) with 7-bits for data and 1-bit to represent continuation
+
+<table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td colspan="7">B₀</td><td>A</td><td colspan="7">Bₙ (n &gt; 0)</td></tr></tbody></table>
+
+* If A is 0, then this is the last VLQ octet of the integer. If A is 1, then another VLQ octet follows.
+
+### `int32_t` and `int64_t`
+
+int32_t and int64_t are represented as VLQ, similar to the unsigned version. The only difference is that the first VLQ has the sixth bit reserved to indicate whether the encoded integer is positive or negative. Any consecutive VLQ octet follows the general structure.
+
+<table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td>B</td><td colspan="6">C₀</td><td>A</td><td>B</td><td colspan="6">Cₙ (n &gt; 0)</td></tr></tbody></table>
+
+* If A is 0, then the VLQ represents a positive integer. If A is 1, then the VLQ represents a negative number.
+* If B is 0, then this is the last VLQ octet of the integer. If B is 1, then another VLQ octet follows.
 
 ## Building, Installing, and Testing
 
