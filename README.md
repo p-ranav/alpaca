@@ -456,7 +456,7 @@ int main() {
 // }
 ```
 
-### Optional Data Structure Versioning
+### Data Structure Versioning
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -491,7 +491,7 @@ int main() {
 }
 ```
 
-### Optional Integrity Checking with CRC32 Checksums
+### Integrity Checking with CRC32 Checksums
 
 ```cpp
 #include <alpaca/alpaca.h>
