@@ -8,7 +8,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 * No macros or boilerplate, no source code generation, no external dependencies
 * Simple, fast, and easy to use
   - Call `auto bytes = serialize(s)` to pack a struct
-  - Call `auto obj = deserialize<T>(s, e)` to unpack a struct 
+  - Call `auto s = deserialize<T>(bytes, error_code)` to unpack a struct 
 * Supports basic data types, STL containers, unique pointers, optionals, and variants
 * Optional data structure versioning - recursively generates a type hash that is checked during deserialization
 * Optional integrity checking - detects data corruption during deserialization using checksums
