@@ -1,6 +1,7 @@
 #pragma once
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/from_bytes.h>
+#include <alpaca/detail/type_info.h>
 #include <string>
 #include <system_error>
 #include <vector>
@@ -8,6 +9,13 @@
 namespace alpaca {
 
 namespace detail {
+
+template <typename T, std::size_t N>
+typename std::enable_if<is_specialization<T, std::basic_string>::value, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::string>());
+}
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
