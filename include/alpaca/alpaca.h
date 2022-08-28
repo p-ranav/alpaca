@@ -40,7 +40,8 @@ void type_info_helper(std::vector<uint8_t>& typeids,
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
 
 // for aggregates
-template <typename T, std::size_t N>
+template <typename T, 
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 typename std::enable_if<std::is_aggregate_v<T>, void>::type
 type_info(std::vector<uint8_t>& typeids, 
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
@@ -72,7 +73,7 @@ void type_info_helper(std::vector<uint8_t>& typeids,
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // save type of field in struct
-    type_info<decayed_field_type, N>(typeids, struct_visitor_map);
+    type_info<decayed_field_type>(typeids, struct_visitor_map);
 
     // go to next field
     type_info_helper<T, N, I + 1>(typeids, struct_visitor_map);

@@ -18,6 +18,7 @@ enum class field_type : uint8_t {
     int64,
     float32,
     float64,
+    enum_class,
     string,
     array,
     vector,

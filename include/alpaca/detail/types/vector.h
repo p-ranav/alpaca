@@ -8,13 +8,19 @@ namespace alpaca {
 
 namespace detail {
 
-template <typename T, std::size_t N>
+template <typename T, 
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+typename std::enable_if<std::is_aggregate_v<T>, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
+
+template <typename T>
 typename std::enable_if<is_specialization<T, std::vector>::value, void>::type
 type_info(std::vector<uint8_t>& typeids, 
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
   typeids.push_back(to_byte<field_type::vector>());
   using value_type = typename T::value_type;
-  type_info<value_type, N>(typeids, struct_visitor_map);
+  type_info<value_type>(typeids, struct_visitor_map);
 }
 
 template <typename T>
