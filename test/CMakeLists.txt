@@ -65,6 +65,7 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_deserialize_error_crc32.cpp
 	test_deserialize_error_set.cpp
 	test_deserialize_error_vector.cpp
+	test_deserialize_error_version.cpp
 
 	test_integer_compatibility.cpp
 )

@@ -3,6 +3,7 @@
 #include <alpaca/detail/crc32.h>
 #include <alpaca/detail/endian.h>
 #include <alpaca/detail/from_bytes.h>
+#include <alpaca/detail/is_specialization.h>
 #include <alpaca/detail/options.h>
 #include <alpaca/detail/print_bytes.h>
 #include <alpaca/detail/struct_nth_field.h>
@@ -34,26 +35,9 @@ namespace alpaca {
 
 namespace detail {
 
-template <typename T, std::size_t N>
-typename std::enable_if<std::is_aggregate_v<T>, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
-
 template <typename T, std::size_t N, std::size_t I>
 void type_info_helper(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
-  if constexpr (I < N) {
-    T ref{};
-    decltype(auto) field = detail::get<I, T, N>(ref);
-    using decayed_field_type = typename std::decay<decltype(field)>::type;
-
-    // save type of field in struct
-    type_info<decayed_field_type>(typeids, struct_visitor_map);
-
-    // go to next field
-    type_info_helper<T, N, I + 1>(typeids, struct_visitor_map);
-  }
-}
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
 
 // for aggregates
 template <typename T, std::size_t N>
@@ -76,6 +60,22 @@ type_info(std::vector<uint8_t>& typeids,
   else {
     struct_visitor_map[name] = struct_visitor_map.size() + 1;  
     type_info_helper<T, N, 0>(typeids, struct_visitor_map);
+  }
+}
+
+template <typename T, std::size_t N, std::size_t I>
+void type_info_helper(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  if constexpr (I < N) {
+    T ref{};
+    decltype(auto) field = detail::get<I, T, N>(ref);
+    using decayed_field_type = typename std::decay<decltype(field)>::type;
+
+    // save type of field in struct
+    type_info<decayed_field_type, N>(typeids, struct_visitor_map);
+
+    // go to next field
+    type_info_helper<T, N, I + 1>(typeids, struct_visitor_map);
   }
 }
 

@@ -1,11 +1,21 @@
 #pragma once
 #include <alpaca/detail/to_bytes.h>
+#include <alpaca/detail/type_info.h>
 #include <system_error>
 #include <vector>
 
 namespace alpaca {
 
 namespace detail {
+
+template <typename T, std::size_t N>
+typename std::enable_if<is_specialization<T, std::vector>::value, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::vector>());
+  using value_type = typename T::value_type;
+  type_info<value_type, N>(typeids, struct_visitor_map);
+}
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);

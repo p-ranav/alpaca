@@ -1,5 +1,4 @@
 #pragma once
-#include <alpaca/detail/type_traits.h>
 #include <optional>
 #include <system_error>
 #include <vector>
