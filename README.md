@@ -614,11 +614,10 @@ For `std::string`, the general structure is as follows:
 * Then, the byte array is simply bytes of data
 
 ```
-┌────┬────┬─────┬────┬────┬─────┐
-│ A1 │ A2 │ ... │ B1 │ B2 │ ... │
-└────┴────┴─────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^ ^^^^ ^^^^ ^^^^^
-  string length   c1   c2    c3
+  string length    char array -->
++----+----+-----+  +----+----+-----+
+| A1 | A2 | ... |  | B1 | B2 | ... |
++----+----+-----+  +----+----+-----+
 ```
 
 #### Vectors
@@ -629,11 +628,10 @@ For `std::vector<T>`, the general structure is as follows:
 * Then, each value in the vector is encoding accordingly to the rules for value_type `T`
 
 ```
-┌────┬────┬─────┬────┬────┬─────┬────┬────┬────┬─────┬────┬────┬─────┐────┬────┬─────┐
-│ A1 │ A2 │ ... │ B1 │ B2 │ ... │ C1 │ C2 │ C3 │ ... │ D1 │ D2 │ ... │ E1 │ E2 │ ... │
-└────┴────┴─────┴────┴────┴─────┴────┴────┴────┴─────┴────┴────┴─────┘────┴────┴─────┘
- ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^
-   vector size        value1             value2             value3
+   vector size          value1                value2          value3
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 ```
 
 #### Arrays
@@ -643,11 +641,10 @@ For `std::array<T, N>`, since the (1) number of elements and (2) type of element
 The byte array simply includes the encoding for value_type `T` for each value in the array. 
 
 ```
-┌────┬────┬─────┬────┬────┬─────┬────┬────┬────┬─────┬────┬────┬─────┐
-│ A1 │ A2 │ ... │ B1 │ B2 │ ... │ C1 │ C2 │ C3 │ ... │ D1 │ D2 │ ... │
-└────┴────┴─────┴────┴────┴─────┴────┴────┴────┴─────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^
-   array size        value1             value2             value3
+     value1             value2                value3          value4
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 ```
 
 ### Associative Containers
@@ -660,11 +657,10 @@ For `std::map<K, V>` and `std::unordered_map<K, V>`, the structure is similar to
 * Then, the byte array is `K₁, V₁, K₂, V₂, K₃, V₃, ...` for each key `Kᵢ` and value `Vᵢ` in the map
 
 ```
-┌────┬────┬─────┬────┬────┬─────┬────┬────┬────┬─────┬────┬────┬─────┐
-│ A1 │ A2 │ ... │ B1 │ B2 │ ... │ C1 │ C2 │ C3 │ ... │ D1 │ D2 │ ... │
-└────┴────┴─────┴────┴────┴─────┴────┴────┴────┴─────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^
-      map size         key1             value1              key2
+     map size            key1                  value1         key2
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 ```
 
 #### Sets
@@ -675,11 +671,10 @@ The format is the same as with `std::vector<T>`:
 * Then, for each value in the set, is encoding accordingly to the rules for value_type `T`
 
 ```
-┌────┬────┬─────┬────┬────┬─────┬────┬────┬────┬─────┬────┬────┬─────┐
-│ A1 │ A2 │ ... │ B1 │ B2 │ ... │ C1 │ C2 │ C3 │ ... │ D1 │ D2 │ ... │
-└────┴────┴─────┴────┴────┴─────┴────┴────┴────┴─────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^
-     set size          value1            value2             value3
+     set size            value1              value2           value3
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 ```
 
 ### Tuples and Pairs
@@ -687,21 +682,19 @@ The format is the same as with `std::vector<T>`:
 For `std::tuple<T, U, V, ...>`, alpaca already knows, during serialization/deserialization, the tuple_size and type of each element in the tuple. So only the value at each index is stored:
 
 ```
-┌────┬────┬─────┬────┬────┬─────┬────┬────┬────┬─────┐
-│ A1 │ A2 │ ... │ B1 │ B2 │ ... │ C1 │ C2 │ C3 │ ... │
-└────┴────┴─────┴────┴────┴─────┴────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^
-      value0          value1            value2
+     value1             value2             value3        value4
++----+----+-----+  +----+----+-----+  +----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+-----+  +---
 ```
 
 For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
 
 ```
-┌────┬────┬─────┬────┬────┬─────┐
-│ A1 │ A2 │ ... │ B1 │ B2 │ ... │
-└────┴────┴─────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^
-      first           second 
+      first             second
++----+----+-----+  +----+----+-----+
+| A1 | A2 | ... |  | B1 | B2 | ... |
++----+----+-----+  +----+----+-----+
 ```
 
 ### Unique Pointers
@@ -709,11 +702,10 @@ For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
 For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
 
 ```
-┌─────────────────┬────┬────┬────┬────┬─────┐
-│              A0 │ B0 │ B1 │ B2 │ B3 │ ... │
-└─────────────────┴────┴────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^
-   ptr == null?              value
+ptr is null?       value (optional)         
++----------+  +----+----+----+-----+
+|    A1    |  | B1 | B2 | B3 | ... |
++----------+  +----+----+----+-----+
 ```
 
 ### Variants
@@ -721,11 +713,10 @@ For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is 
 For `std::variant<T, U, ...>`, the leading bytes represent the index of the variant that is used by the value
 
 ```
-┌─────────────────┬────┬────┬────┬────┬─────┐
-│              A0 │ B0 │ B1 │ B2 │ B3 │ ... │
-└─────────────────┴────┴────┴────┴────┴─────┘
- ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^
-   variant_index             value
+variant index       value       
++-----------+  +----+----+-----+
+|    A1     |  | B1 | B2 | ... |
++-----------+  +----+----+-----+
 ```
 
 ## Building, Installing, and Testing
