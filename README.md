@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="80" src="https://user-images.githubusercontent.com/8450091/186522141-41207b40-6bca-4d55-ac22-f2a01dd09a15.png"/>
+  <img height="80" src="https://user-images.githubusercontent.com/8450091/187056150-3198fd9c-e02a-405c-b3c1-edee60caa156.png"/>
 </p>
 
 Pack C++ structs into a compact byte-array without any macros or boilerplate code.
