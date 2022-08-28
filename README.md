@@ -6,7 +6,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 
 * `alpaca` is header-only serialization library for modern C++, written in C++17
 * No macros or boilerplate, no source code generation, no external dependencies
-* Simple, fast (see [benchmarks](#performance-benchmark)), and easy to use
+* Simple, fast, and easy to use
   - Call `auto bytes = serialize(s)` to pack a struct
   - Call `auto obj = deserialize<T>(s, e)` to unpack a struct 
 * Supports basic data types, STL containers, unique pointers, optionals, and variants
@@ -90,7 +90,6 @@ int main() {
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
-*    [Performance Benchmarks](#performance-benchmark)
 *    [License](#license)
 
 ## Examples
@@ -593,65 +592,6 @@ make
 
 # Install 
 make install
-```
-
-## Performance Benchmark
-
-### System Details
-
-### System Details
-
-| Type            | Value                                          |
-| --------------- | ---------------------------------------------- |
-| Processor       | Dual 20-core Intel® Xeon® E5-2698 v4 2.2 GHz   |
-| Installed RAM   | 512 GB 2133 MHz DDR4                           |
-| OS              | Ubuntu 20.04 LTS                               |
-| C++ Compiler    | g++ (Ubuntu 10.3.0-1ubuntu1~20.04) 10.3.0      |
-
-```console
-(base) ➜  build git:(master) ./benchmark/alpaca_benchmark 
-2022-08-28T09:57:29-05:00
-Running ./benchmark/alpaca_benchmark
-Run on (80 X 3600 MHz CPU s)
-CPU Caches:
-  L1 Data 32 KiB (x40)
-  L1 Instruction 32 KiB (x40)
-  L2 Unified 256 KiB (x40)
-  L3 Unified 51200 KiB (x2)
-Load Average: 2.43, 0.65, 0.28
------------------------------------------------------------------------------------------------------
-Benchmark                                           Time             CPU   Iterations UserCounters...
------------------------------------------------------------------------------------------------------
-BM_alpaca_serialize/50                          12376 ns        12373 ns        56650 BytesOutput=6.913k
-BM_alpaca_serialize/100                         24025 ns        24019 ns        29084 BytesOutput=13.527k
-BM_alpaca_serialize/1000                       350100 ns       349979 ns         1996 BytesOutput=136.928k
-BM_alpaca_serialize/10000                     2587193 ns      2586381 ns          270 BytesOutput=1.38847M
-BM_alpaca_serialize/100000                   28064845 ns     28051903 ns           24 BytesOutput=13.9007M
-BM_alpaca_serialize_with_checksum/50            14406 ns        14402 ns        48652 BytesOutput=6.917k
-BM_alpaca_serialize_with_checksum/100           28110 ns        28104 ns        24894 BytesOutput=13.531k
-BM_alpaca_serialize_with_checksum/1000         295262 ns       295170 ns         2370 BytesOutput=136.932k
-BM_alpaca_serialize_with_checksum/10000       2976304 ns      2975226 ns          236 BytesOutput=1.38847M
-BM_alpaca_serialize_with_checksum/100000     32117934 ns     32105215 ns           21 BytesOutput=13.9007M
-BM_alpaca_serialize_with_version/50             13421 ns        13417 ns        52298 BytesOutput=6.917k
-BM_alpaca_serialize_with_version/100            25145 ns        25137 ns        27952 BytesOutput=13.531k
-BM_alpaca_serialize_with_version/1000          257201 ns       257126 ns         2722 BytesOutput=136.932k
-BM_alpaca_serialize_with_version/10000        2574400 ns      2573510 ns          272 BytesOutput=1.38847M
-BM_alpaca_serialize_with_version/100000      28045113 ns     28029419 ns           25 BytesOutput=13.9007M
-BM_alpaca_deserialize/50                        35324 ns        35312 ns        20117 BytesOutput=6.913k
-BM_alpaca_deserialize/100                       78729 ns        78699 ns         8793 BytesOutput=13.527k
-BM_alpaca_deserialize/1000                     800358 ns       800088 ns          881 BytesOutput=136.928k
-BM_alpaca_deserialize/10000                   8286526 ns      8282856 ns           85 BytesOutput=1.38847M
-BM_alpaca_deserialize/100000                 86462018 ns     86425387 ns            7 BytesOutput=13.9007M
-BM_alpaca_deserialize_with_checksum/50          38158 ns        38146 ns        18416 BytesOutput=6.917k
-BM_alpaca_deserialize_with_checksum/100         83545 ns        83518 ns         8475 BytesOutput=13.531k
-BM_alpaca_deserialize_with_checksum/1000       843035 ns       842749 ns          834 BytesOutput=136.932k
-BM_alpaca_deserialize_with_checksum/10000     8802062 ns      8798439 ns           80 BytesOutput=1.38847M
-BM_alpaca_deserialize_with_checksum/100000   94538768 ns     94504174 ns            6 BytesOutput=13.9007M
-BM_alpaca_deserialize_with_version/50           35260 ns        35251 ns        18844 BytesOutput=6.917k
-BM_alpaca_deserialize_with_version/100          80021 ns        79998 ns         8784 BytesOutput=13.531k
-BM_alpaca_deserialize_with_version/1000        795625 ns       795326 ns          873 BytesOutput=136.932k
-BM_alpaca_deserialize_with_version/10000      8290284 ns      8287512 ns           85 BytesOutput=1.38847M
-BM_alpaca_deserialize_with_version/100000    85959520 ns     85928360 ns            7 BytesOutput=13.9007M
 ```
 
 ## License
