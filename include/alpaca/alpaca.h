@@ -20,7 +20,7 @@
 #include <alpaca/detail/types/variant.h>
 #include <alpaca/detail/types/vector.h>
 #include <alpaca/detail/variable_length_encoding.h>
-
+#include <cassert>
 #include <system_error>
 
 namespace alpaca {
