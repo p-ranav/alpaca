@@ -697,12 +697,23 @@ For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
 +----+----+-----+  +----+----+-----+
 ```
 
+### Optional Values
+
+For `std::optional<T>`, a leading byte is used to represent if the optional has value
+
+```
+has_value?    value (if previous byte is 0x01)         
++----------+  +----+----+----+-----+
+|    A1    |  | B1 | B2 | B3 | ... |
++----------+  +----+----+----+-----+
+```
+
 ### Unique Pointers
 
 For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
 
 ```
-ptr is null?       value (optional)         
+ptr != null?  value (if previous byte is 0x01)          
 +----------+  +----+----+----+-----+
 |    A1    |  | B1 | B2 | B3 | ... |
 +----------+  +----+----+----+-----+
