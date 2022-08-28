@@ -42,11 +42,16 @@ void type_info_helper(std::vector<uint8_t>& typeids,
 // for aggregates
 template <typename T, 
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-typename std::enable_if<std::is_aggregate_v<T>, void>::type
+typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, void>::type
 type_info(std::vector<uint8_t>& typeids, 
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
-  typeids.push_back(static_cast<uint8_t>(N));         // todo: could overflow
-  typeids.push_back(static_cast<uint8_t>(sizeof(T))); // todo: could overflow
+  // save number of fields
+  uint16_t num_fields = N;
+  to_bytes(typeids, num_fields);
+
+  // save size of struct
+  uint16_t size = sizeof(T);
+  to_bytes(typeids, size);
 
   // store num fields in struct
   // store size of struct
@@ -187,7 +192,7 @@ namespace detail {
 
 // version for nested struct/class types
 template <typename T>
-typename std::enable_if<std::is_aggregate_v<T>, bool>::type
+typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
            std::error_code &error_code) {
   deserialize_helper<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(),

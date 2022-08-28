@@ -8,17 +8,24 @@ namespace alpaca {
 
 namespace detail {
 
+template <typename T>
+struct is_array_type: std::false_type {};
+
+template <class T, std::size_t N>
+struct is_array_type<std::array<T, N>> : std::true_type {};
+
 template <typename T, 
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-typename std::enable_if<std::is_aggregate_v<T>, void>::type
+typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, void>::type
 type_info(std::vector<uint8_t>& typeids, 
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
 
 template <typename T>
-typename std::enable_if<std::is_array_v<T>, void>::type
+typename std::enable_if<is_array_type<T>::value, void>::type
 type_info(std::vector<uint8_t>& typeids, 
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
   typeids.push_back(to_byte<field_type::array>());
+  typeids.push_back(std::tuple_size_v<T>);
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);
 }

@@ -42,7 +42,6 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_serialize_variant.cpp
 	test_serialize_unique_ptr.cpp
 	test_serialize_with_crc32.cpp
-	test_serialize_with_version.cpp
 
 	test_deserialize_uint.cpp
 	test_deserialize_int.cpp
@@ -68,6 +67,7 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_deserialize_error_version.cpp
 
 	test_integer_compatibility.cpp
+	test_type_info.cpp
 )
 set_source_files_properties(main.cpp
     PROPERTIES
