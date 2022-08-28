@@ -687,11 +687,11 @@ The format is the same as with `std::vector<T>`:
 For `std::tuple<T, U, V, ...>`, alpaca already knows, during serialization/deserialization, the tuple_size and type of each element in the tuple. So only the value at each index is stored:
 
 ```
-┌───────┬───────┬─────┬───────┬───────┬─────┬───────┬───────┬───────┬─────┐
-│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │ byte1 │ byte2 │ byte3 │ ... │
-└───────┴───────┴─────┴───────┴───────┴─────┴───────┴───────┴───────┴─────┘
- ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    std::get<0>(tup)      std::get<1>(tup)             std::get<2>(tup)
+┌────┬────┬─────┬────┬────┬─────┬────┬────┬────┬─────┐
+│ A1 │ A2 │ ... │ B1 │ B2 │ ... │ C1 │ C2 │ C3 │ ... │
+└────┴────┴─────┴────┴────┴─────┴────┴────┴────┴─────┘
+ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^
+      value0          value1            value2
 ```
 
 For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
