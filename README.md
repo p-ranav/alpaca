@@ -709,11 +709,11 @@ For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
 For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
 
 ```
-┌─────────────────┬───────┬───────┬───────┬───────┬─────┐
-│           byte0 │ byte0 │ byte1 │ byte2 │ byte3 │ ... │
-└─────────────────┴───────┴───────┴───────┴───────┴─────┘
- ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   ptr == null?                   value
+┌─────────────────┬────┬────┬────┬────┬─────┐
+│              A0 │ B0 │ B1 │ B2 │ B3 │ ... │
+└─────────────────┴────┴────┴────┴────┴─────┘
+ ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^
+   ptr == null?              value
 ```
 
 ### Variants
@@ -721,11 +721,11 @@ For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is 
 For `std::variant<T, U, ...>`, the leading bytes represent the index of the variant that is used by the value
 
 ```
-┌─────────────────┬───────┬───────┬───────┬───────┬─────┐
-│           byte0 │ byte0 │ byte1 │ byte2 │ byte3 │ ... │
-└─────────────────┴───────┴───────┴───────┴───────┴─────┘
- ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   variant_index                   value
+┌─────────────────┬────┬────┬────┬────┬─────┐
+│              A0 │ B0 │ B1 │ B2 │ B3 │ ... │
+└─────────────────┴────┴────┴────┴────┴─────┘
+ ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^
+   variant_index             value
 ```
 
 ## Building, Installing, and Testing
