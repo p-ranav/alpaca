@@ -17,8 +17,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 ```cpp
 #include <alpaca/alpaca.h>
 
-// Configuration
-struct Camera {
+struct Config {
     std::string device;
     std::pair<unsigned, unsigned> resolution;
     std::array<double, 9> K_matrix;
@@ -50,16 +49,16 @@ struct Camera {
 int main() {
 
     // Construct the object
-    Camera c{"/dev/video0", {640, 480}, 
+    Config c{"/dev/video0", {640, 480}, 
              {223.28249888247538, 0.0, 152.30570853111396,
               0.0, 223.8756535707556, 124.5606000035353,
               0.0, 0.0, 1.0},
              {-0.44158343539568284, 0.23861463831967872, 0.0016338407443826572,
                0.0034950038632981604, -0.05239245892096022},
-             Camera::StaticTransform{{0.467, -0.258, 0.27},
+             Config::StaticTransform{{0.467, -0.258, 0.27},
                                      {0.95, 0.026, 0.083, -0.3}},
-             Camera::PixelFormat::yuyv,
-             Camera::Parameters{
+             Config::PixelFormat::yuyv,
+             Config::Parameters{
 	         {"start_server", bool{true}},
 	         {"max_depth", uint16_t{5}},
 	         {"model_path", std::string{"foo/bar.pt"}}}};
@@ -69,7 +68,7 @@ int main() {
 
     // Deserialize
     std::error_code ec;
-    auto c_recovered = alpaca::deserialize<Camera>(bytes, ec);
+    auto c_recovered = alpaca::deserialize<Config>(bytes, ec);
     if (!ec) {
       // use config
     }
