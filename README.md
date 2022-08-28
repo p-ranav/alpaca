@@ -597,6 +597,33 @@ struct
 * If A is 0, then the VLQ represents a positive integer. If A is 1, then the VLQ represents a negative number.
 * If B is 0, then this is the last VLQ octet of the integer. If B is 1, then another VLQ octet follows.
 
+### Sequence Containers
+
+#### Strings and Vectors
+
+For `std::string` and `std::vector<T>`, the general structure is as follows:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, the byte array is simply bytes of data:
+  - For strings, this is `string_length` bytes of bytes
+  - For vectors, each value in the vector is encoding accordingly to the rules for value_type `T`
+
+```
+┌────────────┬───────┬───────┬───────┬─────┐
+│ size (VLQ) │ Byte0 │ Byte1 │ Byte2 │ ... │
+└────────────┴───────┴───────┴───────┴─────┘
+```
+
+#### Arrays
+
+For `std::array<T, N>`, since the number of elements in the array is known (both at serialization and deserialization time), this information is not stored. So, the byte array simply includes the encoding for value_type `T` for each value in the array. 
+
+```
+┌───────┬───────┬───────┬─────┐
+│ Byte0 │ Byte1 │ Byte2 │ ... │
+└───────┴───────┴───────┴─────┘
+```
+
 ## Building, Installing, and Testing
 
 ```bash
