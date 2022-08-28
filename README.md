@@ -9,8 +9,8 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 * Simple, fast (see benchmarks), and easy to use
   - Call `auto bytes = serialize(s)` to pack a struct
   - Call `auto obj = deserialize<T>(s, e)` to unpack a struct 
-* Optional data structure versioning - detects erroneous usage, e.g., serialize with `structA` and deserialize with `structB`
-* Optional integrity checking - detects data corruption during deserialization using CRC32 checksums
+* Optional data structure versioning - recursively generates a type hash that is checked during deserialization
+* Optional integrity checking - detects data corruption during deserialization using checksums
 * MIT license
 
 ```cpp
@@ -86,7 +86,7 @@ int main() {
      *    [Type-safe Unions - Variant Types](#type-safe-unions---variant-types)
      *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
      *    [Data Structure Versioning](#data-structure-versioning)
-     *    [Integrity Checking with CRC32 Checksums](#integrity-checking-with-crc32-checksums)
+     *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
@@ -502,7 +502,7 @@ int main() {
 }
 ```
 
-### Optional Integrity Checking with CRC32 Checksums
+### Optional Integrity Checking with Checksums
 
 ```cpp
 #include <alpaca/alpaca.h>
