@@ -121,7 +121,7 @@ int main() {
 // }
 ```
 
-### Sequence containers: arrays, vectors, and strings
+### Arrays, Vectors, and Strings
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -163,7 +163,7 @@ int main() {
 // }
 ```
 
-### Associative containers: map and set
+### Maps and Sets
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -209,7 +209,7 @@ int main() {
 // }
 ```
 
-### Nested structures
+### Nested Structures
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -271,7 +271,7 @@ int main() {
 // }
 ```
 
-### Optional values: `std::optional<T>`
+### Optional Values
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -315,7 +315,7 @@ int main() {
 // }
 ```
 
-### Type-safe unions: `std::variant<...>`
+### Type-safe Unions - Variant Types
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -374,7 +374,7 @@ int main() {
 // }
 ```
 
-### Smart Pointers: `std::unique_ptr<T>`
+### Smart Pointers and Recursive Data Structures
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -456,7 +456,7 @@ int main() {
 // }
 ```
 
-### Checking Version
+### Optional Data Structure Versioning
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -491,7 +491,7 @@ int main() {
 }
 ```
 
-### Appending Checksum
+### Optional Integrity Checking with CRC32 Checksums
 
 ```cpp
 #include <alpaca/alpaca.h>
