@@ -618,7 +618,6 @@ CPU Caches:
   L2 Unified 256 KiB (x40)
   L3 Unified 51200 KiB (x2)
 Load Average: 2.43, 0.65, 0.28
-***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
 -----------------------------------------------------------------------------------------------------
 Benchmark                                           Time             CPU   Iterations UserCounters...
 -----------------------------------------------------------------------------------------------------
