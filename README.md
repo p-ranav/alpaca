@@ -90,8 +90,7 @@ int main() {
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
 *    [Specification](#specification)
      *    [Supported Types](#supported-types)
-     *    [uint32_t and uint64_t](#uint32_t-and-uint64_t)
-     *    [int32_t and int64_t](#int32_t-and-int64_t)
+     *    [Variable-length Encoding for Integers](#variable-length-encoding-for-integers)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
 
