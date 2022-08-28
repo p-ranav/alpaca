@@ -37,6 +37,11 @@ struct Camera {
 
     enum class PixelFormat { yuyv, bayer10 };
     PixelFormat pixel_format;
+
+    using Parameters = std::map<std::string, 
+				                        std::variant<uint16_t, std::string, 
+					                                   bool, std::vector<std::string>>>;
+    Parameters parameters;
 };
 
 int main() {
@@ -50,7 +55,11 @@ int main() {
                0.0034950038632981604, -0.05239245892096022},
              Camera::StaticTransform{{0.467, -0.258, 0.27},
                                      {0.95, 0.026, 0.083, -0.3}},
-             Camera::PixelFormat::yuyv};
+             Camera::PixelFormat::yuyv,
+             Camera::Parameters{
+		             {"start_server", bool{true}},
+	               {"max_depth", uint16_t{5}},
+	               {"model_path", std::string{"foo/bar.pt"}}}};
 
     // Serialize
     auto bytes = alpaca::serialize(c);
