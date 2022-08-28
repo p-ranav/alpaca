@@ -93,6 +93,9 @@ int main() {
      *    [Variable-length Encoding for Integers](#variable-length-encoding-for-integers)
      * 	  [Sequence Containers](#sequence-containers)
      *    [Associative Containers](#associative-containers)
+     *    [Tuples and Pairs](#tuples-and-pairs)
+     *    [Unique Pointers](#unique-pointers)
+     *    [Variants](#variants)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
 
@@ -601,19 +604,34 @@ struct
 
 ### Sequence Containers
 
-#### Strings and Vectors
+#### Strings
 
-For `std::string` and `std::vector<T>`, the general structure is as follows:
+For `std::string`, the general structure is as follows:
 
 * The first N bytes is a VLQ encoding of the size of the container
-* Then, the byte array is simply bytes of data:
-  - For strings, this is `string_length` bytes of bytes
-  - For vectors, each value in the vector is encoding accordingly to the rules for value_type `T`
+* Then, the byte array is simply bytes of data
 
 ```
-┌──────┬────────┬────────┬────────┬────────┬─────┐
-│ size │ value1 │ value2 │ value3 │ value4 │ ... │
-└──────┴────────┴────────┴────────┴────────┴─────┘
+┌───────┬───────┬─────┬───────┬───────┬─────┐
+│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │
+└───────┴───────┴─────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^ ^^^^^^^ ^^^^^^
+      string length      c1      c2      c3
+```
+
+#### Vectors
+
+For `std::vector<T>`, the general structure is as follows:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, each value in the vector is encoding accordingly to the rules for value_type `T`
+
+```
+┌───────┬───────┬─────┬───────┬───────┬─────┬───────┬───────┬───────┬─────┬───────┬───────┬─────┐
+│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │ byte1 │ byte2 │ byte3 │ ... │ byte1 │ byte2 │ ... │
+└───────┴───────┴─────┴───────┴───────┴─────┴───────┴───────┴───────┴─────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^ ^^^^^^^^^^^^^^
+       vector size              value1                    value2            value3      value4
 ```
 
 #### Arrays
@@ -623,9 +641,11 @@ For `std::array<T, N>`, since the (1) number of elements and (2) type of element
 The byte array simply includes the encoding for value_type `T` for each value in the array. 
 
 ```
-┌────────┬────────┬────────┬────────┬─────┐
-│ value1 │ value2 │ value3 │ value4 │ ... │
-└────────┴────────┴────────┴────────┴─────┘
+┌───────┬───────┬─────┬───────┬───────┬─────┬───────┬───────┬───────┬─────┬───────┬───────┬─────┐
+│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │ byte1 │ byte2 │ byte3 │ ... │ byte1 │ byte2 │ ... │
+└───────┴───────┴─────┴───────┴───────┴─────┴───────┴───────┴───────┴─────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^ ^^^^^^^^^^^^^^
+       array size              value1                    value2             value3      value4
 ```
 
 ### Associative Containers
@@ -638,9 +658,72 @@ For `std::map<K, V>` and `std::unordered_map<K, V>`, the structure is similar to
 * Then, the byte array is `K₁, V₁, K₂, V₂, K₃, V₃, ...` for each key `Kᵢ` and value `Vᵢ` in the map
 
 ```
-┌──────┬──────┬────────┬──────┬────────┬──────┬────────┬─────┐
-│ size │ key1 │ value1 │ key2 │ value2 │ key3 │ value3 │ ... │
-└──────┴──────┴────────┴──────┴────────┴──────┴────────┴─────┘
+┌───────┬───────┬─────┬───────┬───────┬─────┬───────┬───────┬───────┬─────┬───────┬───────┬─────┐
+│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │ byte1 │ byte2 │ byte3 │ ... │ byte1 │ byte2 │ ... │
+└───────┴───────┴─────┴───────┴───────┴─────┴───────┴───────┴───────┴─────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^
+     container size          key1                       value1                       key2
+```
+
+#### Sets
+
+The format is the same as with `std::vector<T>`:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, for each value in the set, is encoding accordingly to the rules for value_type `T`
+
+```
+┌───────┬───────┬─────┬───────┬───────┬─────┬───────┬───────┬───────┬─────┬───────┬───────┬─────┐
+│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │ byte1 │ byte2 │ byte3 │ ... │ byte1 │ byte2 │ ... │
+└───────┴───────┴─────┴───────┴───────┴─────┴───────┴───────┴───────┴─────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^
+       set size              value1                     value2                     value3
+```
+
+### Tuples and Pairs
+
+For `std::tuple<T, U, V, ...>`, alpaca already knows, during serialization/deserialization, the tuple_size and type of each element in the tuple. So only the value at each index is stored:
+
+```
+┌───────┬───────┬─────┬───────┬───────┬─────┬───────┬───────┬───────┬─────┐
+│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │ byte1 │ byte2 │ byte3 │ ... │
+└───────┴───────┴─────┴───────┴───────┴─────┴───────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    std::get<0>(tup)      std::get<1>(tup)             std::get<2>(tup)
+```
+
+For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
+
+```
+┌───────┬───────┬─────┬───────┬───────┬─────┐
+│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │
+└───────┴───────┴─────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^
+      pair.first             pair.second 
+```
+
+### Unique Pointers
+
+For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
+
+```
+┌─────────────────┬───────┬───────┬───────┬───────┬─────┐
+│           byte0 │ byte0 │ byte1 │ byte2 │ byte3 │ ... │
+└─────────────────┴───────┴───────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ptr == null?                   value
+```
+
+### Variants
+
+For `std::variant<T, U, ...>`, the leading bytes represent the index of the variant that is used by the value
+
+```
+┌─────────────────┬───────┬───────┬───────┬───────┬─────┐
+│           byte0 │ byte0 │ byte1 │ byte2 │ byte3 │ ... │
+└─────────────────┴───────┴───────┴───────┴───────┴─────┘
+ ^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   variant_index                   value
 ```
 
 ## Building, Installing, and Testing
