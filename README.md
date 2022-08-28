@@ -543,7 +543,19 @@ int main() {
 // source: https://crccalc.com/
 ```
 
-## Supported Types
+## Specification
+
+### Integer Types
+
+* `uint32_t` and `uint64_t`
+
+`alpaca` represents `uint32_t` and `uint64_t` as variable-length quantities (VLQ).
+
+<table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td colspan="7">B₀</td><td>A</td><td colspan="7">Bₙ (n &gt; 0)</td></tr></tbody></table>
+
+* If A is 0, then this is the last VLQ octet of the integer. If A is 1, then another VLQ octet follows.
+
+### Supported Types
 
 ```cpp
 uint8_t
