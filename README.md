@@ -579,11 +579,9 @@ std::variant<T, U...>
 struct
 ```
 
-### Small integers
+### Variable-length Encoding for Integers
 
-`uint8_t`, `uint16_t`, `int8_t`, and `int16_t` are represented as-is, either taking up 1 or 2 bytes of space.
-
-### `uint32_t` and `uint64_t`
+#### Unsigned integers
 
 uint32_t and uint64_t are represented as variable-length quantities (VLQ) with 7-bits for data and 1-bit to represent continuation
 
@@ -591,7 +589,7 @@ uint32_t and uint64_t are represented as variable-length quantities (VLQ) with 7
 
 * If A is 0, then this is the last VLQ octet of the integer. If A is 1, then another VLQ octet follows.
 
-### `int32_t` and `int64_t`
+#### Signed integers
 
 int32_t and int64_t are represented as VLQ, similar to the unsigned version. The only difference is that the first VLQ has the sixth bit reserved to indicate whether the encoded integer is positive or negative. Any consecutive VLQ octet follows the general structure.
 
