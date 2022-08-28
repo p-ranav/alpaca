@@ -620,9 +620,9 @@ For `std::string` and `std::vector<T>`, the general structure is as follows:
 For `std::array<T, N>`, since the number of elements in the array is known (both at serialization and deserialization time), this information is not stored. So, the byte array simply includes the encoding for value_type `T` for each value in the array. 
 
 ```
-┌───────┬───────┬───────┬─────┐
-│ Byte0 │ Byte1 │ Byte2 │ ... │
-└───────┴───────┴───────┴─────┘
+┌───────┬───────┬───────┬───────┬───────┬─────┐
+│ Byte0 │ Byte1 │ Byte2 │ Byte3 │ Byte4 │ ... │
+└───────┴───────┴───────┴───────┴───────┴─────┘
 ```
 
 ## Building, Installing, and Testing
