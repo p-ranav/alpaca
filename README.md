@@ -68,14 +68,14 @@ int main() {
 
 *    [Examples](#examples)
      *    [Fundamental types](#fundamental-types)
-     *    [Sequence containers: arrays, vectors, strings](#sequence-containers-arrays-vectors-and-strings)
-     *    [Associative containers: maps, sets](#associative-containers-map-and-set)
-     *    [Nested structures: structs](#nested-structures)
-     *    [Optional values](#optional-values-stdoptionalt)
-     *    [Type-safe unions: variant](#type-safe-unions-stdvariant)
-     *    [Smart Pointers: unique_ptr](#smart-pointers-stdunique_ptrt)
-     *    [Checking Version](#checking-version)
-     *    [Appending Checksum](#appending-checksum)
+     *    [Arrays, Vectors, and Strings](#arrays-vectors-and-strings)
+     *    [Maps and Sets](#maps-and-sets)
+     *    [Nested Structures](#nested-structures)
+     *    [Optional Values](#optional-values)
+     *    [Type-safe Unions - Variant Types](#type-safe-unions---variant-types)
+     *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
+     *    [Data Structure Versioning](#data-structure-versioning)
+     *    [Integrity Checking with CRC32 Checksums](#integrity-checking-with-crc32-checksums)
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
@@ -456,7 +456,7 @@ int main() {
 // }
 ```
 
-### Data Structure Versioning
+### Optional Data Structure Versioning
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -491,7 +491,7 @@ int main() {
 }
 ```
 
-### Integrity Checking with CRC32 Checksums
+### Optional Integrity Checking with CRC32 Checksums
 
 ```cpp
 #include <alpaca/alpaca.h>
