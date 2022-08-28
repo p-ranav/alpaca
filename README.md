@@ -66,7 +66,6 @@ int main() {
 
 ## Table of Contents
 
-*    [Highlights](#highlights)
 *    [Examples](#examples)
      *    [Fundamental types](#fundamental-types)
      *    [Sequence containers: arrays, vectors, strings](#sequence-containers-arrays-vectors-and-strings)
@@ -80,13 +79,6 @@ int main() {
 *    [Supported Types](#supported-types)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
-
-## Highlights
-
-* Header-only library
-* No external dependencies
-* Requires `C++17`
-* MIT License
 
 ## Examples
 
