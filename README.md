@@ -697,11 +697,11 @@ For `std::tuple<T, U, V, ...>`, alpaca already knows, during serialization/deser
 For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
 
 ```
-┌───────┬───────┬─────┬───────┬───────┬─────┐
-│ byte1 │ byte2 │ ... │ byte1 │ byte2 │ ... │
-└───────┴───────┴─────┴───────┴───────┴─────┘
- ^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^
-      pair.first             pair.second 
+┌────┬────┬─────┬────┬────┬─────┐
+│ A1 │ A2 │ ... │ B1 │ B2 │ ... │
+└────┴────┴─────┴────┴────┴─────┘
+ ^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^
+      first           second 
 ```
 
 ### Unique Pointers
