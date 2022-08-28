@@ -469,7 +469,7 @@ int main() {
 // }
 ```
 
-### Optional Data Structure Versioning
+### Data Structure Versioning
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -504,7 +504,7 @@ int main() {
 }
 ```
 
-### Optional Integrity Checking with Checksums
+### Integrity Checking with Checksums
 
 ```cpp
 #include <alpaca/alpaca.h>
