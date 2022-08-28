@@ -1,5 +1,6 @@
 #pragma once
 #include <alpaca/detail/to_bytes.h>
+#include <alpaca/detail/type_info.h>
 #include <set>
 #include <system_error>
 #include <unordered_set>
@@ -8,6 +9,30 @@
 namespace alpaca {
 
 namespace detail {
+
+template <typename T, 
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+typename std::enable_if<std::is_aggregate_v<T>, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
+
+template <typename T>
+typename std::enable_if<is_specialization<T, std::set>::value, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::set>());
+  using value_type = typename T::value_type;
+  type_info<value_type>(typeids, struct_visitor_map);
+}
+
+template <typename T>
+typename std::enable_if<is_specialization<T, std::unordered_set>::value, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::unordered_set>());
+  using value_type = typename T::value_type;
+  type_info<value_type>(typeids, struct_visitor_map);
+}
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);

@@ -1,4 +1,5 @@
 #pragma once
+#include <alpaca/detail/type_info.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <map>
 #include <system_error>
@@ -8,6 +9,34 @@
 namespace alpaca {
 
 namespace detail {
+
+template <typename T, 
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+typename std::enable_if<std::is_aggregate_v<T>, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
+
+template <typename T>
+typename std::enable_if<is_specialization<T, std::map>::value, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::map>());
+  using key_type = typename T::key_type;
+  type_info<key_type>(typeids, struct_visitor_map);
+  using mapped_type = typename T::mapped_type;
+  type_info<mapped_type>(typeids, struct_visitor_map);
+}
+
+template <typename T>
+typename std::enable_if<is_specialization<T, std::unordered_map>::value, void>::type
+type_info(std::vector<uint8_t>& typeids, 
+  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::unordered_map>());
+  using key_type = typename T::key_type;
+  type_info<key_type>(typeids, struct_visitor_map);
+  using mapped_type = typename T::mapped_type;
+  type_info<mapped_type>(typeids, struct_visitor_map);
+}
 
 template <typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);

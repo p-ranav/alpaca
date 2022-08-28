@@ -13,7 +13,7 @@ namespace detail {
 template <typename T>
 typename std::enable_if<is_specialization<T, std::basic_string>::value, void>::type
 type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+  std::unordered_map<std::string_view, std::size_t>&) {
   typeids.push_back(to_byte<field_type::string>());
 }
 
