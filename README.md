@@ -60,9 +60,9 @@ int main() {
                                      {0.95, 0.026, 0.083, -0.3}},
              Camera::PixelFormat::yuyv,
              Camera::Parameters{
-		             {"start_server", bool{true}},
-	               {"max_depth", uint16_t{5}},
-	               {"model_path", std::string{"foo/bar.pt"}}}};
+	         {"start_server", bool{true}},
+	         {"max_depth", uint16_t{5}},
+	         {"model_path", std::string{"foo/bar.pt"}}}};
 
     // Serialize
     auto bytes = alpaca::serialize(c);
