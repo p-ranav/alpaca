@@ -39,8 +39,10 @@ struct Camera {
     PixelFormat pixel_format;
 
     using Parameters = std::map<std::string, 
-				                        std::variant<uint16_t, std::string, 
-					                                   bool, std::vector<std::string>>>;
+				std::variant<uint16_t, 
+				             std::string, 
+					     bool, 
+					     std::vector<std::string>>>;
     Parameters parameters;
 };
 
