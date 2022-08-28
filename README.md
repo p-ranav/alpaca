@@ -579,6 +579,10 @@ std::variant<T, U...>
 struct
 ```
 
+### Small integers
+
+`uint8_t`, `uint16_t`, `int8_t`, and `int16_t` are represented as-is, either taking up 1 or 2 bytes of space.
+
 ### `uint32_t` and `uint64_t`
 
 uint32_t and uint64_t are represented as variable-length quantities (VLQ) with 7-bits for data and 1-bit to represent continuation
