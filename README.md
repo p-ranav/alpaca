@@ -38,7 +38,8 @@ struct Config {
     enum class PixelFormat { yuyv, bayer10 };
     PixelFormat pixel_format;
 
-    using Parameters = std::map<std::string, std::variant<uint16_t, std::string, bool, std::vector<std::string>>>;
+    using Parameters = std::map<std::string, 
+				std::variant<uint16_t, std::string, bool, std::vector<std::string>>>;
     Parameters parameters;
 };
 
