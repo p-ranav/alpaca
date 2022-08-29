@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __ALPACA_LITTLE_ENDIAN
 #define __ALPACA_LITTLE_ENDIAN 1234
 #endif

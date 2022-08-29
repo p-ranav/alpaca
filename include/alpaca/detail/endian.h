@@ -1,4 +1,5 @@
 #pragma once
+#include <alpaca/detail/crc32.h>
 
 namespace alpaca {
 
@@ -85,6 +86,53 @@ static inline
 void BLI_endian_switch_double(double *val)
 {
   BLI_endian_switch_uint64((uint64_t *)val);
+}
+
+enum class byte_order {
+    little_endian,
+    big_endian
+};
+
+template <typename T, byte_order O>
+constexpr auto byte_swap(const T& value) {
+    T result = value;
+
+    if constexpr (O == byte_order::little_endian && __BYTE_ORDER == __ALPACA_LITTLE_ENDIAN) {
+        // do nothing
+    }
+    else if constexpr (O == byte_order::big_endian && __BYTE_ORDER == __ALPACA_BIG_ENDIAN) {
+        // do nothing
+    }
+    else if constexpr ((O == byte_order::little_endian && __BYTE_ORDER == __ALPACA_BIG_ENDIAN) ||
+                       (O == byte_order::big_endian && __BYTE_ORDER == __ALPACA_LITTLE_ENDIAN)) {
+        // byte swap to match requested order
+        if constexpr (std::is_same_v<T, uint16_t>) {
+            BLI_endian_switch_uint16(&result);
+        }
+        else if constexpr (std::is_same_v<T, uint32_t>) {
+            BLI_endian_switch_uint32(&result);
+        }
+        else if constexpr (std::is_same_v<T, uint64_t>) {
+            BLI_endian_switch_uint64(&result);
+        }
+        else if constexpr (std::is_same_v<T, int16_t>) {
+            BLI_endian_switch_int16(&result);
+        }
+        else if constexpr (std::is_same_v<T, int32_t>) {
+            BLI_endian_switch_int32(&result);
+        }
+        else if constexpr (std::is_same_v<T, int64_t>) {
+            BLI_endian_switch_int64(&result);
+        }
+        else if constexpr (std::is_same_v<T, float>) {
+            BLI_endian_switch_int32(&result);
+        }
+        else if constexpr (std::is_same_v<T, double>) {
+            BLI_endian_switch_int64(&result);
+        }
+    }
+
+    return result;
 }
 
 } // namespace detail
