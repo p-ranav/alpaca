@@ -10,12 +10,6 @@ namespace alpaca {
 
 namespace detail {
 
-template <typename T, 
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
-
 template <typename T, std::size_t N, std::size_t I>
 void type_info_variant_helper(std::vector<uint8_t>& typeids, 
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
