@@ -57,7 +57,7 @@ bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
 
   // read bytes as value_type = variant@index
   detail::set_variant_value<O, std::variant<T...>>(output, index, bytes,
-                                                byte_index, error_code);
+                                                   byte_index, error_code);
 
   return true;
 }

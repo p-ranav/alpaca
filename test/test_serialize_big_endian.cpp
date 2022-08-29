@@ -46,7 +46,8 @@ TEST_CASE("Serialize uint16_t big endian" * test_suite("signed_integer")) {
   }
 }
 
-TEST_CASE("Serialize positive int8_t big endian" * test_suite("signed_integer")) {
+TEST_CASE("Serialize positive int8_t big endian" *
+          test_suite("signed_integer")) {
   struct my_struct {
     int8_t value;
   };
@@ -62,7 +63,8 @@ TEST_CASE("Serialize positive int8_t big endian" * test_suite("signed_integer"))
   }
 }
 
-TEST_CASE("Serialize positive int16_t big endian" * test_suite("signed_integer")) {
+TEST_CASE("Serialize positive int16_t big endian" *
+          test_suite("signed_integer")) {
   struct my_struct {
     int16_t value;
   };
@@ -98,7 +100,8 @@ TEST_CASE("Serialize uint32_t big endian" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{654321};
-    bytes = serialize<my_struct, options::big_endian | options::fixed_length_encoding>(s);
+    bytes = serialize<my_struct,
+                      options::big_endian | options::fixed_length_encoding>(s);
     REQUIRE(bytes.size() == 4);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
     REQUIRE(bytes[1] == static_cast<uint8_t>(0x09));

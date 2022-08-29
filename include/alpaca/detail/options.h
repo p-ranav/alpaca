@@ -3,12 +3,12 @@
 
 namespace alpaca {
 
-enum class options { 
-  none                  = 0, 
-  big_endian            = 1,
+enum class options {
+  none = 0,
+  big_endian = 1,
   fixed_length_encoding = 2,
-  with_version          = 4, 
-  with_checksum         = 8
+  with_version = 4,
+  with_checksum = 8
 };
 
 template <typename E> struct enable_bitmask_operators {

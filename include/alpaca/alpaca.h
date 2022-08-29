@@ -108,8 +108,8 @@ namespace detail {
 template <options O, typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type
 to_bytes(T &bytes, const U &input) {
-  serialize_helper<O, U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
-      input, bytes);
+  serialize_helper<O, U, detail::aggregate_arity<std::remove_cv_t<U>>::size(),
+                   0>(input, bytes);
 }
 
 template <options O, typename T, typename U>
@@ -126,8 +126,7 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <options O,
-          typename T,
+template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
 void serialize_helper(const T &s, std::vector<uint8_t> &bytes) {
@@ -224,7 +223,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
     using underlying_type = typename std::underlying_type<T>::type;
     underlying_type underlying_value{};
     from_bytes_router<O, underlying_type>(underlying_value, bytes, byte_index,
-                                       error_code);
+                                          error_code);
     output = static_cast<T>(underlying_value);
   } else {
     detail::from_bytes<O>(output, bytes, byte_index, error_code);
@@ -235,8 +234,7 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <options O,
-          typename T,
+template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
 void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
@@ -247,7 +245,7 @@ void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
 
     // load current field
     detail::from_bytes_router<O, decayed_field_type>(field, bytes, byte_index,
-                                                  error_code);
+                                                     error_code);
 
     if (error_code) {
       // stop here
@@ -333,7 +331,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
         const std::vector<uint8_t> bytes_without_crc(bytes.begin(),
                                                      bytes.begin() + index);
         deserialize_helper<O, T, N, 0>(s, bytes_without_crc, byte_index,
-                                    error_code);
+                                       error_code);
       } else {
         // message is bad
         error_code = std::make_error_code(std::errc::bad_message);

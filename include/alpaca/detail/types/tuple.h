@@ -65,7 +65,8 @@ void load_tuple_value(T &tuple, const std::vector<uint8_t> &bytes,
                       std::size_t &current_index, std::error_code &error_code) {
   constexpr auto max_index = std::tuple_size<T>::value;
   if constexpr (index < max_index) {
-    from_bytes_router<O>(std::get<index>(tuple), bytes, current_index, error_code);
+    from_bytes_router<O>(std::get<index>(tuple), bytes, current_index,
+                         error_code);
     load_tuple_value<O, T, index + 1>(tuple, bytes, current_index, error_code);
   }
 }

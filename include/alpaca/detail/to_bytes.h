@@ -15,7 +15,7 @@ void to_bytes_crc32(std::vector<uint8_t> &bytes,
 
   // if system is little endian
   // but big_endian is requested
-  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
+  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN &&
                 enum_has_flag<options, O, options::big_endian>()) {
     value = byte_swap<uint32_t, byte_order::big_endian>(value);
   }
@@ -40,7 +40,7 @@ to_bytes(T &bytes, const U &original_value) {
 
   // if system is little endian
   // but big_endian is requested
-  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
+  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN &&
                 enum_has_flag<options, O, options::big_endian>()) {
     value = byte_swap<U, byte_order::big_endian>(value);
   }
@@ -64,19 +64,19 @@ to_bytes(T &bytes, const U &original_value) {
 
   // if system is little endian
   // but big_endian is requested
-  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
+  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN &&
                 enum_has_flag<options, O, options::big_endian>()) {
     value = byte_swap<U, byte_order::big_endian>(value);
   }
 
-  // If fixed-length encoding is requested, dont encode as variable-length quantity
+  // If fixed-length encoding is requested, dont encode as variable-length
+  // quantity
   if constexpr (enum_has_flag<options, O, options::fixed_length_encoding>()) {
     std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
               static_cast<const char *>(static_cast<const void *>(&value)) +
-                 sizeof value,
+                  sizeof value,
               std::back_inserter(bytes));
-  }
-  else {
+  } else {
     encode_varint<U>(value, bytes);
   }
 }

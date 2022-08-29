@@ -1,8 +1,8 @@
 #pragma once
+#include <alpaca/detail/options.h>
 #include <cstdint>
 #include <variant>
 #include <vector>
-#include <alpaca/detail/options.h>
 
 namespace alpaca {
 
@@ -12,7 +12,8 @@ template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
-template <options O, typename type, std::size_t variant_size = std::variant_size_v<type>>
+template <options O, typename type,
+          std::size_t variant_size = std::variant_size_v<type>>
 constexpr void set_variant_value(type &variant, std::size_t index,
                                  const std::vector<uint8_t> &bytes,
                                  std::size_t &byte_index,
