@@ -88,23 +88,21 @@ TEST_CASE("Serialize positive int16_t big endian" * test_suite("signed_integer")
   }
 }
 
-/// TODO: Enable test once fixed-length encoding is an option
-//
-// TEST_CASE("Serialize uint32_t big endian" * test_suite("signed_integer")) {
-//   struct my_struct {
-//     uint32_t value;
-//   };
+TEST_CASE("Serialize uint32_t big endian" * test_suite("signed_integer")) {
+  struct my_struct {
+    uint32_t value;
+  };
 
-//   std::vector<uint8_t> bytes;
+  std::vector<uint8_t> bytes;
 
-//   // serialize
-//   {
-//     my_struct s{654321};
-//     bytes = serialize<my_struct, options::big_endian>(s);
-//     detail::print_bytes(bytes);
-//     REQUIRE(bytes.size() == 3);
-//     REQUIRE(bytes[0] == static_cast<uint8_t>(0x09));
-//     REQUIRE(bytes[1] == static_cast<uint8_t>(0xFB));
-//     REQUIRE(bytes[2] == static_cast<uint8_t>(0xF1));
-//   }
-// }
+  // serialize
+  {
+    my_struct s{654321};
+    bytes = serialize<my_struct, options::big_endian | options::fixed_length_encoding>(s);
+    REQUIRE(bytes.size() == 4);
+    REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
+    REQUIRE(bytes[1] == static_cast<uint8_t>(0x09));
+    REQUIRE(bytes[2] == static_cast<uint8_t>(0xFB));
+    REQUIRE(bytes[3] == static_cast<uint8_t>(0xF1));
+  }
+}

@@ -58,7 +58,16 @@ to_bytes(T &bytes, const U &original_value) {
     value = byte_swap<U, byte_order::big_endian>(value);
   }
 
-  encode_varint<U>(value, bytes);
+  // If fixed-length encoding is requested, dont encode as variable-length quantity
+  if constexpr (enum_has_flag<options, O, options::fixed_length_encoding>()) {
+    std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
+              static_cast<const char *>(static_cast<const void *>(&value)) +
+                 sizeof value,
+              std::back_inserter(bytes));
+  }
+  else {
+    encode_varint<U>(value, bytes);
+  }
 }
 
 // enum class
