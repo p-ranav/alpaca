@@ -116,7 +116,7 @@ template <typename T, byte_order O> constexpr auto byte_swap(const T &value) {
 }
 
 template <options O, typename T>
-void update_value_based_on_alpaca_endian_rules(T& value) {
+void update_value_based_on_alpaca_endian_rules(T &value) {
   // if system is big endian
   // but big endian was not requested in options
   // default to little endian
@@ -127,7 +127,7 @@ void update_value_based_on_alpaca_endian_rules(T& value) {
   // if system is little endian
   // but big_endian is requested
   else if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN &&
-                enum_has_flag<options, O, options::big_endian>()) {
+                     enum_has_flag<options, O, options::big_endian>()) {
     value = byte_swap<T, byte_order::big_endian>(value);
   }
 }

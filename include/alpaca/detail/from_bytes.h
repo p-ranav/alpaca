@@ -3,6 +3,7 @@
 #include <alpaca/detail/options.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <cstdint>
+#include <iostream>
 #include <system_error>
 #include <vector>
 
@@ -73,9 +74,10 @@ typename std::enable_if<
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &) {
 
-  // If fixed-length encoding is requested, dont encode as variable-length
-  // quantity
-  if constexpr (enum_has_flag<options, O, options::fixed_length_encoding>()) {
+  // If big-endian is requested, dont decode as VLQ
+  // If fixed-length encoding is requested, dont decode as VLQ
+  if constexpr (enum_has_flag<options, O, options::big_endian>() ||
+                enum_has_flag<options, O, options::fixed_length_encoding>()) {
     constexpr auto num_bytes_to_read = sizeof(T);
     if (bytes.size() < num_bytes_to_read) {
       /// TODO: report error

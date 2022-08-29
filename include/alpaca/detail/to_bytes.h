@@ -57,9 +57,10 @@ to_bytes(T &bytes, const U &original_value) {
   U value = original_value;
   update_value_based_on_alpaca_endian_rules<O, U>(value);
 
-  // If fixed-length encoding is requested, dont encode as variable-length
-  // quantity
-  if constexpr (enum_has_flag<options, O, options::fixed_length_encoding>()) {
+  // If big-endian is requested, dont encode as VLQ
+  // If fixed-length encoding is requested, dont encode as VLQ
+  if constexpr (enum_has_flag<options, O, options::big_endian>() ||
+                enum_has_flag<options, O, options::fixed_length_encoding>()) {
     std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
               static_cast<const char *>(static_cast<const void *>(&value)) +
                   sizeof value,
