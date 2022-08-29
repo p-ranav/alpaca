@@ -299,8 +299,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       }
       uint32_t version = 0;
       std::size_t index = 0;
-      detail::from_bytes_crc32(version, bytes, index,
-                               error_code); // first 4 bytes
+      detail::from_bytes_crc32<O>(version, bytes, index,
+                                  error_code); // first 4 bytes
 
       if (version != computed_version) {
         error_code = std::make_error_code(std::errc::invalid_argument);
@@ -318,8 +318,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       // check crc bytes
       uint32_t trailing_crc;
       std::size_t index = bytes.size() - 4;
-      detail::from_bytes_crc32(trailing_crc, bytes, index,
-                               error_code); // last 4 bytes
+      detail::from_bytes_crc32<O>(trailing_crc, bytes, index,
+                                  error_code); // last 4 bytes
 
       auto computed_crc = crc32_fast(bytes.data(), bytes.size() - 4);
 

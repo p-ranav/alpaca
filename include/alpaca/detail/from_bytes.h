@@ -11,17 +11,16 @@ namespace alpaca {
 
 namespace detail {
 
-// from_bytes arithmetic value from bytearray
-static inline bool from_bytes_crc32(uint32_t &value,
-                                    const std::vector<uint8_t> &bytes,
-                                    std::size_t &current_index,
-                                    std::error_code &) {
+template <options O>
+bool from_bytes_crc32(uint32_t &value, const std::vector<uint8_t> &bytes,
+                      std::size_t &current_index, std::error_code &) {
   constexpr auto num_bytes_to_read = 4;
 
   if (bytes.size() < num_bytes_to_read) {
     return false;
   }
   value = *(reinterpret_cast<const uint32_t *>(bytes.data() + current_index));
+  update_value_based_on_alpaca_endian_rules<O, uint32_t>(value);
   current_index += num_bytes_to_read;
   return true;
 }

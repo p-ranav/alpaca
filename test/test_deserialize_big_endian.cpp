@@ -555,7 +555,8 @@ TEST_CASE("Deserialize big-endian int64_t" * test_suite("signed_integer")) {
   }
 }
 
-TEST_CASE("Deserialize big-endian int64_t (big positive)" * test_suite("signed_integer")) {
+TEST_CASE("Deserialize big-endian int64_t (big positive)" *
+          test_suite("signed_integer")) {
   struct my_struct {
     int64_t value;
   };
@@ -577,7 +578,8 @@ TEST_CASE("Deserialize big-endian int64_t (big positive)" * test_suite("signed_i
   }
 }
 
-TEST_CASE("Deserialize big-endian int64_t (big negative)" * test_suite("signed_integer")) {
+TEST_CASE("Deserialize big-endian int64_t (big negative)" *
+          test_suite("signed_integer")) {
   struct my_struct {
     int64_t value;
   };
@@ -599,7 +601,8 @@ TEST_CASE("Deserialize big-endian int64_t (big negative)" * test_suite("signed_i
   }
 }
 
-TEST_CASE("Deserialize big-endian signed integer types" * test_suite("integer")) {
+TEST_CASE("Deserialize big-endian signed integer types" *
+          test_suite("integer")) {
   struct my_struct {
     int8_t a;
     int16_t b;
