@@ -42,6 +42,7 @@ file(GLOB ALPACA_TEST_SOURCES
 	test_serialize_variant.cpp
 	test_serialize_unique_ptr.cpp
 	test_serialize_with_crc32.cpp
+	test_serialize_big_endian.cpp
 
 	test_deserialize_uint.cpp
 	test_deserialize_int.cpp
