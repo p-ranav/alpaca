@@ -65,11 +65,11 @@ type_info(
 
     // save number of fields
     uint16_t num_fields = N;
-    to_bytes(typeids, num_fields);
+    to_bytes<options::none>(typeids, num_fields);
 
     // save size of struct
     uint16_t size = sizeof(T);
-    to_bytes(typeids, size);
+    to_bytes<options::none>(typeids, size);
 
     struct_visitor_map[name] = struct_visitor_map.size() + 1;
     type_info_helper<T, N, 0>(typeids, struct_visitor_map);
@@ -96,7 +96,7 @@ void type_info_helper(
 } // namespace detail
 
 // Forward declares
-template <typename T, std::size_t N, std::size_t I>
+template <options O, typename T, std::size_t N, std::size_t I>
 void serialize_helper(const T &s, std::vector<uint8_t> &bytes);
 
 namespace detail {
@@ -105,28 +105,29 @@ namespace detail {
 
 // version for nested struct/class types
 // incidentally, also works for std::pair
-template <typename T, typename U>
+template <options O, typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type
 to_bytes(T &bytes, const U &input) {
-  serialize_helper<U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
+  serialize_helper<O, U, detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
       input, bytes);
 }
 
-template <typename T, typename U>
+template <options O, typename T, typename U>
 typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
                         void>::type
 to_bytes(T &bytes, const U &input);
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
-  to_bytes(bytes, input);
+  to_bytes<O>(bytes, input);
 }
 
 } // namespace detail
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <typename T,
+template <options O,
+          typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
 void serialize_helper(const T &s, std::vector<uint8_t> &bytes) {
@@ -136,17 +137,17 @@ void serialize_helper(const T &s, std::vector<uint8_t> &bytes) {
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // serialize field
-    detail::to_bytes_router<decayed_field_type>(field, bytes);
+    detail::to_bytes_router<O, decayed_field_type>(field, bytes);
 
     // go to next field
-    serialize_helper<T, N, I + 1>(s, bytes);
+    serialize_helper<O, T, N, I + 1>(s, bytes);
   }
 }
 
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 void serialize(const T &s, std::vector<uint8_t> &bytes) {
-  serialize_helper<T, N, 0>(s, bytes);
+  serialize_helper<options::none, T, N, 0>(s, bytes);
 }
 
 template <typename T,
@@ -171,7 +172,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
     detail::to_bytes_crc32(bytes, version);
   }
 
-  serialize_helper<T, N, 0>(s, bytes);
+  serialize_helper<O, T, N, 0>(s, bytes);
 
   if constexpr (N > 0 && enum_has_flag<options, O, options::with_checksum>()) {
     // calculate crc32 for byte array and

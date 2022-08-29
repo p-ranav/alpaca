@@ -34,18 +34,18 @@ type_info(
   type_info_variant_helper<T, variant_size, 0>(typeids, struct_visitor_map);
 }
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
-template <typename T, typename... U>
+template <options O, typename T, typename... U>
 void to_bytes(T &bytes, const std::variant<U...> &input) {
   std::size_t index = input.index();
 
   // save index of variant
-  to_bytes_router<std::size_t>(index, bytes);
+  to_bytes_router<O, std::size_t>(index, bytes);
 
   // save value of variant
-  const auto visitor = [&bytes](auto &&arg) { to_bytes_router(arg, bytes); };
+  const auto visitor = [&bytes](auto &&arg) { to_bytes_router<O>(arg, bytes); };
   std::visit(visitor, input);
 }
 

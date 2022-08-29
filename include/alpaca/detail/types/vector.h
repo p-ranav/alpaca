@@ -18,25 +18,25 @@ type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_from_vector_type(const T &input, std::vector<uint8_t> &bytes) {
   // save vector size
-  to_bytes_router<std::size_t>(input.size(), bytes);
+  to_bytes_router<O, std::size_t>(input.size(), bytes);
 
   // value of each element in list
   for (const auto &v : input) {
     // check if the value_type is a nested list type
     using decayed_value_type = typename std::decay<decltype(v)>::type;
-    to_bytes_router<decayed_value_type>(v, bytes);
+    to_bytes_router<O, decayed_value_type>(v, bytes);
   }
 }
 
-template <typename T, typename U>
+template <options O, typename T, typename U>
 void to_bytes(T &bytes, const std::vector<U> &input) {
-  to_bytes_from_vector_type(input, bytes);
+  to_bytes_from_vector_type<O>(input, bytes);
 }
 
 template <typename T>

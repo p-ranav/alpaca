@@ -18,22 +18,22 @@ typename std::enable_if<is_array_type<T>::value, void>::type type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes) {
   using decayed_value_type = typename std::decay<typename T::value_type>::type;
 
   // value of each element in list
   for (const auto &v : input) {
-    to_bytes_router<decayed_value_type>(v, bytes);
+    to_bytes_router<O, decayed_value_type>(v, bytes);
   }
 }
 
-template <typename T, typename U, std::size_t N>
+template <options O, typename T, typename U, std::size_t N>
 void to_bytes(T &bytes, const std::array<U, N> &input) {
-  to_bytes_from_array_type(input, bytes);
+  to_bytes_from_array_type<O>(input, bytes);
 }
 
 template <typename T>

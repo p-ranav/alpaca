@@ -39,29 +39,29 @@ type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes) {
   // save set size
-  to_bytes_router(input.size(), bytes);
+  to_bytes_router<O>(input.size(), bytes);
 
   // save values in set
   for (const auto &value : input) {
     using decayed_key_type = typename std::decay<typename T::value_type>::type;
-    to_bytes_router<decayed_key_type>(value, bytes);
+    to_bytes_router<O, decayed_key_type>(value, bytes);
   }
 }
 
-template <typename T, typename U>
+template <options O, typename T, typename U>
 void to_bytes(T &bytes, const std::set<U> &input) {
-  to_bytes_from_set_type(input, bytes);
+  to_bytes_from_set_type<O>(input, bytes);
 }
 
-template <typename T, typename U>
+template <options O, typename T, typename U>
 void to_bytes(T &bytes, const std::unordered_set<U> &input) {
-  to_bytes_from_set_type(input, bytes);
+  to_bytes_from_set_type<O>(input, bytes);
 }
 
 template <typename T>

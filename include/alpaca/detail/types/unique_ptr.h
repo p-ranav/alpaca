@@ -20,10 +20,10 @@ type_info(
   type_info<element_type>(typeids, struct_visitor_map);
 }
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
-template <typename T, typename U>
+template <options O, typename T, typename U>
 void to_bytes(T &bytes, const std::unique_ptr<U> &input) {
   auto has_value = false;
   if (input) {
@@ -31,11 +31,11 @@ void to_bytes(T &bytes, const std::unique_ptr<U> &input) {
   }
 
   // save if ptr has value
-  to_bytes_router<bool>(has_value, bytes);
+  to_bytes_router<O, bool>(has_value, bytes);
 
   // save value
   if (has_value) {
-    to_bytes_router<U>(*input, bytes);
+    to_bytes_router<O, U>(*input, bytes);
   }
 }
 

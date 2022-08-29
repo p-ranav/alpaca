@@ -18,19 +18,19 @@ type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
-template <typename T, typename U>
+template <options O, typename T, typename U>
 void to_bytes(T &bytes, const std::optional<U> &input) {
   const auto has_value = input.has_value();
 
   // save if optional has value
-  to_bytes_router<bool>(has_value, bytes);
+  to_bytes_router<O, bool>(has_value, bytes);
 
   // save value
   if (has_value) {
-    to_bytes_router<U>(input.value(), bytes);
+    to_bytes_router<O, U>(input.value(), bytes);
   }
 }
 

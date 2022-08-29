@@ -15,7 +15,7 @@ static inline void to_bytes_crc32(std::vector<uint8_t> &bytes,
 }
 
 // write as is
-template <typename T, typename U>
+template <options O, typename T, typename U>
 typename std::enable_if<
     std::is_same_v<U, bool> || std::is_same_v<U, char> ||
         std::is_same_v<U, uint8_t> || std::is_same_v<U, uint16_t> ||
@@ -30,7 +30,7 @@ to_bytes(T &bytes, const U &value) {
 }
 
 // encode as variable-length
-template <typename T, typename U>
+template <options O, typename T, typename U>
 typename std::enable_if<
     std::is_same_v<U, uint32_t> || std::is_same_v<U, uint64_t> ||
         std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t> ||
@@ -41,12 +41,12 @@ to_bytes(T &bytes, const U &value) {
 }
 
 // enum class
-template <typename T, typename U>
+template <options O, typename T, typename U>
 typename std::enable_if<std::is_enum<U>::value, void>::type
 to_bytes(T &bytes, const U &value) {
   using underlying_type =
       typename std::decay<typename std::underlying_type<U>::type>::type;
-  to_bytes<T, underlying_type>(bytes, static_cast<underlying_type>(value));
+  to_bytes<O, T, underlying_type>(bytes, static_cast<underlying_type>(value));
 }
 
 } // namespace detail

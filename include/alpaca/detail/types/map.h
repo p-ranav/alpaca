@@ -35,33 +35,33 @@ type_info(
   type_info<mapped_type>(typeids, struct_visitor_map);
 }
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
 
-template <typename T>
+template <options O, typename T>
 void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
   // save map size
-  to_bytes_router<std::size_t>(input.size(), bytes);
+  to_bytes_router<O, std::size_t>(input.size(), bytes);
 
   // save key,value pairs in map
   for (const auto &[key, value] : input) {
 
     using decayed_key_type = typename std::decay<decltype(key)>::type;
-    to_bytes_router<decayed_key_type>(key, bytes);
+    to_bytes_router<O, decayed_key_type>(key, bytes);
 
     using decayed_value_type = typename std::decay<decltype(value)>::type;
-    to_bytes_router<decayed_value_type>(value, bytes);
+    to_bytes_router<O, decayed_value_type>(value, bytes);
   }
 }
 
-template <typename T, typename K, typename V>
+template <options O, typename T, typename K, typename V>
 void to_bytes(T &bytes, const std::map<K, V> &input) {
-  to_bytes_from_map_type(input, bytes);
+  to_bytes_from_map_type<O>(input, bytes);
 }
 
-template <typename T, typename K, typename V>
+template <options O, typename T, typename K, typename V>
 void to_bytes(T &bytes, const std::unordered_map<K, V> &input) {
-  to_bytes_from_map_type(input, bytes);
+  to_bytes_from_map_type<O>(input, bytes);
 }
 
 template <typename T>
