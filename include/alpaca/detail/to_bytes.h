@@ -31,7 +31,7 @@ to_bytes(T &bytes, const U &original_value) {
   // but big_endian is requested
   if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
                 enum_has_flag<options, O, options::big_endian>()) {
-    byte_swap<U, byte_order::big_endian>(value);
+    value = byte_swap<U, byte_order::big_endian>(value);
   }
 
   std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
@@ -55,7 +55,7 @@ to_bytes(T &bytes, const U &original_value) {
   // but big_endian is requested
   if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
                 enum_has_flag<options, O, options::big_endian>()) {
-    byte_swap<U, byte_order::big_endian>(value);
+    value = byte_swap<U, byte_order::big_endian>(value);
   }
 
   encode_varint<U>(value, bytes);
