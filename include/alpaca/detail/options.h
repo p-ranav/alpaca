@@ -10,6 +10,7 @@ template <typename E> struct enable_bitmask_operators {
 };
 
 template <typename E>
+constexpr 
 typename std::enable_if<enable_bitmask_operators<E>::enable, E>::type
 operator|(E lhs, E rhs) {
   using underlying = typename std::underlying_type<E>::type;
