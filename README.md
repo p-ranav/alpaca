@@ -2,6 +2,13 @@
   <img height="80" src="https://user-images.githubusercontent.com/8450091/187056150-3198fd9c-e02a-405c-b3c1-edee60caa156.png"/>
 </p>
 
+<p align="center">
+  <a href="https://github.com/p-ranav/alpaca/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="license"/>
+  </a>
+  <img src="https://img.shields.io/badge/version-1.0-blue.svg?cacheSeconds=2592000" alt="version"/>
+</p>
+
 Pack C++ structs into a compact byte-array without any macros or boilerplate code.
 
 * `alpaca` is header-only serialization library for modern C++, written in C++17
