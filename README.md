@@ -35,7 +35,10 @@ struct Config {
     };
     StaticTransform static_transform;
 
-    enum class PixelFormat { yuyv, bayer10 };
+    enum class PixelFormat { 
+        yuyv, 
+	bayer10 
+    };
     PixelFormat pixel_format;
 
     using Parameters = std::map<std::string, 
