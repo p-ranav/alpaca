@@ -7,8 +7,8 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 * `alpaca` is header-only serialization library for modern C++, written in C++17
 * No macros or boilerplate, no source code generation, no external dependencies
 * Simple, fast, and easy to use
-  - Call `auto bytes = serialize(s)` to pack a struct
-  - Call `auto obj = deserialize<T>(s, e)` to unpack a struct 
+  - Call `auto bytes = serialize(object)` to pack a struct object
+  - Call `auto object = deserialize<T>(bytes, error_code)` to unpack a bytearray
 * Supports basic data types, STL containers, unique pointers, optionals, and variants
 * Optional data structure versioning - recursively generates a type hash that is checked during deserialization
 * Optional integrity checking - detects data corruption during deserialization using checksums
@@ -35,14 +35,14 @@ struct Config {
     };
     StaticTransform static_transform;
 
-    enum class PixelFormat { yuyv, bayer10 };
+    enum class PixelFormat { 
+        yuyv, 
+	bayer10 
+    };
     PixelFormat pixel_format;
 
     using Parameters = std::map<std::string, 
-				std::variant<uint16_t, 
-				             std::string, 
-					     bool, 
-					     std::vector<std::string>>>;
+				std::variant<uint16_t, std::string, bool, std::vector<std::string>>>;
     Parameters parameters;
 };
 
