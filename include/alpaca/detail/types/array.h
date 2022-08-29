@@ -49,6 +49,14 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
 
   constexpr auto size = std::tuple_size<T>::value;
 
+  if (size > bytes.size() - current_index) {
+    // size is greater than the number of bytes remaining
+    error_code = std::make_error_code(std::errc::value_too_large);
+
+    // stop here
+    return;
+  }
+
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     decayed_value_type v{};

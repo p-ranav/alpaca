@@ -72,6 +72,14 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
   // current byte is the size of the map
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
 
+  if (size > bytes.size() - current_index) {
+    // size is greater than the number of bytes remaining
+    error_code = std::make_error_code(std::errc::value_too_large);
+
+    // stop here
+    return;
+  }
+
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     typename T::key_type key{};

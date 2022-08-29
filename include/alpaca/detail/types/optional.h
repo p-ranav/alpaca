@@ -41,6 +41,17 @@ template <typename T>
 bool from_bytes(std::optional<T> &output, const std::vector<uint8_t> &bytes,
             std::size_t &byte_index,
             std::error_code &error_code) {
+    
+    auto current_byte = bytes[byte_index];
+
+    // check if has_value has a legal value of either 0 or 1
+    if (current_byte != 0x00 && current_byte != 0x01) {
+      // expected either 0 or 1, got something else
+      error_code = std::make_error_code(std::errc::illegal_byte_sequence);
+
+      // stop here
+      return false;
+    }
 
     // current byte is the `has_value` byte
     bool has_value = static_cast<bool>(bytes[byte_index++]);
