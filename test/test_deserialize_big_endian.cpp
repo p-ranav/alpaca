@@ -116,7 +116,7 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint8_t)" *
     my_struct s{5};
     bytes = serialize<my_struct, options::big_endian>(s);
     detail::print_bytes(bytes);
-    REQUIRE(bytes.size() == 1);
+    REQUIRE(bytes.size() == 4); // large value after byte-swap
   }
 
   // deserialize
@@ -140,7 +140,7 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint16_t)" *
   {
     my_struct s{1600};
     bytes = serialize<my_struct, options::big_endian>(s);
-    REQUIRE(bytes.size() == 2);
+    REQUIRE(bytes.size() == 5); // large value after byte-swap
   }
 
   // deserialize
@@ -163,7 +163,7 @@ TEST_CASE("Deserialize big-endian uint32_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{75535};
     bytes = serialize<my_struct, options::big_endian>(s);
-    REQUIRE(bytes.size() == 3);
+    REQUIRE(bytes.size() == 4); // large value after byte-swap
   }
 
   // deserialize
@@ -187,7 +187,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint8_t)" *
   {
     my_struct s{5};
     bytes = serialize<my_struct, options::big_endian>(s);
-    REQUIRE(bytes.size() == 1);
+    REQUIRE(bytes.size() == 9); // large value after byte-swap
   }
 
   // deserialize
@@ -211,7 +211,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint16_t)" *
   {
     my_struct s{12345};
     bytes = serialize<my_struct, options::big_endian>(s);
-    REQUIRE(bytes.size() == 2);
+    REQUIRE(bytes.size() == 9); // large value after byte-swap
   }
 
   // deserialize
@@ -258,7 +258,7 @@ TEST_CASE("Deserialize big-endian uint64_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{5294967295};
     bytes = serialize<my_struct, options::big_endian>(s);
-    REQUIRE(bytes.size() == 5);
+    REQUIRE(bytes.size() == 10); // large value after byte-swap
   }
 
   // deserialize
@@ -314,7 +314,7 @@ TEST_CASE("Deserialize big-endian unsigned integer types" *
   {
     my_struct s{5, 12345, 12345678, 5294967295};
     bytes = serialize<my_struct, options::big_endian>(s);
-    REQUIRE(bytes.size() == 12);
+    REQUIRE(bytes.size() == 18); // large value after byte-swap
   }
 
   // deserialize
