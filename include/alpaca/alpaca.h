@@ -169,7 +169,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
     std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
     detail::type_info<T, N>(typeids, struct_visitor_map);
     uint32_t version = crc32_fast(typeids.data(), typeids.size());
-    detail::to_bytes_crc32(bytes, version);
+    detail::to_bytes_crc32<O>(bytes, version);
   }
 
   serialize_helper<O, T, N, 0>(s, bytes);
@@ -178,7 +178,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), bytes.size());
-    detail::to_bytes_crc32(bytes, crc);
+    detail::to_bytes_crc32<O>(bytes, crc);
   }
 }
 

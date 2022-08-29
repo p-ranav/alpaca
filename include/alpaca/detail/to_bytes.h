@@ -7,8 +7,19 @@ namespace alpaca {
 
 namespace detail {
 
-static inline void to_bytes_crc32(std::vector<uint8_t> &bytes,
-                                  const uint32_t &value) {
+template <options O>
+void to_bytes_crc32(std::vector<uint8_t> &bytes,
+                    const uint32_t &original_value) {
+
+  uint32_t value = original_value;
+
+  // if system is little endian
+  // but big_endian is requested
+  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
+                enum_has_flag<options, O, options::big_endian>()) {
+    value = byte_swap<uint32_t, byte_order::big_endian>(value);
+  }
+
   std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
             static_cast<const char *>(static_cast<const void *>(&value)) +
                 sizeof value,
