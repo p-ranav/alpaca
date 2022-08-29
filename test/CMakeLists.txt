@@ -23,53 +23,8 @@ if (WIN32)
 endif()
 
 # ALPACA executable
-file(GLOB ALPACA_TEST_SOURCES
-    main.cpp
-	test_serialize_uint.cpp
-	test_serialize_int.cpp
-	test_serialize_string.cpp
-	test_serialize_float.cpp
-	test_serialize_bool.cpp
-	test_serialize_array.cpp
-	test_serialize_vector.cpp
-	test_serialize_tuple.cpp
-	test_serialize_pair.cpp
-	test_serialize_enum_class.cpp
-	test_serialize_nested_struct.cpp
-	test_serialize_map.cpp
-	test_serialize_set.cpp
-	test_serialize_optional.cpp
-	test_serialize_variant.cpp
-	test_serialize_unique_ptr.cpp
-	test_serialize_with_crc32.cpp
-	test_serialize_big_endian.cpp
+file(GLOB ALPACA_TEST_SOURCES *.cpp)
 
-	test_deserialize_uint.cpp
-	test_deserialize_int.cpp
-	test_deserialize_string.cpp
-	test_deserialize_float.cpp
-	test_deserialize_bool.cpp
-	test_deserialize_array.cpp
-	test_deserialize_vector.cpp
-	test_deserialize_tuple.cpp
-	test_deserialize_pair.cpp
-	test_deserialize_map.cpp
-	test_deserialize_set.cpp
-	test_deserialize_enum_class.cpp
-	test_deserialize_optional.cpp
-	test_deserialize_unique_ptr.cpp
-	test_deserialize_variant.cpp
-	test_deserialize_with_crc32.cpp
-	test_deserialize_with_version.cpp
-	
-	test_deserialize_error_crc32.cpp
-	test_deserialize_error_set.cpp
-	test_deserialize_error_vector.cpp
-	test_deserialize_error_version.cpp
-
-	test_integer_compatibility.cpp
-	test_type_info.cpp
-)
 set_source_files_properties(main.cpp
     PROPERTIES
     COMPILE_DEFINITIONS DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN)
