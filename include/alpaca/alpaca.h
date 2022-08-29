@@ -45,13 +45,6 @@ template <typename T,
 typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, void>::type
 type_info(std::vector<uint8_t>& typeids, 
   std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
-  // save number of fields
-  uint16_t num_fields = N;
-  to_bytes(typeids, num_fields);
-
-  // save size of struct
-  uint16_t size = sizeof(T);
-  to_bytes(typeids, size);
 
   // store num fields in struct
   // store size of struct
@@ -60,10 +53,22 @@ type_info(std::vector<uint8_t>& typeids,
   std::string_view name = ALPACA_FUNCTION_SIGNATURE;
   auto it = struct_visitor_map.find(name);
   if (it != struct_visitor_map.end()) {
+    // struct was previously visited
+
     // store index in struct_visitor_map
     typeids.push_back(it->second);
   }
   else {
+    // struct visited for first time
+
+    // save number of fields
+    uint16_t num_fields = N;
+    to_bytes(typeids, num_fields);
+
+    // save size of struct
+    uint16_t size = sizeof(T);
+    to_bytes(typeids, size);
+
     struct_visitor_map[name] = struct_visitor_map.size() + 1;  
     type_info_helper<T, N, 0>(typeids, struct_visitor_map);
   }

@@ -14,7 +14,7 @@ void type_info_tuple_helper(std::vector<uint8_t>& typeids,
   if constexpr (I < N) {
 
     // save current type
-    type_info<std::tuple_element<I, T>::type>(typeids, struct_visitor_map);
+    type_info<typename std::tuple_element<I, T>::type>(typeids, struct_visitor_map);
 
     // go to next type
     type_info_tuple_helper<T, N, I+1>(typeids, struct_visitor_map);
