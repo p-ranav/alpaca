@@ -1,4 +1,5 @@
 #pragma once
+#include <alpaca/detail/endian.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <iterator>
 
@@ -22,7 +23,17 @@ typename std::enable_if<
         std::is_same_v<U, int8_t> || std::is_same_v<U, int16_t> ||
         std::is_same_v<U, float> || std::is_same_v<U, double>,
     void>::type
-to_bytes(T &bytes, const U &value) {
+to_bytes(T &bytes, const U &original_value) {
+
+  U value = original_value;
+
+  // if system is little endian
+  // but big_endian is requested
+  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
+                enum_has_flag<options, O, options::big_endian>()) {
+    byte_swap<U, byte_order::big_endian>(value);
+  }
+
   std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
             static_cast<const char *>(static_cast<const void *>(&value)) +
                 sizeof value,
@@ -36,7 +47,17 @@ typename std::enable_if<
         std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t> ||
         std::is_same_v<U, std::size_t>,
     void>::type
-to_bytes(T &bytes, const U &value) {
+to_bytes(T &bytes, const U &original_value) {
+
+  U value = original_value;
+
+  // if system is little endian
+  // but big_endian is requested
+  if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN && 
+                enum_has_flag<options, O, options::big_endian>()) {
+    byte_swap<U, byte_order::big_endian>(value);
+  }
+
   encode_varint<U>(value, bytes);
 }
 
