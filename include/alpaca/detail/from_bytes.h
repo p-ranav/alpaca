@@ -1,4 +1,5 @@
 #pragma once
+#include <alpaca/detail/endian.h>
 #include <alpaca/detail/options.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <cstdint>
@@ -56,6 +57,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
   }
   value = *(reinterpret_cast<const T *>(bytes.data() + current_index));
   current_index += num_bytes_to_read;
+  update_value_based_on_alpaca_endian_rules<O, T>(value);
   return true;
 }
 
@@ -68,6 +70,7 @@ typename std::enable_if<
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &) {
   value = decode_varint<T>(bytes, current_index);
+  update_value_based_on_alpaca_endian_rules<O, T>(value);
   return true;
 }
 
