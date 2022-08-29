@@ -39,11 +39,11 @@ void to_bytes(T &bytes, const std::unique_ptr<U> &input) {
   }
 }
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
-template <typename T>
+template <options O, typename T>
 bool from_bytes(std::unique_ptr<T> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::error_code &error_code) {
 
@@ -64,7 +64,7 @@ bool from_bytes(std::unique_ptr<T> &output, const std::vector<uint8_t> &bytes,
   if (has_value) {
     // read value of unique_ptr
     T value{};
-    from_bytes_router(value, bytes, byte_index, error_code);
+    from_bytes_router<O>(value, bytes, byte_index, error_code);
     output = std::unique_ptr<T>(new T{std::move(value)});
   } else {
     output = nullptr;

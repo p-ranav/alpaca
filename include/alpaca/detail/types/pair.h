@@ -31,15 +31,15 @@ void to_bytes(T &bytes, const std::pair<U, V> &input) {
   to_bytes_router<O>(input.second, bytes);
 }
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
-template <typename T, typename U>
+template <options O, typename T, typename U>
 bool from_bytes(std::pair<T, U> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_router(output.first, bytes, byte_index, error_code);
-  from_bytes_router(output.second, bytes, byte_index, error_code);
+  from_bytes_router<O>(output.first, bytes, byte_index, error_code);
+  from_bytes_router<O>(output.second, bytes, byte_index, error_code);
 
   return true;
 }

@@ -39,11 +39,11 @@ void to_bytes(T &bytes, const std::vector<U> &input) {
   to_bytes_from_vector_type<O>(input, bytes);
 }
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
                           std::size_t &current_index,
@@ -63,7 +63,7 @@ void from_bytes_to_vector(std::vector<T> &value,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     T v{};
-    from_bytes_router(v, bytes, current_index, error_code);
+    from_bytes_router<O>(v, bytes, current_index, error_code);
     if (error_code) {
       // something went wrong
       return;
@@ -72,10 +72,10 @@ void from_bytes_to_vector(std::vector<T> &value,
   }
 }
 
-template <typename T>
+template <options O, typename T>
 bool from_bytes(std::vector<T> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_to_vector(output, bytes, byte_index, error_code);
+  from_bytes_to_vector<O>(output, bytes, byte_index, error_code);
   return true;
 }
 

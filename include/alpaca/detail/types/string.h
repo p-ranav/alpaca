@@ -31,10 +31,11 @@ void to_bytes(T &bytes, const std::string &input) {
   }
 }
 
-static inline bool from_bytes(std::string &value,
-                              const std::vector<uint8_t> &bytes,
-                              std::size_t &current_index,
-                              std::error_code &error_code) {
+template <options O> 
+bool from_bytes(std::string &value,
+                const std::vector<uint8_t> &bytes,
+                std::size_t &current_index,
+                std::error_code &error_code) {
 
   // current byte is the length of the string
   std::size_t size = decode_varint<std::size_t>(bytes, current_index);

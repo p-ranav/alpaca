@@ -64,11 +64,11 @@ void to_bytes(T &bytes, const std::unordered_set<U> &input) {
   to_bytes_from_set_type<O>(input, bytes);
 }
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index,
                        std::error_code &error_code) {
@@ -86,23 +86,23 @@ void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     typename T::value_type value{};
-    from_bytes_router(value, bytes, current_index, error_code);
+    from_bytes_router<O>(value, bytes, current_index, error_code);
     set.insert(value);
   }
 }
 
-template <typename T>
+template <options O, typename T>
 bool from_bytes(std::set<T> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_to_set(output, bytes, byte_index, error_code);
+  from_bytes_to_set<O>(output, bytes, byte_index, error_code);
   return true;
 }
 
-template <typename T>
+template <options O, typename T>
 bool from_bytes(std::unordered_set<T> &output,
                 const std::vector<uint8_t> &bytes, std::size_t &byte_index,
                 std::error_code &error_code) {
-  from_bytes_to_set(output, bytes, byte_index, error_code);
+  from_bytes_to_set<O>(output, bytes, byte_index, error_code);
   return true;
 }
 

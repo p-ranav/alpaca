@@ -64,11 +64,11 @@ void to_bytes(T &bytes, const std::unordered_map<K, V> &input) {
   to_bytes_from_map_type<O>(input, bytes);
 }
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
-template <typename T>
+template <options O, typename T>
 void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
                        std::size_t &current_index,
                        std::error_code &error_code) {
@@ -86,27 +86,27 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     typename T::key_type key{};
-    from_bytes_router(key, bytes, current_index, error_code);
+    from_bytes_router<O>(key, bytes, current_index, error_code);
 
     typename T::mapped_type value{};
-    from_bytes_router(value, bytes, current_index, error_code);
+    from_bytes_router<O>(value, bytes, current_index, error_code);
 
     map.insert(std::make_pair(key, value));
   }
 }
 
-template <typename K, typename V>
+template <options O, typename K, typename V>
 bool from_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_to_map(output, bytes, byte_index, error_code);
+  from_bytes_to_map<O>(output, bytes, byte_index, error_code);
   return true;
 }
 
-template <typename K, typename V>
+template <options O, typename K, typename V>
 bool from_bytes(std::unordered_map<K, V> &output,
                 const std::vector<uint8_t> &bytes, std::size_t &byte_index,
                 std::error_code &error_code) {
-  from_bytes_to_map(output, bytes, byte_index, error_code);
+  from_bytes_to_map<O>(output, bytes, byte_index, error_code);
   return true;
 }
 
