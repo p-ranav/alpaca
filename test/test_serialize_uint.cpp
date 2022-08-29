@@ -28,7 +28,7 @@ TEST_CASE("Serialize uint16_t" * test_suite("unsigned_integer")) {
     my_struct s{5};
     auto bytes = serialize(s);
     REQUIRE(bytes.size() == 2);
-    if (detail::is_system_little_endian()) {
+    if constexpr (detail::is_system_little_endian()) {
       REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
       REQUIRE(bytes[1] == static_cast<uint8_t>(0x00));
     } else {
@@ -42,7 +42,7 @@ TEST_CASE("Serialize uint16_t" * test_suite("unsigned_integer")) {
     auto bytes = serialize(s);
     REQUIRE(bytes.size() == 2);
 
-    if (detail::is_system_little_endian()) {
+    if constexpr (detail::is_system_little_endian()) {
       REQUIRE(bytes[0] == static_cast<uint8_t>(0x39));
       REQUIRE(bytes[1] == static_cast<uint8_t>(0x30));
     } else {

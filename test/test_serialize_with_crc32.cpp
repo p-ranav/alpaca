@@ -15,7 +15,7 @@ TEST_CASE("Serialize int with crc32" * test_suite("crc32")) {
   REQUIRE(bytes.size() == 5);
 
   REQUIRE(bytes[0] == static_cast<uint32_t>(0x05));
-  if (detail::is_system_little_endian()) {
+  if constexpr (detail::is_system_little_endian()) {
     // 0x02 0x1b 0x68 0xa2
     REQUIRE(bytes[1] == static_cast<uint32_t>(0x02));
     REQUIRE(bytes[2] == static_cast<uint32_t>(0x1b));

@@ -96,7 +96,7 @@ TEST_CASE("Serialize map<string, variant>" * test_suite("variant")) {
     REQUIRE(bytes[41] == static_cast<uint8_t>(0x74));
     REQUIRE(bytes[42] ==
             static_cast<uint8_t>(0x00)); // variant_index = 0 (uint16_t)
-    if (detail::is_system_little_endian()) {
+    if constexpr (detail::is_system_little_endian()) {
       REQUIRE(bytes[43] == static_cast<uint8_t>(0x90)); // port: 8080
       REQUIRE(bytes[44] == static_cast<uint8_t>(0x1f));
     } else {

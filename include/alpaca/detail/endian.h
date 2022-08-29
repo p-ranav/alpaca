@@ -5,12 +5,12 @@ namespace alpaca {
 
 namespace detail {
 
-static inline bool is_system_little_endian() {
-  static int value{0x01};
-  static auto address = static_cast<const void *>(&value);
-  static auto least_significant_address =
-      static_cast<const unsigned char *>(address);
-  return (*least_significant_address == 0x01);
+constexpr bool is_system_little_endian() {
+  return __BYTE_ORDER == __ALPACA_LITTLE_ENDIAN;
+}
+
+constexpr bool is_system_big_endian() {
+  return __BYTE_ORDER == __ALPACA_BIG_ENDIAN;
 }
 
 // Endian switching code taken from 
