@@ -26,6 +26,7 @@ static inline bool from_bytes_crc32(uint32_t &value,
 }
 
 // char, bool, small ints, float, double
+// read as is
 template <options O, typename T>
 typename std::enable_if<
     std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
@@ -53,6 +54,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 
   constexpr auto num_bytes_to_read = sizeof(T);
   if (bytes.size() < num_bytes_to_read) {
+    /// TODO: report error
     return false;
   }
   value = *(reinterpret_cast<const T *>(bytes.data() + current_index));
@@ -62,6 +64,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 }
 
 // large ints
+// decode variable-length encoding
 template <options O, typename T>
 typename std::enable_if<
     std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
@@ -69,7 +72,21 @@ typename std::enable_if<
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &) {
-  value = decode_varint<T>(bytes, current_index);
+
+  // If fixed-length encoding is requested, dont encode as variable-length
+  // quantity
+  if constexpr (enum_has_flag<options, O, options::fixed_length_encoding>()) {
+    constexpr auto num_bytes_to_read = sizeof(T);
+    if (bytes.size() < num_bytes_to_read) {
+      /// TODO: report error
+      return false;
+    }
+    value = *(reinterpret_cast<const T *>(bytes.data() + current_index));
+    current_index += num_bytes_to_read;
+  } else {
+    value = decode_varint<T>(bytes, current_index);
+  }
+
   update_value_based_on_alpaca_endian_rules<O, T>(value);
   return true;
 }

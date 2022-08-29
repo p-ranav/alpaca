@@ -235,7 +235,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint32_t)" *
   {
     my_struct s{12345678};
     bytes = serialize<my_struct, options::big_endian>(s);
-    REQUIRE(bytes.size() == 4);
+    REQUIRE(bytes.size() == 9); // large value after byte-swap
   }
 
   // deserialize
