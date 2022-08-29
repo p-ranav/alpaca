@@ -4,7 +4,8 @@ using namespace alpaca;
 
 using doctest::test_suite;
 
-TEST_CASE("Deserialize int into another struct { uint16_t }" * test_suite("version")) {
+TEST_CASE("Deserialize int into another struct { uint16_t }" *
+          test_suite("version")) {
 
   std::vector<uint8_t> bytes;
 
@@ -27,7 +28,8 @@ TEST_CASE("Deserialize int into another struct { uint16_t }" * test_suite("versi
   }
 }
 
-TEST_CASE("Deserialize int into struct { int,int,int }" * test_suite("version")) {
+TEST_CASE("Deserialize int into struct { int,int,int }" *
+          test_suite("version")) {
 
   std::vector<uint8_t> bytes;
 
@@ -52,7 +54,8 @@ TEST_CASE("Deserialize int into struct { int,int,int }" * test_suite("version"))
   }
 }
 
-TEST_CASE("Deserialize vector<int> into struct { vector<float> }" * test_suite("version")) {
+TEST_CASE("Deserialize vector<int> into struct { vector<float> }" *
+          test_suite("version")) {
 
   std::vector<uint8_t> bytes;
 

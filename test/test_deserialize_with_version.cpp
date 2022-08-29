@@ -24,7 +24,8 @@ TEST_CASE("Deserialize int into struct { int }" * test_suite("version")) {
   }
 }
 
-TEST_CASE("Deserialize vector<int> into struct { vector<int> }" * test_suite("version")) {
+TEST_CASE("Deserialize vector<int> into struct { vector<int> }" *
+          test_suite("version")) {
 
   std::vector<uint8_t> bytes;
 

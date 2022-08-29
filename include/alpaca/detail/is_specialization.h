@@ -12,6 +12,6 @@ struct is_specialization : std::false_type {};
 template <template <typename...> class Ref, typename... Args>
 struct is_specialization<Ref<Args...>, Ref> : std::true_type {};
 
-}
+} // namespace detail
 
-}
+} // namespace alpaca

@@ -9,9 +9,9 @@ namespace alpaca {
 namespace detail {
 
 template <typename T>
-typename std::enable_if<is_array_type<T>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+typename std::enable_if<is_array_type<T>::value, void>::type type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::array>());
   typeids.push_back(std::tuple_size_v<T>);
   using value_type = typename T::value_type;
@@ -67,12 +67,11 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
 
 template <typename U, std::size_t N>
 bool from_bytes(std::array<U, N> &output, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
-    from_bytes_to_array(output, bytes, byte_index, error_code);
-    return true;
+                std::size_t &byte_index, std::error_code &error_code) {
+  from_bytes_to_array(output, bytes, byte_index, error_code);
+  return true;
 }
 
-}
+} // namespace detail
 
-}
+} // namespace alpaca

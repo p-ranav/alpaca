@@ -36,15 +36,18 @@ namespace alpaca {
 namespace detail {
 
 template <typename T, std::size_t N, std::size_t I>
-void type_info_helper(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
+void type_info_helper(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 
 // for aggregates
-template <typename T, 
+template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
+                        void>::type
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
 
   // store num fields in struct
   // store size of struct
@@ -57,8 +60,7 @@ type_info(std::vector<uint8_t>& typeids,
 
     // store index in struct_visitor_map
     typeids.push_back(it->second);
-  }
-  else {
+  } else {
     // struct visited for first time
 
     // save number of fields
@@ -69,14 +71,15 @@ type_info(std::vector<uint8_t>& typeids,
     uint16_t size = sizeof(T);
     to_bytes(typeids, size);
 
-    struct_visitor_map[name] = struct_visitor_map.size() + 1;  
+    struct_visitor_map[name] = struct_visitor_map.size() + 1;
     type_info_helper<T, N, 0>(typeids, struct_visitor_map);
   }
 }
 
 template <typename T, std::size_t N, std::size_t I>
-void type_info_helper(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+void type_info_helper(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   if constexpr (I < N) {
     T ref{};
     decltype(auto) field = detail::get<I, T, N>(ref);
@@ -90,7 +93,7 @@ void type_info_helper(std::vector<uint8_t>& typeids,
   }
 }
 
-}
+} // namespace detail
 
 // Forward declares
 template <typename T, std::size_t N, std::size_t I>
@@ -197,7 +200,8 @@ namespace detail {
 
 // version for nested struct/class types
 template <typename T>
-typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, bool>::type
+typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
+                        bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
            std::error_code &error_code) {
   deserialize_helper<T, detail::aggregate_arity<std::remove_cv_t<T>>::size(),
@@ -288,8 +292,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
     if (bytes.size() < 4) {
       error_code = std::make_error_code(std::errc::invalid_argument);
       return;
-    }
-    else {
+    } else {
       std::vector<uint8_t> version_bytes{};
       for (std::size_t i = 0; i < 4; ++i) {
         version_bytes.push_back(bytes[byte_index++]);

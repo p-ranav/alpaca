@@ -9,22 +9,25 @@ namespace alpaca {
 namespace detail {
 
 template <typename T, std::size_t N, std::size_t I>
-void type_info_tuple_helper(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+void type_info_tuple_helper(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   if constexpr (I < N) {
 
     // save current type
-    type_info<typename std::tuple_element<I, T>::type>(typeids, struct_visitor_map);
+    type_info<typename std::tuple_element<I, T>::type>(typeids,
+                                                       struct_visitor_map);
 
     // go to next type
-    type_info_tuple_helper<T, N, I+1>(typeids, struct_visitor_map);
+    type_info_tuple_helper<T, N, I + 1>(typeids, struct_visitor_map);
   }
 }
 
 template <typename T>
 typename std::enable_if<is_specialization<T, std::tuple>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::tuple>());
   constexpr auto tuple_size = std::tuple_size_v<T>;
   type_info_tuple_helper<T, tuple_size, 0>(typeids, struct_visitor_map);
@@ -50,7 +53,7 @@ void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes) {
 
 template <typename T, typename... U>
 void to_bytes(T &bytes, const std::tuple<U...> &input) {
-    to_bytes_from_tuple_type(input, bytes);
+  to_bytes_from_tuple_type(input, bytes);
 }
 
 template <typename T>
@@ -76,12 +79,11 @@ void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
 
 template <typename... T>
 bool from_bytes(std::tuple<T...> &output, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
-    from_bytes_to_tuple(output, bytes, byte_index, error_code);
-    return true;
+                std::size_t &byte_index, std::error_code &error_code) {
+  from_bytes_to_tuple(output, bytes, byte_index, error_code);
+  return true;
 }
 
-}
+} // namespace detail
 
-}
+} // namespace alpaca

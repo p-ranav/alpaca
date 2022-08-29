@@ -10,25 +10,30 @@ namespace alpaca {
 
 namespace detail {
 
-template <typename T, 
+template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map);
+typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
+                        void>::type
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 
 template <typename T>
 typename std::enable_if<is_specialization<T, std::set>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::set>());
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
 template <typename T>
-typename std::enable_if<is_specialization<T, std::unordered_set>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+typename std::enable_if<is_specialization<T, std::unordered_set>::value,
+                        void>::type
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::unordered_set>());
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);
@@ -88,20 +93,19 @@ void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
 
 template <typename T>
 bool from_bytes(std::set<T> &output, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
-    from_bytes_to_set(output, bytes, byte_index, error_code);
-    return true;
+                std::size_t &byte_index, std::error_code &error_code) {
+  from_bytes_to_set(output, bytes, byte_index, error_code);
+  return true;
 }
 
 template <typename T>
-bool from_bytes(std::unordered_set<T> &output, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
-    from_bytes_to_set(output, bytes, byte_index, error_code);
-    return true;
+bool from_bytes(std::unordered_set<T> &output,
+                const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+                std::error_code &error_code) {
+  from_bytes_to_set(output, bytes, byte_index, error_code);
+  return true;
 }
 
-}
+} // namespace detail
 
-}
+} // namespace alpaca

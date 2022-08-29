@@ -12,8 +12,9 @@ namespace detail {
 
 template <typename T>
 typename std::enable_if<is_specialization<T, std::map>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::map>());
   using key_type = typename T::key_type;
   type_info<key_type>(typeids, struct_visitor_map);
@@ -22,9 +23,11 @@ type_info(std::vector<uint8_t>& typeids,
 }
 
 template <typename T>
-typename std::enable_if<is_specialization<T, std::unordered_map>::value, void>::type
-type_info(std::vector<uint8_t>& typeids, 
-  std::unordered_map<std::string_view, std::size_t>& struct_visitor_map) {
+typename std::enable_if<is_specialization<T, std::unordered_map>::value,
+                        void>::type
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::unordered_map>());
   using key_type = typename T::key_type;
   type_info<key_type>(typeids, struct_visitor_map);
@@ -94,20 +97,19 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
 
 template <typename K, typename V>
 bool from_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
-    from_bytes_to_map(output, bytes, byte_index, error_code);
-    return true;
+                std::size_t &byte_index, std::error_code &error_code) {
+  from_bytes_to_map(output, bytes, byte_index, error_code);
+  return true;
 }
 
 template <typename K, typename V>
-bool from_bytes(std::unordered_map<K, V> &output, const std::vector<uint8_t> &bytes,
-            std::size_t &byte_index,
-            std::error_code &error_code) {
-    from_bytes_to_map(output, bytes, byte_index, error_code);
-    return true;
+bool from_bytes(std::unordered_map<K, V> &output,
+                const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+                std::error_code &error_code) {
+  from_bytes_to_map(output, bytes, byte_index, error_code);
+  return true;
 }
 
-}
+} // namespace detail
 
-}
+} // namespace alpaca
