@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 #include <alpaca/detail/options.h>
 #include <cstdint>
 #include <variant>
@@ -20224,3 +20225,4 @@ constexpr void set_variant_value(type &variant, std::size_t index,
 } // namespace detail
 
 } // namespace alpaca
+#endif

@@ -12,7 +12,11 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 #include <variant>
+#endif
+
 #include <vector>
 
 namespace alpaca {
@@ -195,12 +199,14 @@ type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 // variant
 template <typename T>
 typename std::enable_if<is_specialization<T, std::variant>::value, void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
 // vector
 template <typename T>

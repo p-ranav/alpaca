@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 #include <alpaca/detail/type_info.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <alpaca/detail/variant_nth_field.h>
@@ -73,3 +74,4 @@ bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
 } // namespace detail
 
 } // namespace alpaca
+#endif
