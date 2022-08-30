@@ -166,7 +166,7 @@ Container serialize(const T &s) {
 
 template <typename T, typename Container, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-void serialize(const T &s, Container &bytes, std::size_t& byte_index) {
+std::size_t serialize(const T &s, Container &bytes, std::size_t& byte_index) {
   if constexpr (N > 0 && enum_has_flag<options, O, options::with_version>()) {
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
@@ -184,6 +184,18 @@ void serialize(const T &s, Container &bytes, std::size_t& byte_index) {
     uint32_t crc = crc32_fast(bytes.data(), bytes.size());
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, crc);
   }
+
+  return byte_index;
+}
+
+template <typename T,
+          typename Container = std::vector<uint8_t>,
+          options O,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+std::size_t serialize(const T &s, Container &bytes) {
+  std::size_t byte_index = 0;
+  serialize<T, Container, O, N>(s, bytes, byte_index);
+  return byte_index;
 }
 
 template <typename T, typename Container, options O,
