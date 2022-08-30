@@ -7,6 +7,15 @@ namespace alpaca {
 
 namespace detail {
 
+template <typename T, typename Container>
+void copy_bytes_in_range(const T& value, Container& bytes, std::size_t& byte_index) {
+  auto start = static_cast<const char *>(static_cast<const void *>(&value));
+  auto end = start + sizeof value;
+  for (auto i = start; i < end - 1; ++i) {
+    append(static_cast<uint8_t>(*i), bytes, byte_index);
+  }
+}
+
 template <options O>
 void to_bytes_crc32(std::vector<uint8_t> &bytes,
                     std::size_t& byte_index,
@@ -17,10 +26,7 @@ void to_bytes_crc32(std::vector<uint8_t> &bytes,
   uint32_t value = original_value;
   update_value_based_on_alpaca_endian_rules<O, uint32_t>(value);
 
-  std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
-            static_cast<const char *>(static_cast<const void *>(&value)) +
-                sizeof value,
-            std::back_inserter(bytes));
+  copy_bytes_in_range(value, bytes, byte_index);
 }
 
 // write as is
@@ -36,10 +42,7 @@ to_bytes(T &bytes, std::size_t& byte_index, const U &original_value) {
   U value = original_value;
   update_value_based_on_alpaca_endian_rules<O, U>(value);
 
-  std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
-            static_cast<const char *>(static_cast<const void *>(&value)) +
-                sizeof value,
-            std::back_inserter(bytes));
+  copy_bytes_in_range(value, bytes, byte_index);
 }
 
 // encode as variable-length
@@ -68,12 +71,9 @@ to_bytes(T &bytes, std::size_t& byte_index, const U &original_value) {
       (enum_has_flag<options, O, options::fixed_length_encoding>()));
 
   if constexpr (use_fixed_length_encoding) {
-    std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
-              static_cast<const char *>(static_cast<const void *>(&value)) +
-                  sizeof value,
-              std::back_inserter(bytes));
+    copy_bytes_in_range(value, bytes, byte_index);
   } else {
-    encode_varint<U, T>(value, bytes);
+    encode_varint<U, T>(value, bytes, byte_index);
   }
 }
 

@@ -7,7 +7,8 @@ using doctest::test_suite;
 #define CONSTRUCT_EXPECTED_VALUE_SIGNED(type, value)                           \
   type expected_value = value;                                                 \
   std::vector<uint8_t> expected;                                               \
-  detail::encode_varint<type, std::vector<uint8_t>>(expected_value, expected);
+  std::size_t index = 0;                                                       \
+  detail::encode_varint<type, std::vector<uint8_t>>(expected_value, expected, index);
 
 TEST_CASE("Serialize int8_t" * test_suite("signed_integer")) {
   struct my_struct {
