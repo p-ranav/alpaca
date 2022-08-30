@@ -67,6 +67,7 @@ int main() {
      *    [Optional Values](#optional-values)
      *    [Type-safe Unions - Variant Types](#type-safe-unions---variant-types)
      *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
+*    [Backward and Forward Compatibility](#backward-and-forward-compatibility)
 *    [Configuration Options](#configuration-options)
      *    [Data Structure Versioning](#data-structure-versioning)
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
@@ -456,6 +457,17 @@ int main() {
 //   0x00 // 4.has_right = false
 // }
 ```
+
+## Backward and Forward Compatibility
+
+* A change made to a system or technology in such a way that the existing users are unaffected is a ***backward compatible change***. The obvious advantage is that the existing users have a non-time sensitive and a graceful way of upgrading their integrations. On the other hand, a non backward-compatible change breaks the existing integrations and forces the existing users to deal with an immediate fix.
+* ***Forward compatibility***, on the other hand is the ability of a system to process input meant for a later version of the system. A message/standard/library/tool (ex: alpaca) supports forward compatibility if an implementation (ex: a service built on alpaca) that uses an older version of the message processes a future version of the message.
+
+### Tips while changing `alpaca` message struct definitions:
+* Do not change the order or type of existing fields in the struct. This will break the design considerations meant for backward and forward compatibility.
+* Do not remove a field right away if it is not being used anymore. Mark it as deprecated and have a timeline to completely remote it, thereby giving the integrated applications time to flexibly remove the dependency on that field.
+* Add new fields for newer implementations and deprecate older fields in a timely way.
+* Adding fields is always a safe option as long as you manage them and don't end up with too many of them.
 
 ## Configuration Options
 
