@@ -386,7 +386,18 @@ auto bytes = serialize<Node<int>>(*root); // 15 bytes
 
 Consider an RPC interaction pattern where a client sends a message to a server. 
 
-### Case 1: Client-side is updated to use a newwer version of the message struct
+Here's the first version of the message struct:
+
+```cpp
+struct my_struct {
+  int old_field_1;
+  float old_field_2;
+};
+```
+
+### Case 1: Client-side is updated to use a newer version of the message struct
+
+In the scenario where the client side is updated to use a newer version of the struct, which includes a string `new_field_1`. The server side will receive and deserialize this newer version of the message, even though it is compiled to unpack the older version. This is expected to work as long as the newer version simply has more fields. Changes to existing fields, e.g., if `int` was changed to `int8_t`, may or may not work depending on the data.
 
 ```cpp
 std::vector<uint8_t> bytes;
@@ -417,6 +428,8 @@ std::vector<uint8_t> bytes;
 ```
 
 ### Case 2: Server-side is updated to use a newer version of the message struct
+
+In this scenario, the server-side is updated to use a newer version of the struct, accepting 3 additional fields: a string, a vector<bool>, and an integer. The client-side is still compiled with the older version of the struct. When the message is deserialized on the server side, the server will construct the newer version of the struct, fill out the fields that are available in the input, and default initialize the rest of the fields. 
 
 ```cpp
 std::vector<uint8_t> bytes;
