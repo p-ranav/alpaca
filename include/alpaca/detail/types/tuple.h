@@ -36,19 +36,19 @@ type_info(
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T, std::size_t index>
-void save_tuple_value(const T &tuple, std::vector<uint8_t> &bytes, std::size_t &byte_index) {
+template <options O, typename T, typename Container, std::size_t index>
+void save_tuple_value(const T &tuple, Container &bytes, std::size_t &byte_index) {
   constexpr auto max_index = std::tuple_size<T>::value;
   if constexpr (index < max_index) {
     to_bytes_router<O>(std::get<index>(tuple), bytes, byte_index);
-    save_tuple_value<O, T, index + 1>(tuple, bytes, byte_index);
+    save_tuple_value<O, T, Container, index + 1>(tuple, bytes, byte_index);
   }
 }
 
-template <options O, typename T>
-void to_bytes_from_tuple_type(const T &input, std::vector<uint8_t> &bytes, std::size_t &byte_index) {
+template <options O, typename T, typename Container>
+void to_bytes_from_tuple_type(const T &input, Container &bytes, std::size_t &byte_index) {
   // value of each element
-  save_tuple_value<O, T, 0>(input, bytes, byte_index);
+  save_tuple_value<O, T, Container, 0>(input, bytes, byte_index);
 }
 
 template <options O, typename Container, typename... U>

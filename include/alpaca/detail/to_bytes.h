@@ -16,13 +16,10 @@ void copy_bytes_in_range(const T& value, Container& bytes, std::size_t& byte_ind
   }
 }
 
-template <options O>
-void to_bytes_crc32(std::vector<uint8_t> &bytes,
+template <options O, typename Container>
+void to_bytes_crc32(Container &bytes,
                     std::size_t& byte_index,
                     const uint32_t &original_value) {
-
-  // TODO: change vector of bytes to Container generic
-
   uint32_t value = original_value;
   update_value_based_on_alpaca_endian_rules<O, uint32_t>(value);
 

@@ -42,15 +42,15 @@ type_info(
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T>
-void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes, std::size_t &byte_index) {
+template <options O, typename T, typename Container>
+void to_bytes_from_set_type(const T &input, Container &bytes, std::size_t &byte_index) {
   // save set size
-  to_bytes_router<O>(input.size(), bytes, byte_index);
+  to_bytes_router<O, std::size_t, Container>(input.size(), bytes, byte_index);
 
   // save values in set
   for (const auto &value : input) {
     using decayed_key_type = typename std::decay<typename T::value_type>::type;
-    to_bytes_router<O, decayed_key_type>(value, bytes, byte_index);
+    to_bytes_router<O, decayed_key_type, Container>(value, bytes, byte_index);
   }
 }
 

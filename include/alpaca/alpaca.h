@@ -147,9 +147,10 @@ void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
 template <typename T,
           typename Container = std::vector<uint8_t>,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-void serialize(const T &s, Container &bytes) {
+std::size_t serialize(const T &s, Container &bytes) {
   std::size_t byte_index = 0;
   serialize_helper<options::none, T, Container, N, 0>(s, bytes, byte_index);
+  return byte_index;
 }
 
 template <typename T,
@@ -172,7 +173,7 @@ void serialize(const T &s, Container &bytes, std::size_t& byte_index) {
     std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
     detail::type_info<T, N>(typeids, struct_visitor_map);
     uint32_t version = crc32_fast(typeids.data(), typeids.size());
-    detail::to_bytes_crc32<O>(bytes, byte_index, version);
+    detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
   }
 
   serialize_helper<O, T, Container, N, 0>(s, bytes, byte_index);
@@ -181,7 +182,7 @@ void serialize(const T &s, Container &bytes, std::size_t& byte_index) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), bytes.size());
-    detail::to_bytes_crc32<O>(bytes, byte_index, crc);
+    detail::to_bytes_crc32<O, Container>(bytes, byte_index, crc);
   }
 }
 

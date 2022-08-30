@@ -139,7 +139,7 @@ decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
 template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
                         void>::type
-encode_varint(int_t value, std::vector<uint8_t> &output, std::size_t& byte_index) {
+encode_varint(int_t value, Container &output, std::size_t& byte_index) {
   // first octet
   if (encode_varint_firstbyte_6<int_t>(value, output, byte_index)) {
     // rest of the octets

@@ -38,19 +38,19 @@ type_info(
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T>
-void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes, std::size_t &byte_index) {
+template <options O, typename T, typename Container>
+void to_bytes_from_map_type(const T &input, Container &bytes, std::size_t &byte_index) {
   // save map size
-  to_bytes_router<O, std::size_t>(input.size(), bytes, byte_index);
+  to_bytes_router<O, std::size_t, Container>(input.size(), bytes, byte_index);
 
   // save key,value pairs in map
   for (const auto &[key, value] : input) {
 
     using decayed_key_type = typename std::decay<decltype(key)>::type;
-    to_bytes_router<O, decayed_key_type>(key, bytes, byte_index);
+    to_bytes_router<O, decayed_key_type, Container>(key, bytes, byte_index);
 
     using decayed_value_type = typename std::decay<decltype(value)>::type;
-    to_bytes_router<O, decayed_value_type>(value, bytes, byte_index);
+    to_bytes_router<O, decayed_value_type, Container>(value, bytes, byte_index);
   }
 }
 

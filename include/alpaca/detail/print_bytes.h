@@ -7,7 +7,8 @@ namespace alpaca {
 
 namespace detail {
 
-static inline void print_bytes(const std::vector<uint8_t> &bytes) {
+template <typename Container>
+static inline void print_bytes(const Container &bytes) {
   std::ios_base::fmtflags f(std::cout.flags());
 
   std::cout << "bytes[" << bytes.size() << "]:\n  ";
