@@ -212,22 +212,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
 template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code) {
-  // unsigned or signed integer types
-  // char, bool
-  // float, double
-  if constexpr (std::is_arithmetic_v<T>) {
-    detail::from_bytes<O>(output, bytes, byte_index, error_code);
-  }
-  // enum class
-  else if constexpr (std::is_enum<T>::value) {
-    using underlying_type = typename std::underlying_type<T>::type;
-    underlying_type underlying_value{};
-    from_bytes_router<O, underlying_type>(underlying_value, bytes, byte_index,
-                                          error_code);
-    output = static_cast<T>(underlying_value);
-  } else {
-    detail::from_bytes<O>(output, bytes, byte_index, error_code);
-  }
+  detail::from_bytes<O>(output, bytes, byte_index, error_code);
 }
 
 } // namespace detail

@@ -112,6 +112,19 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
   return true;
 }
 
+// enum class
+template <options O, typename T>
+typename std::enable_if<std::is_enum_v<T>, bool>::type
+from_bytes(T &value, const std::vector<uint8_t> &bytes,
+           std::size_t &current_index, std::error_code & error_code) {
+  using underlying_type = typename std::underlying_type<T>::type;
+  underlying_type underlying_value{};
+  from_bytes<O, underlying_type>(underlying_value, bytes, current_index,
+                                 error_code);
+  value = static_cast<T>(underlying_value);
+  return true;
+}
+
 } // namespace detail
 
 } // namespace alpaca
