@@ -45,7 +45,7 @@ Config c{"/dev/video0", {640, 480},
 	  {"model_path", std::string{"foo/bar.pt"}}}};
 
 // Serialize
-auto bytes = alpaca::serialize(c); // 161 bytes
+auto bytes = alpaca::serialize(c);
 
 // Deserialize
 std::error_code ec;
