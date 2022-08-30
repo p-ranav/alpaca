@@ -18,8 +18,8 @@ type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes);
 
 template <options O, typename T>
 void to_bytes_from_vector_type(const T &input, std::vector<uint8_t> &bytes) {
@@ -34,8 +34,8 @@ void to_bytes_from_vector_type(const T &input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <options O, typename T, typename U>
-void to_bytes(T &bytes, const std::vector<U> &input) {
+template <options O, typename Container, typename U>
+void to_bytes(Container &bytes, const std::vector<U> &input) {
   to_bytes_from_vector_type<O>(input, bytes);
 }
 

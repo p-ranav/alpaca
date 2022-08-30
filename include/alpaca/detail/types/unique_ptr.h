@@ -20,11 +20,11 @@ type_info(
   type_info<element_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes);
 
-template <options O, typename T, typename U>
-void to_bytes(T &bytes, const std::unique_ptr<U> &input) {
+template <options O, typename Container, typename U>
+void to_bytes(Container &bytes, const std::unique_ptr<U> &input) {
   auto has_value = false;
   if (input) {
     has_value = true;

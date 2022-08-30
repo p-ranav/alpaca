@@ -35,8 +35,8 @@ type_info(
   type_info<mapped_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes);
 
 template <options O, typename T>
 void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
@@ -54,13 +54,13 @@ void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <options O, typename T, typename K, typename V>
-void to_bytes(T &bytes, const std::map<K, V> &input) {
+template <options O, typename Container, typename K, typename V>
+void to_bytes(Container &bytes, const std::map<K, V> &input) {
   to_bytes_from_map_type<O>(input, bytes);
 }
 
-template <options O, typename T, typename K, typename V>
-void to_bytes(T &bytes, const std::unordered_map<K, V> &input) {
+template <options O, typename Container, typename K, typename V>
+void to_bytes(Container &bytes, const std::unordered_map<K, V> &input) {
   to_bytes_from_map_type<O>(input, bytes);
 }
 

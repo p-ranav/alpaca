@@ -22,11 +22,11 @@ type_info(
   type_info<second_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes);
 
-template <options O, typename T, typename U, typename V>
-void to_bytes(T &bytes, const std::pair<U, V> &input) {
+template <options O, typename Container, typename U, typename V>
+void to_bytes(Container &bytes, const std::pair<U, V> &input) {
   to_bytes_router<O>(input.first, bytes);
   to_bytes_router<O>(input.second, bytes);
 }

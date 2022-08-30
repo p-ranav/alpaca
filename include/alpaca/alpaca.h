@@ -96,8 +96,8 @@ void type_info_helper(
 } // namespace detail
 
 // Forward declares
-template <options O, typename T, std::size_t N, std::size_t I>
-void serialize_helper(const T &s, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container, std::size_t N, std::size_t I>
+void serialize_helper(const T &s, Container &bytes);
 
 namespace detail {
 
@@ -108,7 +108,7 @@ namespace detail {
 template <options O, typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type
 to_bytes(T &bytes, const U &input) {
-  serialize_helper<O, U, detail::aggregate_arity<std::remove_cv_t<U>>::size(),
+  serialize_helper<O, U, T, detail::aggregate_arity<std::remove_cv_t<U>>::size(),
                    0>(input, bytes);
 }
 
@@ -117,8 +117,8 @@ typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
                         void>::type
 to_bytes(T &bytes, const U &input);
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes) {
   to_bytes<O>(bytes, input);
 }
 
@@ -126,42 +126,44 @@ void to_bytes_router(const T &input, std::vector<uint8_t> &bytes) {
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <options O, typename T,
+template <options O, typename T, typename Container,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
-void serialize_helper(const T &s, std::vector<uint8_t> &bytes) {
+void serialize_helper(const T &s, Container &bytes) {
   if constexpr (I < N) {
     const auto &ref = s;
     decltype(auto) field = detail::get<I, decltype(ref), N>(ref);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // serialize field
-    detail::to_bytes_router<O, decayed_field_type>(field, bytes);
+    detail::to_bytes_router<O, decayed_field_type, Container>(field, bytes);
 
     // go to next field
-    serialize_helper<O, T, N, I + 1>(s, bytes);
+    serialize_helper<O, T, Container, N, I + 1>(s, bytes);
   }
 }
 
 template <typename T,
+          typename Container = std::vector<uint8_t>,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-void serialize(const T &s, std::vector<uint8_t> &bytes) {
-  serialize_helper<options::none, T, N, 0>(s, bytes);
+void serialize(const T &s, Container &bytes) {
+  serialize_helper<options::none, T, Container, N, 0>(s, bytes);
 }
 
 template <typename T,
+          typename Container = std::vector<uint8_t>,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-std::vector<uint8_t> serialize(const T &s) {
-  std::vector<uint8_t> bytes{};
-  serialize<T, N>(s, bytes);
+Container serialize(const T &s) {
+  Container bytes{};
+  serialize<T, Container, N>(s, bytes);
   return bytes;
 }
 
 // overloads taking options template parameter
 
-template <typename T, options O,
+template <typename T, typename Container, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-void serialize(const T &s, std::vector<uint8_t> &bytes) {
+void serialize(const T &s, Container &bytes) {
   if constexpr (N > 0 && enum_has_flag<options, O, options::with_version>()) {
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
@@ -171,7 +173,7 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
     detail::to_bytes_crc32<O>(bytes, version);
   }
 
-  serialize_helper<O, T, N, 0>(s, bytes);
+  serialize_helper<O, T, Container, N, 0>(s, bytes);
 
   if constexpr (N > 0 && enum_has_flag<options, O, options::with_checksum>()) {
     // calculate crc32 for byte array and
@@ -181,11 +183,11 @@ void serialize(const T &s, std::vector<uint8_t> &bytes) {
   }
 }
 
-template <typename T, options O,
+template <typename T, typename Container, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-std::vector<uint8_t> serialize(const T &s) {
-  std::vector<uint8_t> bytes{};
-  serialize<T, O, N>(s, bytes);
+Container serialize(const T &s) {
+  Container bytes{};
+  serialize<T, Container, O, N>(s, bytes);
   return bytes;
 }
 
