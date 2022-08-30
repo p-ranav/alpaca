@@ -463,70 +463,79 @@ int main() {
 * A change made to a system or technology in such a way that the existing users are unaffected is a ***backward compatible change***. The obvious advantage is that the existing users have a non-time sensitive and a graceful way of upgrading their integrations. On the other hand, a non backward-compatible change breaks the existing integrations and forces the existing users to deal with an immediate fix.
 * ***Forward compatibility***, on the other hand is the ability of a system to process input meant for a later version of the system. A message/standard/library/tool (ex: alpaca) supports forward compatibility if an implementation (ex: a service built on alpaca) that uses an older version of the message processes a future version of the message.
 
-Consider a client-server scenario where the client sends a request message to the server and receives a response message.
-
-```cpp
-struct HelloRequest {};
-
-struct HelloReply {
-  std::string message;
-};
-```
-
-The following service implementation just fills the message with the string `"Hello World"`
-
-```cpp
-auto say_hello(const HelloRequest& request, const Context& context) {
-  return HelloReply{"Hello World"};
-}
-```
-
-Following the simplistic implementation, we decide to add more flavour to our messages and come up with the Version 2 of the struct - we add a personalized message
-
-```cpp
-struct HelloRequest {
-  std::string name;
-};
-
-struct HelloReply {
-  std::string message;
-  std::string personalized_message;
-};
-```
-
-Now let's examine the various cases affected by this change.
-
-### Case 1: Server upgrades to Version 2 of the struct and the client is on Version 1
-
-As part of an upgrade, the server could choose to change the server endpoint implementation or not. If it does not change the implementation, it would only be filling in the "message" field of the HelloReply message.
-
-On the other hand, it could change the implementation to fill in both the fields and support backwards logic compatibility with the following implementation:
-
-```cpp
-auto say_hello(const HelloRequest& request, const Context& context) {
-  auto response = HelloReply{"Hello World"};
-  
-  if (request.name != "") {
-    response.personalized_message = fmt::format("Hi, {}", request.name);
-  }
-  
-  return response;
-}
-```
-
-Either way, the client only understands Version 1 of the messages and it will only be referencing to the `message` field in the response while ignoring the `personalized_message` field.
-
-### Case 2 - Client upgrades to Version 2 of the struct and the server is on Version 1
-
-In this case, the client fills in the `name` field in the HelloRequest message, but the server which is compiled with Version 1 of the struct just fills in the `message` field in the `HelloReply` response message.
-
-The client is expecting two fields in its response and the second field (personalized_message) is set to its default value for the string datatype (an empty string).
-
 ### Tips while changing `alpaca` message struct definitions:
+
 * Do not change the order or type of existing fields in the struct. This will break the design considerations meant for backward and forward compatibility.
 * Do not remove a field right away if it is not being used anymore. Mark it as deprecated and have a timeline to completely remote it, thereby giving the integrated applications time to flexibly remove the dependency on that field.
 * Add new fields for newer implementations and deprecate older fields in a timely way.
 * Adding fields is always a safe option as long as you manage them and don't end up with too many of them.
+
+Consider an RPC interaction pattern where a client sends a message to a server. 
+
+### Case 1: Client-side is updated to use a newwer version of the message struct
+
+```cpp
+std::vector<uint8_t> bytes;
+{
+    // client side is updated to use a newer version
+    struct my_struct {
+        int old_field_1;
+        float old_field_2;
+        std::string new_field_1;
+    };
+
+    my_struct s{5, 3.14f, "Hello"};
+    bytes = serialize<my_struct>(s);
+}
+
+{
+    // server side is still compiled to deserialize the older version of the struct
+    struct my_struct {
+        int old_field_1;
+        float old_field_2;
+    };
+    std::error_code ec;
+    auto s = deserialize<my_struct>(bytes, ec);
+    assert((bool)ec == false);
+    assert(s.old_field_1 == 5);
+    assert(s.old_field_2 == 3.14f);
+}
+```
+
+### Case 2: Server-side is updated to use a newer version of the message struct
+
+```cpp
+std::vector<uint8_t> bytes;
+{
+    // client side is using an old structure
+    struct my_struct {
+        int old_field_1;
+        float old_field_2;
+    };
+
+    my_struct s{5, 3.14f};
+    bytes = serialize<my_struct>(s);
+}
+    
+{
+    // server side is updated to use a new structure
+    struct my_struct {
+        int old_field_1;
+        float old_field_2;
+        std::string new_field_1;
+        std::vector<bool> new_field_2;
+        int new_field_3;
+    };
+    std::error_code ec;
+    auto s = deserialize<my_struct>(bytes, ec);
+    assert((bool)ec == false);
+    assert(s.old_field_1 == 5);
+    assert(s.old_field_2 == 3.14f);
+    assert(s.new_field_1.empty()); // default initialized
+    assert(s.new_field_2.size() == 0); // default initialized
+    assert(s.new_field_3 == 0); // default initialized
+}
+```
 
 ## Configuration Options
 
