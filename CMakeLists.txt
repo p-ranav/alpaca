@@ -29,6 +29,14 @@ endif()
 
 include(cmake/project-is-top-level.cmake)
 
+# ---- Benchmarks ----
+if(PROJECT_IS_TOP_LEVEL)
+  if(ALPACA_BUILD_BENCHMARKS)
+    message(STATUS "Building benchmark")
+    add_subdirectory(benchmark)
+  endif()
+endif()
+
 install(TARGETS alpaca EXPORT alpacaConfig)
 install(EXPORT alpacaConfig
         NAMESPACE alpaca::
