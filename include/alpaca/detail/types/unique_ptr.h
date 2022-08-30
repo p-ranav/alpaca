@@ -49,6 +49,12 @@ bool from_bytes(std::unique_ptr<T> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
+  if (byte_index >= end_index) {
+    // end of input
+    // return true for forward compatibility
+    return true;
+  }
+
   auto current_byte = bytes[byte_index];
 
   // check if has_value has a legal value of either 0 or 1

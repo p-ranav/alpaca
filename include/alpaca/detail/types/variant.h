@@ -53,6 +53,13 @@ template <options O, typename... T>
 bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
+
+  if (byte_index >= end_index) {
+    // end of input
+    // return true for forward compatibility
+    return true;
+  }
+
   // current byte is the index of the variant value
   std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
 

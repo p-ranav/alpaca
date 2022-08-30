@@ -85,6 +85,13 @@ template <options O, typename... T>
 bool from_bytes(std::tuple<T...> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
+
+  if (byte_index >= end_index) {
+    // end of input
+    // return true for forward compatibility
+    return true;
+  }
+
   from_bytes_to_tuple<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }

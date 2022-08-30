@@ -40,6 +40,13 @@ template <options O, typename T, typename U>
 bool from_bytes(std::pair<T, U> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
+
+  if (byte_index >= end_index) {
+    // end of input
+    // return true for forward compatibility
+    return true;
+  }
+
   from_bytes_router<O>(output.first, bytes, byte_index, end_index, error_code);
   from_bytes_router<O>(output.second, bytes, byte_index, end_index, error_code);
 
