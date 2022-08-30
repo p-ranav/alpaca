@@ -51,10 +51,20 @@ to_bytes(T &bytes, const U &original_value) {
   U value = original_value;
   update_value_based_on_alpaca_endian_rules<O, U>(value);
 
-  // If big-endian is requested, dont encode as VLQ
-  // If fixed-length encoding is requested, dont encode as VLQ
-  if constexpr (enum_has_flag<options, O, options::big_endian>() ||
-                enum_has_flag<options, O, options::fixed_length_encoding>()) {
+  constexpr auto use_fixed_length_encoding = (
+      // Do not perform VLQ if:
+      // 1. if the system is little-endian and the requested byte order is
+      // big-endian
+      // 2. if the system is big-endian and the requested byte order is
+      // little-endian
+      // 3. If fixed length encoding is requested
+      (is_system_little_endian() &&
+       enum_has_flag<options, O, options::big_endian>()) ||
+      (is_system_big_endian() &&
+       !enum_has_flag<options, O, options::big_endian>()) ||
+      (enum_has_flag<options, O, options::fixed_length_encoding>()));
+
+  if constexpr (use_fixed_length_encoding) {
     std::copy(static_cast<const char *>(static_cast<const void *>(&value)),
               static_cast<const char *>(static_cast<const void *>(&value)) +
                   sizeof value,
