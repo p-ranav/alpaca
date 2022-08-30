@@ -87,9 +87,6 @@ int main() {
 ### Fundamental types
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
 struct MyStruct {
   char a;
   int b;
@@ -98,20 +95,10 @@ struct MyStruct {
   bool e;
 };
 
-int main() {
+MyStruct s{'a', 5, 12345, 3.14f, true};
 
-  MyStruct s{'a', 5, 12345, 3.14f, true};
-
-  // Serialize
-  auto bytes = serialize(s); // 9 bytes
-
-  // Deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
-}
+// Serialize
+auto bytes = serialize(s); // 9 bytes
 
 // bytes:
 // {
@@ -126,29 +113,16 @@ int main() {
 ### Arrays, Vectors, and Strings
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
 struct MyStruct {
   std::array<int, 3> a;
   std::vector<std::vector<float>> b;
   std::string c;
 };
 
-int main() {
+MyStruct s{{1, 2, 3}, {{3.14, 1.61}, {2.71, -1}}, {"Hello"}};
 
-  MyStruct s{{1, 2, 3}, {{3.14, 1.61}, {2.71, -1}}, {"Hello"}};
-
-  // Serialize
-  auto bytes = serialize(s); // 28 bytes
-
-  // Deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
-}
+// Serialize
+auto bytes = serialize(s); // 28 bytes
 
 // bytes:
 // {
@@ -168,31 +142,18 @@ int main() {
 ### Maps and Sets
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
 struct MyStruct {
   std::map<std::string, std::tuple<uint8_t, uint8_t, uint8_t>> a;
   std::set<int> b;
 };
 
-int main() {
+MyStruct s{{{"red", std::make_tuple(255, 0, 0)},
+            {"green", std::make_tuple(0, 255, 0)},
+            {"blue", std::make_tuple(0, 0, 255)}},
+           {1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4}};
 
-  MyStruct s{{{"red", std::make_tuple(255, 0, 0)},
-              {"green", std::make_tuple(0, 255, 0)},
-              {"blue", std::make_tuple(0, 0, 255)}},
-             {1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4}};
-
-  // Serialize
-  auto bytes = serialize(s); // 30 bytes
-
-  // Deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
-}
+// Serialize
+auto bytes = serialize(s); // 30 bytes
 
 // bytes:
 // {
@@ -214,9 +175,6 @@ int main() {
 ### Nested Structures
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
 struct MyStruct {
   struct gps {
     double latitude;
@@ -238,24 +196,14 @@ struct MyStruct {
   image thumbnail;
 };
 
-int main() {
+MyStruct s{{41.13, -73.70},
+           {480,
+            340,
+            "https://foo/bar/baz.jpg",
+            {MyStruct::image::format::type::yuyv_422}}};
 
-  MyStruct s{{41.13, -73.70},
-             {480,
-              340,
-              "https://foo/bar/baz.jpg",
-              {MyStruct::image::format::type::yuyv_422}}};
-
-  // Serialize
-  auto bytes = serialize(s); // 45 bytes
-
-  // Deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
-}
+// Serialize
+auto bytes = serialize(s); // 45 bytes
 
 // bytes:
 // {
@@ -276,9 +224,6 @@ int main() {
 ### Optional Values
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
 struct MyStruct {
   std::optional<int> a;
   std::optional<float> b;
@@ -286,23 +231,13 @@ struct MyStruct {
   std::optional<std::vector<bool>> d;
 };
 
-int main() {
+MyStruct s{5, 3.14f, std::nullopt, std::vector<bool>{true, false, true, false}};
 
-  MyStruct s{5, 3.14f, std::nullopt, std::vector<bool>{true, false, true, false}};
-
-  // Serialize
-  auto bytes = serialize<MyStruct, 4>(s); // 14 bytes
-                     // ^^^^^^^^^^^^^ 
-                     //    specify the number of fields (4) in struct manually
-                     //    alpaca fails at correctly detecting this due to the nature of std::optional
-
-  // Deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
-}
+// Serialize
+auto bytes = serialize<MyStruct, 4>(s); // 14 bytes
+	            // ^^^^^^^^^^^^^ 
+	            //    specify the number of fields (4) in struct manually
+	            //    alpaca fails at correctly detecting this due to the nature of std::optional
 
 // bytes:
 // {
@@ -320,9 +255,6 @@ int main() {
 ### Type-safe Unions - Variant Types
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
 struct MyStruct {
   std::map<std::string, 
            std::variant<uint16_t, 
@@ -332,22 +264,13 @@ struct MyStruct {
           > value;
 };
 
-int main() {
-  Config s{{{"keepalive", true},
-            {"port", uint16_t{8080}},
-            {"ip_address", std::string{"192.168.8.1"}},
-            {"subscriptions", std::vector<std::string>{"motor_state", "battery_state"}}}};
+Config s{{{"keepalive", true},
+          {"port", uint16_t{8080}},
+          {"ip_address", std::string{"192.168.8.1"}},
+          {"subscriptions", std::vector<std::string>{"motor_state", "battery_state"}}}};
   
-  // serialize
-  auto bytes = serialize(s); // 87 bytes
-  
-  // deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
-}
+// serialize
+auto bytes = serialize(s); // 87 bytes
 
 // bytes:
 // {
@@ -379,10 +302,8 @@ int main() {
 ### Smart Pointers and Recursive Data Structures
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
-template <class T> struct Node {
+template <class T> 
+struct Node {
   T data;
   std::unique_ptr<Node<T>> left;
   std::unique_ptr<Node<T>> right;
@@ -405,38 +326,27 @@ auto make_node(T const &value, std::unique_ptr<Node<T>> lhs = nullptr,
       new Node<T>{value, std::move(lhs), std::move(rhs)});
 }
 
-int main() {
-
-  /*
-    Binary Tree:
-
-          5
-         / \
-        3   4
+/*
+  Binary Tree:
+        5
        / \
-      1   2
-  */
+      3   4
+     / \
+    1   2
+*/
 
-  auto const root = make_node(
-      5, 
-      make_node(
-          3, 
-          make_node(1), 
-          make_node(2)
-      ), 
-      make_node(4)
-  );  
+auto const root = make_node(
+    5, 
+    make_node(
+        3, 
+        make_node(1), 
+        make_node(2)
+    ), 
+    make_node(4)
+);  
 
-  // serialize
-  auto bytes = serialize<Node<int>>(*root); // 15 bytes
-
-  // deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
-}
+// serialize
+auto bytes = serialize<Node<int>>(*root); // 15 bytes
 
 // bytes:
 // {
@@ -542,64 +452,52 @@ std::vector<uint8_t> bytes;
 ### Data Structure Versioning
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
+std::vector<uint8_t> bytes;
 
-int main() {
+// serialize
+{
+  struct MyStruct {
+    int a;
+  };
 
-  std::vector<uint8_t> bytes;
+  MyStruct s{5};
+  bytes = serialize<MyStruct, options::with_version>(s);
+}
 
-  // serialize
-  {
-    struct MyStruct {
-      int a;
-    };
+// deserialize
+{
+  struct MyStruct {
+    int a;
+    float b;
+    char c;
+  };
 
-    MyStruct s{5};
-    bytes = serialize<MyStruct, options::with_version>(s);
-  }
-
-  // deserialize
-  {
-    struct MyStruct {
-      int a;
-      float b;
-      char c;
-    };
-
-    std::error_code ec;
-    auto object = deserialize<MyStruct, options::with_version>(bytes, ec);
-    // ec.value() == std::errc::invalid_argument here
-  }
+  std::error_code ec;
+  auto object = deserialize<MyStruct, options::with_version>(bytes, ec);
+  // ec.value() == std::errc::invalid_argument here
 }
 ```
 
 ### Integrity Checking with Checksums
 
 ```cpp
-#include <alpaca/alpaca.h>
-using namespace alpaca;
-
 struct MyStruct {
   char a;
   uint16_t b;
   float c;
 };
 
-int main() {
+MyStruct s{'m', 54321, -987.654};
 
-  MyStruct s{'m', 54321, -987.654};
+// Serialize and append CRC32 hash
+constexpr auto OPTIONS = options::with_checksum;
+auto bytes = serialize<MyStruct, OPTIONS>(s); // 11 bytes
 
-  // Serialize and append CRC32 hash
-  constexpr auto OPTIONS = options::with_checksum;
-  auto bytes = serialize<MyStruct, OPTIONS>(s); // 11 bytes
-
-  // Check CRC32 hash and deserialize
-  std::error_code ec;
-  auto object = deserialize<MyStruct, OPTIONS>(bytes, ec);
-  if (!ec) {
-    // use object
-  }
+// Check CRC32 hash and deserialize
+std::error_code ec;
+auto object = deserialize<MyStruct, OPTIONS>(bytes, ec);
+if (!ec) {
+  // use object
 }
 
 // bytes:
