@@ -14,6 +14,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 * `alpaca` is header-only serialization library for modern C++, written in C++17
 * No macros or boilerplate, no source code generation, no external dependencies
 * Simple, fast, and easy to use
+  - Include `<alpaca/alpaca.h>`
   - Call `auto bytes = serialize(object)` to pack a struct object
   - Call `auto object = deserialize<T>(bytes, error_code)` to unpack a bytearray
 * Supports basic data types, STL containers, unique pointers, optionals, and variants
@@ -83,6 +84,10 @@ if (!ec) {
 
 ### Fundamental types
 
+* Fundamental types, including `char`, `bool`, fixed-width integer types like `uint16_t`, and floating-point types are supported by alpaca
+* For larger integer types including `int32_t`, alpaca may use variable-length encoding where applicable. If fixed-width encoding is preferred, this can be changed using `options::fixed_width_encoding`.
+* By default, alpaca uses little endian for the byte order. This can be changed to use big-endian byte order using `options::big_endian`
+
 ```cpp
 struct MyStruct {
   char a;
@@ -95,7 +100,7 @@ struct MyStruct {
 MyStruct s{'a', 5, 12345, 3.14f, true};
 
 // Serialize
-auto bytes = serialize(s); // 9 bytes
+auto bytes = alpaca::serialize(s); // 9 bytes
 
 // bytes:
 // {
@@ -106,6 +111,8 @@ auto bytes = serialize(s); // 9 bytes
 //   0x01                  // bool true
 // }
 ```
+
+In the above example, `c` is a `uint64_t` but its value is only `5`. Here, alpaca will pack the value in a single byte instead of taking up 8 bytes. This is the default behavior for larger integer types. 
 
 ### Arrays, Vectors, and Strings
 
