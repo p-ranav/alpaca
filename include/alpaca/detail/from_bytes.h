@@ -13,10 +13,11 @@ namespace detail {
 
 template <options O>
 bool from_bytes_crc32(uint32_t &value, const std::vector<uint8_t> &bytes,
-                      std::size_t &current_index, std::error_code &) {
+                      std::size_t &current_index, std::size_t &end_index,
+                      std::error_code &) {
   constexpr auto num_bytes_to_read = 4;
 
-  if (bytes.size() < num_bytes_to_read) {
+  if (end_index < num_bytes_to_read) {
     return false;
   }
   value = *(reinterpret_cast<const uint32_t *>(bytes.data() + current_index));
@@ -35,9 +36,10 @@ typename std::enable_if<
         std::is_same_v<T, float> || std::is_same_v<T, double>,
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index, std::error_code &error_code) {
+           std::size_t &current_index, std::size_t &end_index,
+           std::error_code &error_code) {
 
-  if (current_index >= bytes.size()) {
+  if (current_index >= end_index) {
     // end of input
 
     // default initialize the value
@@ -49,21 +51,21 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 
   if constexpr (std::is_same_v<T, uint8_t> || std::is_same_v<T, int8_t>) {
     // there should be at least 1 byte
-    if (bytes.size() - current_index < 1) {
+    if (end_index - current_index < 1) {
       error_code = std::make_error_code(std::errc::message_size);
       return false;
     }
   } else if constexpr (std::is_same_v<T, uint16_t> ||
                        std::is_same_v<T, int16_t>) {
     // there should be at least 2 bytes
-    if (bytes.size() - current_index < 2) {
+    if (end_index - current_index < 2) {
       error_code = std::make_error_code(std::errc::message_size);
       return false;
     }
   }
 
   constexpr auto num_bytes_to_read = sizeof(T);
-  if (bytes.size() < num_bytes_to_read) {
+  if (end_index < num_bytes_to_read) {
     /// TODO: report error
     return false;
   }
@@ -81,9 +83,10 @@ typename std::enable_if<
         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>,
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index, std::error_code &) {
+           std::size_t &current_index, std::size_t &end_index,
+           std::error_code &) {
 
-  if (current_index >= bytes.size()) {
+  if (current_index >= end_index) {
     // end of input
 
     // default initialize the value
@@ -98,7 +101,7 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
   if constexpr (enum_has_flag<options, O, options::big_endian>() ||
                 enum_has_flag<options, O, options::fixed_length_encoding>()) {
     constexpr auto num_bytes_to_read = sizeof(T);
-    if (bytes.size() < num_bytes_to_read) {
+    if (end_index < num_bytes_to_read) {
       /// TODO: report error
       return false;
     }
@@ -116,11 +119,12 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 template <options O, typename T>
 typename std::enable_if<std::is_enum_v<T>, bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
-           std::size_t &current_index, std::error_code & error_code) {
+           std::size_t &current_index, std::size_t &end_index,
+           std::error_code &error_code) {
   using underlying_type = typename std::underlying_type<T>::type;
   underlying_type underlying_value{};
   from_bytes<O, underlying_type>(underlying_value, bytes, current_index,
-                                 error_code);
+                                 end_index, error_code);
   value = static_cast<T>(underlying_value);
   return true;
 }

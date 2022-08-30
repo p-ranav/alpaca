@@ -33,13 +33,15 @@ void to_bytes(T &bytes, const std::pair<U, V> &input) {
 
 template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
-                       std::size_t &byte_index, std::error_code &error_code);
+                       std::size_t &byte_index, std::size_t &end_index,
+                       std::error_code &error_code);
 
 template <options O, typename T, typename U>
 bool from_bytes(std::pair<T, U> &output, const std::vector<uint8_t> &bytes,
-                std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_router<O>(output.first, bytes, byte_index, error_code);
-  from_bytes_router<O>(output.second, bytes, byte_index, error_code);
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
+  from_bytes_router<O>(output.first, bytes, byte_index, end_index, error_code);
+  from_bytes_router<O>(output.second, bytes, byte_index, end_index, error_code);
 
   return true;
 }

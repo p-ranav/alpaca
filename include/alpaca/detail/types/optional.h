@@ -36,11 +36,13 @@ void to_bytes(T &bytes, const std::optional<U> &input) {
 
 template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
-                       std::size_t &byte_index, std::error_code &error_code);
+                       std::size_t &byte_index, std::size_t &end_index,
+                       std::error_code &error_code);
 
 template <options O, typename T>
 bool from_bytes(std::optional<T> &output, const std::vector<uint8_t> &bytes,
-                std::size_t &byte_index, std::error_code &error_code) {
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
 
   auto current_byte = bytes[byte_index];
 
@@ -59,7 +61,7 @@ bool from_bytes(std::optional<T> &output, const std::vector<uint8_t> &bytes,
   if (has_value) {
     // read value of optional
     T value;
-    from_bytes_router<O>(value, bytes, byte_index, error_code);
+    from_bytes_router<O>(value, bytes, byte_index, end_index, error_code);
     output = value;
   }
 

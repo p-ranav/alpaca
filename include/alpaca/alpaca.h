@@ -192,7 +192,8 @@ std::vector<uint8_t> serialize(const T &s) {
 // Forward declares
 template <options O, typename T, std::size_t N, std::size_t index>
 void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
-                        std::size_t &byte_index, std::error_code &error_code);
+                        std::size_t &byte_index, std::size_t &end_index,
+                        std::error_code &error_code);
 
 namespace detail {
 
@@ -203,16 +204,17 @@ template <options O, typename T>
 typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
                         bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
-           std::error_code &error_code) {
+           std::size_t &end_index, std::error_code &error_code) {
   deserialize_helper<O, T, detail::aggregate_arity<std::remove_cv_t<T>>::size(),
-                     0>(value, bytes, byte_index, error_code);
+                     0>(value, bytes, byte_index, end_index, error_code);
   return true;
 }
 
 template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
-                       std::size_t &byte_index, std::error_code &error_code) {
-  detail::from_bytes<O>(output, bytes, byte_index, error_code);
+                       std::size_t &byte_index, std::size_t &end_index,
+                       std::error_code &error_code) {
+  detail::from_bytes<O>(output, bytes, byte_index, end_index, error_code);
 }
 
 } // namespace detail
@@ -223,21 +225,23 @@ template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
 void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
-                        std::size_t &byte_index, std::error_code &error_code) {
+                        std::size_t &byte_index, std::size_t &end_index,
+                        std::error_code &error_code) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // load current field
     detail::from_bytes_router<O, decayed_field_type>(field, bytes, byte_index,
-                                                     error_code);
+                                                     end_index, error_code);
 
     if (error_code) {
       // stop here
       return;
     } else {
       // go to next field
-      deserialize_helper<O, T, N, I + 1>(s, bytes, byte_index, error_code);
+      deserialize_helper<O, T, N, I + 1>(s, bytes, byte_index, end_index,
+                                         error_code);
     }
   }
 }
@@ -245,8 +249,10 @@ void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index, std::error_code &error_code) {
-  deserialize_helper<options::none, T, N, 0>(s, bytes, byte_index, error_code);
+                 std::size_t &byte_index, std::size_t &end_index,
+                 std::error_code &error_code) {
+  deserialize_helper<options::none, T, N, 0>(s, bytes, byte_index, end_index,
+                                             error_code);
 }
 
 template <typename T,
@@ -260,7 +266,8 @@ T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
   }
 
   std::size_t byte_index = 0;
-  deserialize<T, N>(object, bytes, byte_index, error_code);
+  std::size_t end_index = bytes.size();
+  deserialize<T, N>(object, bytes, byte_index, end_index, error_code);
   return object;
 }
 
@@ -268,7 +275,8 @@ T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
 template <typename T, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 void deserialize(T &s, const std::vector<uint8_t> &bytes,
-                 std::size_t &byte_index, std::error_code &error_code) {
+                 std::size_t &byte_index, std::size_t &end_index,
+                 std::error_code &error_code) {
 
   if constexpr (N > 0 && enum_has_flag<options, O, options::with_version>()) {
 
@@ -280,7 +288,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
 
     // check computed version with version in input
     // there should be at least 4 bytes in input
-    if (bytes.size() < 4) {
+    if (end_index < 4) {
       error_code = std::make_error_code(std::errc::invalid_argument);
       return;
     } else {
@@ -290,7 +298,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       }
       uint32_t version = 0;
       std::size_t index = 0;
-      detail::from_bytes_crc32<O>(version, bytes, index,
+      detail::from_bytes_crc32<O>(version, bytes, index, end_index,
                                   error_code); // first 4 bytes
 
       if (version != computed_version) {
@@ -302,26 +310,22 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
 
   if constexpr (enum_has_flag<options, O, options::with_checksum>()) {
     // bytes must be at least 4 bytes long
-    if (bytes.size() < 4) {
+    if (end_index < 4) {
       error_code = std::make_error_code(std::errc::invalid_argument);
       return;
     } else {
       // check crc bytes
       uint32_t trailing_crc;
-      std::size_t index = bytes.size() - 4;
-      detail::from_bytes_crc32<O>(trailing_crc, bytes, index,
+      std::size_t index = end_index - 4;
+      detail::from_bytes_crc32<O>(trailing_crc, bytes, index, end_index,
                                   error_code); // last 4 bytes
 
-      auto computed_crc = crc32_fast(bytes.data(), bytes.size() - 4);
+      auto computed_crc = crc32_fast(bytes.data(), end_index - 4);
 
       if (trailing_crc == computed_crc) {
         // message is good!
-        // copy over all bytes except last 4
-        // TODO: Should this function accept a non-const vector?
-        // If it did, it could just remove the last 4 bytes
-        const std::vector<uint8_t> bytes_without_crc(bytes.begin(),
-                                                     bytes.begin() + index);
-        deserialize_helper<O, T, N, 0>(s, bytes_without_crc, byte_index,
+        end_index -= 4;
+        deserialize_helper<O, T, N, 0>(s, bytes, byte_index, end_index,
                                        error_code);
       } else {
         // message is bad
@@ -332,7 +336,7 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
   } else {
     // bytes does not have any CRC
     // just deserialize everything into type T
-    deserialize_helper<O, T, N, 0>(s, bytes, byte_index, error_code);
+    deserialize_helper<O, T, N, 0>(s, bytes, byte_index, end_index, error_code);
   }
 }
 
@@ -347,7 +351,8 @@ T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
   }
 
   std::size_t byte_index = 0;
-  deserialize<T, O, N>(object, bytes, byte_index, error_code);
+  std::size_t end_index = bytes.size();
+  deserialize<T, O, N>(object, bytes, byte_index, end_index, error_code);
   return object;
 }
 

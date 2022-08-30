@@ -66,16 +66,17 @@ void to_bytes(T &bytes, const std::unordered_map<K, V> &input) {
 
 template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
-                       std::size_t &byte_index, std::error_code &error_code);
+                       std::size_t &byte_index, std::size_t &end_index,
+                       std::error_code &error_code);
 
 template <options O, typename T>
 void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
-                       std::size_t &current_index,
+                       std::size_t &current_index, std::size_t &end_index,
                        std::error_code &error_code) {
   // current byte is the size of the map
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
 
-  if (size > bytes.size() - current_index) {
+  if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining
     error_code = std::make_error_code(std::errc::value_too_large);
 
@@ -86,10 +87,10 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     typename T::key_type key{};
-    from_bytes_router<O>(key, bytes, current_index, error_code);
+    from_bytes_router<O>(key, bytes, current_index, end_index, error_code);
 
     typename T::mapped_type value{};
-    from_bytes_router<O>(value, bytes, current_index, error_code);
+    from_bytes_router<O>(value, bytes, current_index, end_index, error_code);
 
     map.insert(std::make_pair(key, value));
   }
@@ -97,16 +98,17 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
 
 template <options O, typename K, typename V>
 bool from_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
-                std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_to_map<O>(output, bytes, byte_index, error_code);
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
+  from_bytes_to_map<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }
 
 template <options O, typename K, typename V>
 bool from_bytes(std::unordered_map<K, V> &output,
                 const std::vector<uint8_t> &bytes, std::size_t &byte_index,
-                std::error_code &error_code) {
-  from_bytes_to_map<O>(output, bytes, byte_index, error_code);
+                std::size_t &end_index, std::error_code &error_code) {
+  from_bytes_to_map<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }
 

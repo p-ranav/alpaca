@@ -38,18 +38,19 @@ void to_bytes(T &bytes, const std::array<U, N> &input) {
 
 template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
-                       std::size_t &byte_index, std::error_code &error_code);
+                       std::size_t &byte_index, std::size_t &end_index,
+                       std::error_code &error_code);
 
 template <options O, typename T>
 void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
-                         std::size_t &current_index,
+                         std::size_t &current_index, std::size_t &end_index,
                          std::error_code &error_code) {
 
   using decayed_value_type = typename std::decay<typename T::value_type>::type;
 
   constexpr auto size = std::tuple_size<T>::value;
 
-  if (size > bytes.size() - current_index) {
+  if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining
     error_code = std::make_error_code(std::errc::value_too_large);
 
@@ -60,15 +61,16 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     decayed_value_type v{};
-    from_bytes_router<O>(v, bytes, current_index, error_code);
+    from_bytes_router<O>(v, bytes, current_index, end_index, error_code);
     value[i] = v;
   }
 }
 
 template <options O, typename U, std::size_t N>
 bool from_bytes(std::array<U, N> &output, const std::vector<uint8_t> &bytes,
-                std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_to_array<O>(output, bytes, byte_index, error_code);
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
+  from_bytes_to_array<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }
 

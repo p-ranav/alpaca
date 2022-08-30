@@ -41,15 +41,16 @@ void to_bytes(T &bytes, const std::vector<U> &input) {
 
 template <options O, typename T>
 void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
-                       std::size_t &byte_index, std::error_code &error_code);
+                       std::size_t &byte_index, std::size_t &end_index,
+                       std::error_code &error_code);
 
 template <options O, typename T>
 bool from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
-                          std::size_t &current_index,
+                          std::size_t &current_index, std::size_t &end_index,
                           std::error_code &error_code) {
 
-  if (current_index >= bytes.size()) {
+  if (current_index >= end_index) {
     // end of input
     // return true for forward compatibility
     return true;
@@ -58,7 +59,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
   // current byte is the size of the vector
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
 
-  if (size > bytes.size() - current_index) {
+  if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining
     error_code = std::make_error_code(std::errc::value_too_large);
 
@@ -69,7 +70,7 @@ bool from_bytes_to_vector(std::vector<T> &value,
   // read `size` bytes and save to value
   for (std::size_t i = 0; i < size; ++i) {
     T v{};
-    from_bytes_router<O>(v, bytes, current_index, error_code);
+    from_bytes_router<O>(v, bytes, current_index, end_index, error_code);
     if (error_code) {
       // something went wrong
       return false;
@@ -82,8 +83,10 @@ bool from_bytes_to_vector(std::vector<T> &value,
 
 template <options O, typename T>
 bool from_bytes(std::vector<T> &output, const std::vector<uint8_t> &bytes,
-                std::size_t &byte_index, std::error_code &error_code) {
-  return from_bytes_to_vector<O>(output, bytes, byte_index, error_code);
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
+  return from_bytes_to_vector<O>(output, bytes, byte_index, end_index,
+                                 error_code);
 }
 
 } // namespace detail

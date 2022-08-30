@@ -9,7 +9,7 @@ enum class options {
   fixed_length_encoding = 2,
   with_version = 4,
   with_checksum = 8,
-  unchecked     = 16
+  unchecked = 16
 };
 
 template <typename E> struct enable_bitmask_operators {

@@ -33,9 +33,10 @@ void to_bytes(T &bytes, const std::string &input) {
 
 template <options O>
 bool from_bytes(std::string &value, const std::vector<uint8_t> &bytes,
-                std::size_t &current_index, std::error_code &error_code) {
+                std::size_t &current_index, std::size_t &end_index,
+                std::error_code &error_code) {
 
-  if (current_index >= bytes.size()) {
+  if (current_index >= end_index) {
     // end of input
     // return true for forward compatibility
     return true;
@@ -44,7 +45,7 @@ bool from_bytes(std::string &value, const std::vector<uint8_t> &bytes,
   // current byte is the length of the string
   std::size_t size = decode_varint<std::size_t>(bytes, current_index);
 
-  if (size > bytes.size() - current_index) {
+  if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining
     error_code = std::make_error_code(std::errc::value_too_large);
 

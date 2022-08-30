@@ -51,13 +51,14 @@ void to_bytes(T &bytes, const std::variant<U...> &input) {
 
 template <options O, typename... T>
 bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
-                std::size_t &byte_index, std::error_code &error_code) {
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
   // current byte is the index of the variant value
   std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
 
   // read bytes as value_type = variant@index
-  detail::set_variant_value<O, std::variant<T...>>(output, index, bytes,
-                                                   byte_index, error_code);
+  detail::set_variant_value<O, std::variant<T...>>(
+      output, index, bytes, byte_index, end_index, error_code);
 
   return true;
 }
