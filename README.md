@@ -17,9 +17,12 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
   - Include `<alpaca/alpaca.h>`
   - Call `auto bytes = serialize(object)` to pack a struct object
   - Call `auto object = deserialize<T>(bytes, error_code)` to unpack a bytearray
-* Supports basic data types, STL containers, unique pointers, optionals, and variants
-* Optional data structure versioning - recursively generates a type hash that is checked during deserialization
-* Optional integrity checking - detects data corruption during deserialization using checksums
+* Supports basic data types, STL containers, unique pointers, recursive data structures, optionals, variants and more
+* Highly configurable at compile time
+  - Little endian by default. Configurable to use big endian byte order
+  - Variable-length encoding by default for large integer types. Configurable to use fixed-width encoding
+  - Optional type hashing and data structure versioning - recursively generates a type hash that is checked during deserialization
+  - Optional integrity checking - detects data corruption during deserialization using checksums
 * MIT license
 
 ```cpp
