@@ -37,6 +37,16 @@ typename std::enable_if<
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &error_code) {
 
+  if (current_index >= bytes.size()) {
+    // end of input
+
+    // default initialize the value
+    value = T();
+
+    // return true for forward compatibility
+    return true;
+  }
+
   if constexpr (std::is_same_v<T, uint8_t> || std::is_same_v<T, int8_t>) {
     // there should be at least 1 byte
     if (bytes.size() - current_index < 1) {
@@ -72,6 +82,16 @@ typename std::enable_if<
     bool>::type
 from_bytes(T &value, const std::vector<uint8_t> &bytes,
            std::size_t &current_index, std::error_code &) {
+
+  if (current_index >= bytes.size()) {
+    // end of input
+
+    // default initialize the value
+    value = T();
+
+    // return true for forward compatibility
+    return true;
+  }
 
   // If big-endian is requested, dont decode as VLQ
   // If fixed-length encoding is requested, dont decode as VLQ

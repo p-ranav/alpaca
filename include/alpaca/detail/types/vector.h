@@ -44,10 +44,16 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
                        std::size_t &byte_index, std::error_code &error_code);
 
 template <options O, typename T>
-void from_bytes_to_vector(std::vector<T> &value,
+bool from_bytes_to_vector(std::vector<T> &value,
                           const std::vector<uint8_t> &bytes,
                           std::size_t &current_index,
                           std::error_code &error_code) {
+
+  if (current_index >= bytes.size()) {
+    // end of input
+    // return true for forward compatibility
+    return true;
+  }
 
   // current byte is the size of the vector
   std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
@@ -57,7 +63,7 @@ void from_bytes_to_vector(std::vector<T> &value,
     error_code = std::make_error_code(std::errc::value_too_large);
 
     // stop here
-    return;
+    return false;
   }
 
   // read `size` bytes and save to value
@@ -66,17 +72,18 @@ void from_bytes_to_vector(std::vector<T> &value,
     from_bytes_router<O>(v, bytes, current_index, error_code);
     if (error_code) {
       // something went wrong
-      return;
+      return false;
     }
     value.push_back(v);
   }
+
+  return true;
 }
 
 template <options O, typename T>
 bool from_bytes(std::vector<T> &output, const std::vector<uint8_t> &bytes,
                 std::size_t &byte_index, std::error_code &error_code) {
-  from_bytes_to_vector<O>(output, bytes, byte_index, error_code);
-  return true;
+  return from_bytes_to_vector<O>(output, bytes, byte_index, error_code);
 }
 
 } // namespace detail

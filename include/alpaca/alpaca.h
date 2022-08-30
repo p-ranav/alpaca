@@ -268,6 +268,12 @@ template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
   T object{};
+
+  if (bytes.empty()) {
+    error_code = std::make_error_code(std::errc::message_size);
+    return object;
+  }
+
   std::size_t byte_index = 0;
   deserialize<T, N>(object, bytes, byte_index, error_code);
   return object;
@@ -349,6 +355,12 @@ template <typename T, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
   T object{};
+
+  if (bytes.empty()) {
+    error_code = std::make_error_code(std::errc::message_size);
+    return object;
+  }
+
   std::size_t byte_index = 0;
   deserialize<T, O, N>(object, bytes, byte_index, error_code);
   return object;
