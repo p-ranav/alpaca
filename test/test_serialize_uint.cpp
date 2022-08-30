@@ -6,7 +6,7 @@ using doctest::test_suite;
 
 #define CONSTRUCT_EXPECTED_VALUE(value)                                        \
   std::vector<uint8_t> expected;                                               \
-  detail::encode_varint(value, expected);
+  detail::encode_varint<decltype(value), std::vector<uint8_t>>(value, expected);
 
 TEST_CASE("Serialize uint8_t" * test_suite("unsigned_integer")) {
   struct my_struct {

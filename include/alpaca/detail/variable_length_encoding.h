@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <utility>
 #include <vector>
+#include <alpaca/detail/output_container.h>
 
 namespace alpaca {
 
@@ -19,8 +20,8 @@ template <typename T> void RESET_BIT(T &value, uint8_t pos) {
   value = value & ~(1 << pos);
 }
 
-template <typename int_t = uint64_t>
-bool encode_varint_firstbyte_6(int_t &value, std::vector<uint8_t> &output) {
+template <typename int_t, typename Container>
+bool encode_varint_firstbyte_6(int_t &value, Container &output) {
   uint8_t octet = 0;
   if (value < 0) {
     value *= -1;
@@ -40,8 +41,8 @@ bool encode_varint_firstbyte_6(int_t &value, std::vector<uint8_t> &output) {
   }
 }
 
-template <typename int_t = uint64_t>
-void encode_varint_6(int_t value, std::vector<uint8_t> &output) {
+template <typename int_t, typename Container>
+void encode_varint_6(int_t value, Container &output) {
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
   while (value > 63) {
@@ -88,8 +89,8 @@ int_t decode_varint_6(const std::vector<uint8_t> &input,
   return ret;
 }
 
-template <typename int_t = uint64_t>
-void encode_varint_7(int_t value, std::vector<uint8_t> &output) {
+template <typename int_t, typename Container>
+void encode_varint_7(int_t value, Container &output) {
   if (value < 0) {
     value *= 1;
   }
@@ -120,7 +121,7 @@ int_t decode_varint_7(const std::vector<uint8_t> &input,
 }
 
 // Unsigned integer variable-length encoding functions
-template <typename int_t = uint64_t>
+template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>,
                         void>::type
 encode_varint(int_t value, std::vector<uint8_t> &output) {
@@ -135,7 +136,7 @@ decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
 }
 
 // Signed integer variable-length encoding functions
-template <typename int_t = int64_t>
+template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
                         void>::type
 encode_varint(int_t value, std::vector<uint8_t> &output) {

@@ -70,7 +70,7 @@ to_bytes(T &bytes, const U &original_value) {
                   sizeof value,
               std::back_inserter(bytes));
   } else {
-    encode_varint<U>(value, bytes);
+    encode_varint<U, T>(value, bytes);
   }
 }
 
