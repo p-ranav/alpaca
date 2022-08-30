@@ -9,7 +9,10 @@ namespace detail {
 
 template <options O>
 void to_bytes_crc32(std::vector<uint8_t> &bytes,
+                    std::size_t& byte_index,
                     const uint32_t &original_value) {
+
+  // TODO: change vector of bytes to Container generic
 
   uint32_t value = original_value;
   update_value_based_on_alpaca_endian_rules<O, uint32_t>(value);
@@ -28,7 +31,7 @@ typename std::enable_if<
         std::is_same_v<U, int8_t> || std::is_same_v<U, int16_t> ||
         std::is_same_v<U, float> || std::is_same_v<U, double>,
     void>::type
-to_bytes(T &bytes, const U &original_value) {
+to_bytes(T &bytes, std::size_t& byte_index, const U &original_value) {
 
   U value = original_value;
   update_value_based_on_alpaca_endian_rules<O, U>(value);
@@ -46,7 +49,7 @@ typename std::enable_if<
         std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t> ||
         std::is_same_v<U, std::size_t>,
     void>::type
-to_bytes(T &bytes, const U &original_value) {
+to_bytes(T &bytes, std::size_t& byte_index, const U &original_value) {
 
   U value = original_value;
   update_value_based_on_alpaca_endian_rules<O, U>(value);
@@ -77,10 +80,10 @@ to_bytes(T &bytes, const U &original_value) {
 // enum class
 template <options O, typename T, typename U>
 typename std::enable_if<std::is_enum<U>::value, void>::type
-to_bytes(T &bytes, const U &value) {
+to_bytes(T &bytes, std::size_t& byte_index, const U &value) {
   using underlying_type =
       typename std::decay<typename std::underlying_type<U>::type>::type;
-  to_bytes<O, T, underlying_type>(bytes, static_cast<underlying_type>(value));
+  to_bytes<O, T, underlying_type>(bytes, byte_index, static_cast<underlying_type>(value));
 }
 
 } // namespace detail

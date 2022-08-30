@@ -36,17 +36,17 @@ type_info(
 }
 
 template <options O, typename T, typename Container>
-void to_bytes_router(const T &input, Container &bytes);
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
 template <options O, typename Container, typename... U>
-void to_bytes(Container &bytes, const std::variant<U...> &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index, const std::variant<U...> &input) {
   std::size_t index = input.index();
 
   // save index of variant
-  to_bytes_router<O, std::size_t>(index, bytes);
+  to_bytes_router<O, std::size_t>(index, bytes, byte_index);
 
   // save value of variant
-  const auto visitor = [&bytes](auto &&arg) { to_bytes_router<O>(arg, bytes); };
+  const auto visitor = [&bytes, &byte_index](auto &&arg) { to_bytes_router<O>(arg, bytes, byte_index); };
   std::visit(visitor, input);
 }
 

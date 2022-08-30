@@ -21,21 +21,21 @@ type_info(
 }
 
 template <options O, typename T, typename Container>
-void to_bytes_router(const T &input, Container &bytes);
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
 template <options O, typename Container, typename U>
-void to_bytes(Container &bytes, const std::unique_ptr<U> &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index, const std::unique_ptr<U> &input) {
   auto has_value = false;
   if (input) {
     has_value = true;
   }
 
   // save if ptr has value
-  to_bytes_router<O, bool>(has_value, bytes);
+  to_bytes_router<O, bool>(has_value, bytes, byte_index);
 
   // save value
   if (has_value) {
-    to_bytes_router<O, U>(*input, bytes);
+    to_bytes_router<O, U>(*input, bytes, byte_index);
   }
 }
 
