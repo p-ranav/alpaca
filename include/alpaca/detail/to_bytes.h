@@ -11,7 +11,7 @@ template <typename T, typename Container>
 void copy_bytes_in_range(const T& value, Container& bytes, std::size_t& byte_index) {
   auto start = static_cast<const char *>(static_cast<const void *>(&value));
   auto end = start + sizeof value;
-  for (auto i = start; i < end - 1; ++i) {
+  for (auto i = start; i != end; ++i) {
     append(static_cast<uint8_t>(*i), bytes, byte_index);
   }
 }

@@ -16,7 +16,7 @@ TEST_CASE("Serialize int8_t into std::array" * test_suite("signed_integer")) {
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
 }
 
-TEST_CASE("Serialize int16_t" * test_suite("signed_integer")) {
+TEST_CASE("Serialize int16_t into std::array" * test_suite("signed_integer")) {
   struct my_struct {
     int16_t value;
   };
