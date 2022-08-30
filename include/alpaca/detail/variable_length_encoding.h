@@ -124,7 +124,7 @@ int_t decode_varint_7(const std::vector<uint8_t> &input,
 template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>,
                         void>::type
-encode_varint(int_t value, std::vector<uint8_t> &output, std::size_t& byte_index) {
+encode_varint(int_t value, Container &output, std::size_t& byte_index) {
   encode_varint_7<int_t>(value, output, byte_index);
 }
 
