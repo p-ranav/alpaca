@@ -67,8 +67,9 @@ int main() {
      *    [Optional Values](#optional-values)
      *    [Type-safe Unions - Variant Types](#type-safe-unions---variant-types)
      *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
-*    [Data Structure Versioning](#data-structure-versioning)
-*    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
+*    [Configuration Options](#configuration-options)
+     *    [Data Structure Versioning](#data-structure-versioning)
+     *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
 *    [Specification](#specification)
      *    [Supported Types](#supported-types)
      *    [Variable-length Encoding for Integers](#variable-length-encoding-for-integers)
@@ -456,7 +457,9 @@ int main() {
 // }
 ```
 
-## Data Structure Versioning
+## Configuration Options
+
+### Data Structure Versioning
 
 ```cpp
 #include <alpaca/alpaca.h>
@@ -491,7 +494,7 @@ int main() {
 }
 ```
 
-## Integrity Checking with Checksums
+### Integrity Checking with Checksums
 
 ```cpp
 #include <alpaca/alpaca.h>
