@@ -18,7 +18,7 @@ TEST_CASE("Deserialize uint8_t" * test_suite("unsigned_integer")) {
     uint8_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -62,7 +62,7 @@ TEST_CASE("Deserialize uint16_t (stored as uint8_t)" *
     uint16_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -85,7 +85,7 @@ TEST_CASE("Deserialize uint16_t" * test_suite("unsigned_integer")) {
     uint16_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -109,7 +109,7 @@ TEST_CASE("Deserialize uint32_t (packed as uint8_t)" *
     uint32_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -133,7 +133,7 @@ TEST_CASE("Deserialize uint32_t (packed as uint16_t)" *
     uint32_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -156,7 +156,7 @@ TEST_CASE("Deserialize uint32_t" * test_suite("unsigned_integer")) {
     uint32_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -180,7 +180,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint8_t)" *
     uint64_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -204,7 +204,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint16_t)" *
     uint64_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -228,7 +228,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint32_t)" *
     uint64_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -251,7 +251,7 @@ TEST_CASE("Deserialize uint64_t" * test_suite("unsigned_integer")) {
     uint64_t value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -278,7 +278,7 @@ TEST_CASE("Deserialize unsigned integer types" *
     uint64_t d;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {
@@ -307,7 +307,7 @@ TEST_CASE("Deserialize unsigned integer types" *
     uint64_t h;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   // serialize
   {

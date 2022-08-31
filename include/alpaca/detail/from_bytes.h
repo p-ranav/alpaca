@@ -35,9 +35,8 @@ typename std::enable_if<
         std::is_same_v<T, char> || std::is_same_v<T, bool> ||
         std::is_same_v<T, float> || std::is_same_v<T, double>,
     bool>::type
-from_bytes(T &value, const Container &bytes,
-           std::size_t &current_index, std::size_t &end_index,
-           std::error_code &error_code) {
+from_bytes(T &value, const Container &bytes, std::size_t &current_index,
+           std::size_t &end_index, std::error_code &error_code) {
 
   if (current_index >= end_index) {
     // end of input
@@ -82,9 +81,8 @@ typename std::enable_if<
     std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>,
     bool>::type
-from_bytes(T &value, const Container &bytes,
-           std::size_t &current_index, std::size_t &end_index,
-           std::error_code &) {
+from_bytes(T &value, const Container &bytes, std::size_t &current_index,
+           std::size_t &end_index, std::error_code &) {
 
   if (current_index >= end_index) {
     // end of input
@@ -128,9 +126,8 @@ from_bytes(T &value, const Container &bytes,
 // enum class
 template <options O, typename T, typename Container>
 typename std::enable_if<std::is_enum_v<T>, bool>::type
-from_bytes(T &value, const Container &bytes,
-           std::size_t &current_index, std::size_t &end_index,
-           std::error_code &error_code) {
+from_bytes(T &value, const Container &bytes, std::size_t &current_index,
+           std::size_t &end_index, std::error_code &error_code) {
 
   if (current_index >= end_index) {
     // end of input
@@ -144,8 +141,8 @@ from_bytes(T &value, const Container &bytes,
 
   using underlying_type = typename std::underlying_type<T>::type;
   underlying_type underlying_value{};
-  from_bytes<O, underlying_type, Container>(underlying_value, bytes, current_index,
-                                            end_index, error_code);
+  from_bytes<O, underlying_type, Container>(
+      underlying_value, bytes, current_index, end_index, error_code);
   value = static_cast<T>(underlying_value);
   return true;
 }

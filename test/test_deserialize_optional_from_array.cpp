@@ -10,10 +10,10 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
   };
 
   {
-    std::array<uint8_t,  10> bytes;
+    std::array<uint8_t, 10> bytes;
     {
       my_struct s{5};
-      auto bytes_written = serialize<my_struct, std::array<uint8_t,  10>, 1>(
+      auto bytes_written = serialize<my_struct, std::array<uint8_t, 10>, 1>(
           s, bytes); // number of fields in struct specified
       REQUIRE(bytes_written == 2);
     }
@@ -27,16 +27,16 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
   }
 
   {
-    std::array<uint8_t,  10> bytes;
+    std::array<uint8_t, 10> bytes;
     {
       my_struct s{5};
-      auto bytes_written = serialize<my_struct, std::array<uint8_t,  10>, 1>(
+      auto bytes_written = serialize<my_struct, std::array<uint8_t, 10>, 1>(
           s, bytes); // number of fields in struct specified
       REQUIRE(bytes_written == 2);
     }
     {
       std::error_code ec;
-      auto result = deserialize<my_struct, std::array<uint8_t,  10>, 1>(
+      auto result = deserialize<my_struct, std::array<uint8_t, 10>, 1>(
           bytes, ec); // number of fields in struct specified
       REQUIRE((bool)ec == false);
       REQUIRE(result.value.has_value() == true);
@@ -45,16 +45,16 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
   }
 
   {
-    std::array<uint8_t,  10> bytes;
+    std::array<uint8_t, 10> bytes;
     {
       my_struct s{};
-      auto bytes_written = serialize<my_struct, std::array<uint8_t,  10>, 1>(
+      auto bytes_written = serialize<my_struct, std::array<uint8_t, 10>, 1>(
           s, bytes); // number of fields in struct specified
       REQUIRE(bytes_written == 1);
     }
     {
       std::error_code ec;
-      auto result = deserialize<my_struct, std::array<uint8_t,  10>, 1>(
+      auto result = deserialize<my_struct, std::array<uint8_t, 10>, 1>(
           bytes, ec); // number of fields in struct specified
       REQUIRE((bool)ec == false);
       REQUIRE(result.value.has_value() == false);
@@ -71,17 +71,19 @@ TEST_CASE("Deserialize optional sandwiched by regular types" *
   };
 
   {
-    std::array<uint8_t,  10> bytes;
+    std::array<uint8_t, 10> bytes;
     {
       my_struct s{true, 5, 3.14f};
       // number of fields in struct needs to be specified
-      auto bytes_written = serialize<my_struct, std::array<uint8_t,  10>, 3>(s, bytes);
+      auto bytes_written =
+          serialize<my_struct, std::array<uint8_t, 10>, 3>(s, bytes);
       REQUIRE(bytes_written == 7);
     }
     {
       // number of fields in struct needs to be specified
       std::error_code ec;
-      auto result = deserialize<my_struct, std::array<uint8_t,  10>, 3>(bytes, ec);
+      auto result =
+          deserialize<my_struct, std::array<uint8_t, 10>, 3>(bytes, ec);
       REQUIRE((bool)ec == false);
       REQUIRE(result.before == true);
       REQUIRE(result.value.has_value() == true);

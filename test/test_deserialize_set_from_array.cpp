@@ -9,7 +9,7 @@ TEST_CASE("Deserialize set<int>" * test_suite("map")) {
     std::set<int> value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   {
     my_struct s{{1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4}};

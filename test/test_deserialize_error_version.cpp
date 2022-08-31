@@ -23,7 +23,8 @@ TEST_CASE("Deserialize int into another struct { uint16_t }" *
       uint16_t value;
     };
     std::error_code ec;
-    deserialize<my_struct, std::vector<uint8_t>, options::with_version>(bytes, ec);
+    deserialize<my_struct, std::vector<uint8_t>, options::with_version>(bytes,
+                                                                        ec);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::invalid_argument));
   }
@@ -50,7 +51,8 @@ TEST_CASE("Deserialize int into struct { int,int,int }" *
       int c;
     };
     std::error_code ec;
-    deserialize<my_struct, std::vector<uint8_t>, options::with_version>(bytes, ec);
+    deserialize<my_struct, std::vector<uint8_t>, options::with_version>(bytes,
+                                                                        ec);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::invalid_argument));
   }
@@ -75,7 +77,8 @@ TEST_CASE("Deserialize vector<int> into struct { vector<float> }" *
       std::vector<float> value;
     };
     std::error_code ec;
-    deserialize<my_struct, std::vector<uint8_t>, options::with_version>(bytes, ec);
+    deserialize<my_struct, std::vector<uint8_t>, options::with_version>(bytes,
+                                                                        ec);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::invalid_argument));
   }

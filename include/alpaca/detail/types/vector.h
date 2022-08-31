@@ -47,8 +47,7 @@ void from_bytes_router(T &output, const Container &bytes,
                        std::error_code &error_code);
 
 template <options O, typename T, typename Container>
-bool from_bytes_to_vector(std::vector<T> &value,
-                          const Container &bytes,
+bool from_bytes_to_vector(std::vector<T> &value, const Container &bytes,
                           std::size_t &current_index, std::size_t &end_index,
                           std::error_code &error_code) {
 

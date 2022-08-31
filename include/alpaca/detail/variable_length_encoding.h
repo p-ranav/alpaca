@@ -76,8 +76,7 @@ int_t decode_varint_firstbyte_6(const Container &input,
 }
 
 template <typename int_t, typename Container>
-int_t decode_varint_6(const Container &input,
-                      std::size_t &current_index) {
+int_t decode_varint_6(const Container &input, std::size_t &current_index) {
   int_t ret = 0;
   for (std::size_t i = 0; i < sizeof(int_t); ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 63)) << (6 * i);
@@ -107,8 +106,7 @@ void encode_varint_7(int_t value, Container &output, std::size_t &byte_index) {
 }
 
 template <typename int_t, typename Container>
-int_t decode_varint_7(const Container &input,
-                      std::size_t &current_index) {
+int_t decode_varint_7(const Container &input, std::size_t &current_index) {
   int_t ret = 0;
   for (std::size_t i = 0; i < sizeof(int_t); ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 127)) << (7 * i);
@@ -154,8 +152,8 @@ typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
 decode_varint(const Container &input, std::size_t &current_index) {
   // decode first byte
   bool is_negative = false, multibyte = false;
-  auto ret = decode_varint_firstbyte_6<int_t, Container>(input, current_index, is_negative,
-                                              multibyte);
+  auto ret = decode_varint_firstbyte_6<int_t, Container>(
+      input, current_index, is_negative, multibyte);
 
   // decode rest of the bytes
   // if continuation bit is set

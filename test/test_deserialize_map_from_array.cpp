@@ -9,7 +9,7 @@ TEST_CASE("Deserialize map<char, int>" * test_suite("map")) {
     std::map<char, int> value;
   };
 
-  std::array<uint8_t,  100> bytes;
+  std::array<uint8_t, 100> bytes;
 
   {
     my_struct s{{{'x', 1}, {'y', 2}, {'z', 3}}};
@@ -33,7 +33,7 @@ TEST_CASE("Deserialize unordered_map<string, vector<int>>" *
     std::unordered_map<std::string, std::vector<int>> value;
   };
 
-  std::array<uint8_t,  100> bytes;
+  std::array<uint8_t, 100> bytes;
 
   {
     my_struct s{{{"time", {0, 1, 2, 3, 4}}, {"x", {5, 10, 15}}}};
@@ -56,7 +56,7 @@ TEST_CASE("Deserialize unordered_map<string, vector<int>>" *
     std::unordered_map<std::string, std::map<int, double>> value;
   };
 
-  std::array<uint8_t,  100> bytes;
+  std::array<uint8_t, 100> bytes;
 
   {
     my_struct s{{{"time", {{0, 1.1}, {1, 2.2}}}, {"x", {{3, 4.4}, {4, 5.5}}}}};

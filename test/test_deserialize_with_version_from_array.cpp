@@ -13,12 +13,15 @@ TEST_CASE("Deserialize int into struct { int }" * test_suite("version")) {
 
   {
     my_struct s{5};
-    serialize<my_struct, std::array<uint8_t, 20>, options::with_version>(s, bytes);
+    serialize<my_struct, std::array<uint8_t, 20>, options::with_version>(s,
+                                                                         bytes);
   }
 
   {
     std::error_code ec;
-    auto result = deserialize<my_struct, std::array<uint8_t, 20>, options::with_version>(bytes, ec);
+    auto result =
+        deserialize<my_struct, std::array<uint8_t, 20>, options::with_version>(
+            bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -34,7 +37,8 @@ TEST_CASE("Deserialize vector<int> into struct { vector<int> }" *
       std::vector<int> value;
     };
     my_struct s{{1, 2, 3, 4, 5}};
-    serialize<my_struct, std::array<uint8_t, 20>, options::with_version>(s, bytes);
+    serialize<my_struct, std::array<uint8_t, 20>, options::with_version>(s,
+                                                                         bytes);
   }
 
   {
@@ -42,7 +46,9 @@ TEST_CASE("Deserialize vector<int> into struct { vector<int> }" *
       std::vector<int> value;
     };
     std::error_code ec;
-    auto result = deserialize<my_struct, std::array<uint8_t, 20>, options::with_version>(bytes, ec);
+    auto result =
+        deserialize<my_struct, std::array<uint8_t, 20>, options::with_version>(
+            bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE((result.value == std::vector<int>{1, 2, 3, 4, 5}));
   }

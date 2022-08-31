@@ -18,7 +18,7 @@ TEST_CASE("Deserialize std::string" * test_suite("string")) {
     std::string value;
   };
 
-  std::array<uint8_t,  20> bytes;
+  std::array<uint8_t, 20> bytes;
 
   // serialize
   {
@@ -41,7 +41,7 @@ TEST_CASE("Deserialize int and std::string" * test_suite("string")) {
     std::string value;
   };
 
-  std::array<uint8_t,  20> bytes;
+  std::array<uint8_t, 20> bytes;
 
   // serialize
   {

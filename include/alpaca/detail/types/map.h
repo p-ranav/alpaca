@@ -115,9 +115,9 @@ bool from_bytes(std::map<K, V> &output, const Container &bytes,
 }
 
 template <options O, typename K, typename V, typename Container>
-bool from_bytes(std::unordered_map<K, V> &output,
-                const Container &bytes, std::size_t &byte_index,
-                std::size_t &end_index, std::error_code &error_code) {
+bool from_bytes(std::unordered_map<K, V> &output, const Container &bytes,
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
 
   if (byte_index >= end_index) {
     // end of input

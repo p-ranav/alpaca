@@ -9,7 +9,7 @@ TEST_CASE("Deserialize pair<int, double>" * test_suite("pair")) {
     std::pair<int, double> value;
   };
 
-  std::array<uint8_t,  10> bytes;
+  std::array<uint8_t, 10> bytes;
 
   {
     my_struct s{std::make_pair(5, 3.14)};
@@ -31,7 +31,7 @@ TEST_CASE("Deserialize pair<std::vector<int>, std::vector<float>>" *
     std::pair<std::vector<int>, std::vector<float>> value;
   };
 
-  std::array<uint8_t,  20> bytes;
+  std::array<uint8_t, 20> bytes;
 
   {
     my_struct s{std::make_pair(std::vector<int>{1, 2, 3},

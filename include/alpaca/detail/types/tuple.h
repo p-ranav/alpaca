@@ -72,8 +72,8 @@ void load_tuple_value(T &tuple, const Container &bytes,
   if constexpr (index < max_index) {
     from_bytes_router<O>(std::get<index>(tuple), bytes, current_index,
                          end_index, error_code);
-    load_tuple_value<O, T, Container, index + 1>(tuple, bytes, current_index, end_index,
-                                      error_code);
+    load_tuple_value<O, T, Container, index + 1>(tuple, bytes, current_index,
+                                                 end_index, error_code);
   }
 }
 
@@ -81,7 +81,8 @@ template <options O, typename T, typename Container>
 void from_bytes_to_tuple(T &tuple, const Container &bytes,
                          std::size_t &current_index, std::size_t &end_index,
                          std::error_code &error_code) {
-  load_tuple_value<O, T, Container, 0>(tuple, bytes, current_index, end_index, error_code);
+  load_tuple_value<O, T, Container, 0>(tuple, bytes, current_index, end_index,
+                                       error_code);
 }
 
 template <options O, typename Container, typename... T>

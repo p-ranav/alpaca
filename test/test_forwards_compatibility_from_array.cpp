@@ -7,7 +7,7 @@ using doctest::test_suite;
 TEST_CASE("Forwards Compatibility (new field added in struct)" *
           test_suite("forward_compatibility")) {
 
-  std::array<uint8_t, 32> bytes = { 0 };
+  std::array<uint8_t, 32> bytes = {0};
   {
     // client side is using an old structure
     struct my_struct {

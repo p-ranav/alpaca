@@ -9,7 +9,7 @@ TEST_CASE("Deserialize tuple<int, float, bool>" * test_suite("tuple")) {
     std::tuple<int, float, bool, std::string, char> values;
   };
 
-  std::array<uint8_t,  32> bytes;
+  std::array<uint8_t, 32> bytes;
   {
     my_struct s{std::make_tuple(5, 3.14, true, "Hello", 'i')};
     serialize(s, bytes);
@@ -32,7 +32,7 @@ TEST_CASE("Deserialize tuple<std::vector<int>, std::vector<tuple>>" *
     std::tuple<std::vector<int>, std::vector<std::tuple<int, float>>> values;
   };
 
-  std::array<uint8_t,  32> bytes;
+  std::array<uint8_t, 32> bytes;
   {
     my_struct s{
         std::make_tuple(std::vector<int>{1, 2, 3},
