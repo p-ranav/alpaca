@@ -210,8 +210,8 @@ Container serialize(const T &s) {
 }
 
 // Forward declares
-template <options O, typename T, std::size_t N, std::size_t index>
-void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container, std::size_t N, std::size_t index>
+void deserialize_helper(T &s, const Container &bytes,
                         std::size_t &byte_index, std::size_t &end_index,
                         std::error_code &error_code);
 
@@ -220,18 +220,18 @@ namespace detail {
 // Start of deserialization functions
 
 // version for nested struct/class types
-template <options O, typename T>
+template <options O, typename T, typename Container>
 typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
                         bool>::type
-from_bytes(T &value, const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+from_bytes(T &value, const Container &bytes, std::size_t &byte_index,
            std::size_t &end_index, std::error_code &error_code) {
-  deserialize_helper<O, T, detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+  deserialize_helper<O, T, Container, detail::aggregate_arity<std::remove_cv_t<T>>::size(),
                      0>(value, bytes, byte_index, end_index, error_code);
   return true;
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code) {
   detail::from_bytes<O>(output, bytes, byte_index, end_index, error_code);
@@ -242,9 +242,10 @@ void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
 /// N -> number of fields in struct
 /// I -> field to start from
 template <options O, typename T,
+          typename Container = std::vector<uint8_t>,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           std::size_t I = 0>
-void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
+void deserialize_helper(T &s, const Container &bytes,
                         std::size_t &byte_index, std::size_t &end_index,
                         std::error_code &error_code) {
   if constexpr (I < N) {
@@ -252,32 +253,34 @@ void deserialize_helper(T &s, const std::vector<uint8_t> &bytes,
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // load current field
-    detail::from_bytes_router<O, decayed_field_type>(field, bytes, byte_index,
-                                                     end_index, error_code);
+    detail::from_bytes_router<O, decayed_field_type, Container>(field, bytes, byte_index,
+                                                                end_index, error_code);
 
     if (error_code) {
       // stop here
       return;
     } else {
       // go to next field
-      deserialize_helper<O, T, N, I + 1>(s, bytes, byte_index, end_index,
-                                         error_code);
+      deserialize_helper<O, T, Container, N, I + 1>(s, bytes, byte_index, end_index,
+                                                    error_code);
     }
   }
 }
 
 template <typename T,
+          typename Container = std::vector<uint8_t>,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-void deserialize(T &s, const std::vector<uint8_t> &bytes,
+void deserialize(T &s, const Container &bytes,
                  std::size_t &byte_index, std::size_t &end_index,
                  std::error_code &error_code) {
-  deserialize_helper<options::none, T, N, 0>(s, bytes, byte_index, end_index,
-                                             error_code);
+  deserialize_helper<options::none, T, Container, N, 0>(s, bytes, byte_index, end_index,
+                                                        error_code);
 }
 
 template <typename T,
+          typename Container = std::vector<uint8_t>,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
+T deserialize(const Container &bytes, std::error_code &error_code) {
   T object{};
 
   if (bytes.empty()) {
@@ -287,14 +290,14 @@ T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
 
   std::size_t byte_index = 0;
   std::size_t end_index = bytes.size();
-  deserialize<T, N>(object, bytes, byte_index, end_index, error_code);
+  deserialize<T, Container, N>(object, bytes, byte_index, end_index, error_code);
   return object;
 }
 
 // Overloads to check crc in bytes
-template <typename T, options O,
+template <typename T, typename Container, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-void deserialize(T &s, const std::vector<uint8_t> &bytes,
+void deserialize(T &s, const Container &bytes,
                  std::size_t &byte_index, std::size_t &end_index,
                  std::error_code &error_code) {
 
@@ -345,8 +348,8 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
       if (trailing_crc == computed_crc) {
         // message is good!
         end_index -= 4;
-        deserialize_helper<O, T, N, 0>(s, bytes, byte_index, end_index,
-                                       error_code);
+        deserialize_helper<O, T, Container, N, 0>(s, bytes, byte_index, end_index,
+                                                  error_code);
       } else {
         // message is bad
         error_code = std::make_error_code(std::errc::bad_message);
@@ -356,13 +359,13 @@ void deserialize(T &s, const std::vector<uint8_t> &bytes,
   } else {
     // bytes does not have any CRC
     // just deserialize everything into type T
-    deserialize_helper<O, T, N, 0>(s, bytes, byte_index, end_index, error_code);
+    deserialize_helper<O, T, Container, N, 0>(s, bytes, byte_index, end_index, error_code);
   }
 }
 
-template <typename T, options O,
+template <typename T, typename Container, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
+T deserialize(const Container &bytes, std::error_code &error_code) {
   T object{};
 
   if (bytes.empty()) {
@@ -372,7 +375,7 @@ T deserialize(const std::vector<uint8_t> &bytes, std::error_code &error_code) {
 
   std::size_t byte_index = 0;
   std::size_t end_index = bytes.size();
-  deserialize<T, O, N>(object, bytes, byte_index, end_index, error_code);
+  deserialize<T, Container, O, N>(object, bytes, byte_index, end_index, error_code);
   return object;
 }
 

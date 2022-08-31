@@ -40,13 +40,13 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   }
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
-bool from_bytes(std::unique_ptr<T> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+bool from_bytes(std::unique_ptr<T> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

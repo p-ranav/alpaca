@@ -11,8 +11,8 @@ namespace alpaca {
 
 namespace detail {
 
-template <options O>
-bool from_bytes_crc32(uint32_t &value, const std::vector<uint8_t> &bytes,
+template <options O, typename Container>
+bool from_bytes_crc32(uint32_t &value, const Container &bytes,
                       std::size_t &current_index, std::size_t &end_index,
                       std::error_code &) {
   constexpr auto num_bytes_to_read = 4;
@@ -28,14 +28,14 @@ bool from_bytes_crc32(uint32_t &value, const std::vector<uint8_t> &bytes,
 
 // char, bool, small ints, float, double
 // read as is
-template <options O, typename T>
+template <options O, typename T, typename Container>
 typename std::enable_if<
     std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
         std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
         std::is_same_v<T, char> || std::is_same_v<T, bool> ||
         std::is_same_v<T, float> || std::is_same_v<T, double>,
     bool>::type
-from_bytes(T &value, const std::vector<uint8_t> &bytes,
+from_bytes(T &value, const Container &bytes,
            std::size_t &current_index, std::size_t &end_index,
            std::error_code &error_code) {
 
@@ -77,12 +77,12 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 
 // large ints
 // decode variable-length encoding
-template <options O, typename T>
+template <options O, typename T, typename Container>
 typename std::enable_if<
     std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>,
     bool>::type
-from_bytes(T &value, const std::vector<uint8_t> &bytes,
+from_bytes(T &value, const Container &bytes,
            std::size_t &current_index, std::size_t &end_index,
            std::error_code &) {
 
@@ -126,9 +126,9 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 }
 
 // enum class
-template <options O, typename T>
+template <options O, typename T, typename Container>
 typename std::enable_if<std::is_enum_v<T>, bool>::type
-from_bytes(T &value, const std::vector<uint8_t> &bytes,
+from_bytes(T &value, const Container &bytes,
            std::size_t &current_index, std::size_t &end_index,
            std::error_code &error_code) {
 
@@ -144,8 +144,8 @@ from_bytes(T &value, const std::vector<uint8_t> &bytes,
 
   using underlying_type = typename std::underlying_type<T>::type;
   underlying_type underlying_value{};
-  from_bytes<O, underlying_type>(underlying_value, bytes, current_index,
-                                 end_index, error_code);
+  from_bytes<O, underlying_type, Container>(underlying_value, bytes, current_index,
+                                            end_index, error_code);
   value = static_cast<T>(underlying_value);
   return true;
 }

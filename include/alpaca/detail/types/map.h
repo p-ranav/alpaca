@@ -67,13 +67,13 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   to_bytes_from_map_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
-void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_to_map(T &map, const Container &bytes,
                        std::size_t &current_index, std::size_t &end_index,
                        std::error_code &error_code) {
   // current byte is the size of the map
@@ -99,8 +99,8 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
   }
 }
 
-template <options O, typename K, typename V>
-bool from_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename K, typename V, typename Container>
+bool from_bytes(std::map<K, V> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
@@ -114,9 +114,9 @@ bool from_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
   return true;
 }
 
-template <options O, typename K, typename V>
+template <options O, typename K, typename V, typename Container>
 bool from_bytes(std::unordered_map<K, V> &output,
-                const std::vector<uint8_t> &bytes, std::size_t &byte_index,
+                const Container &bytes, std::size_t &byte_index,
                 std::size_t &end_index, std::error_code &error_code) {
 
   if (byte_index >= end_index) {

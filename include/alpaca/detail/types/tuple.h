@@ -59,33 +59,33 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   to_bytes_from_tuple_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T, std::size_t index>
-void load_tuple_value(T &tuple, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container, std::size_t index>
+void load_tuple_value(T &tuple, const Container &bytes,
                       std::size_t &current_index, std::size_t &end_index,
                       std::error_code &error_code) {
   constexpr auto max_index = std::tuple_size<T>::value;
   if constexpr (index < max_index) {
     from_bytes_router<O>(std::get<index>(tuple), bytes, current_index,
                          end_index, error_code);
-    load_tuple_value<O, T, index + 1>(tuple, bytes, current_index, end_index,
+    load_tuple_value<O, T, Container, index + 1>(tuple, bytes, current_index, end_index,
                                       error_code);
   }
 }
 
-template <options O, typename T>
-void from_bytes_to_tuple(T &tuple, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_to_tuple(T &tuple, const Container &bytes,
                          std::size_t &current_index, std::size_t &end_index,
                          std::error_code &error_code) {
-  load_tuple_value<O, T, 0>(tuple, bytes, current_index, end_index, error_code);
+  load_tuple_value<O, T, Container, 0>(tuple, bytes, current_index, end_index, error_code);
 }
 
-template <options O, typename... T>
-bool from_bytes(std::tuple<T...> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename Container, typename... T>
+bool from_bytes(std::tuple<T...> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

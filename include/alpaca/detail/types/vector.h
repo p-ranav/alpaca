@@ -41,14 +41,14 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   to_bytes_from_vector_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
+template <options O, typename T, typename Container>
 bool from_bytes_to_vector(std::vector<T> &value,
-                          const std::vector<uint8_t> &bytes,
+                          const Container &bytes,
                           std::size_t &current_index, std::size_t &end_index,
                           std::error_code &error_code) {
 
@@ -83,8 +83,8 @@ bool from_bytes_to_vector(std::vector<T> &value,
   return true;
 }
 
-template <options O, typename T>
-bool from_bytes(std::vector<T> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+bool from_bytes(std::vector<T> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
   return from_bytes_to_vector<O>(output, bytes, byte_index, end_index,
