@@ -55,8 +55,8 @@ void encode_varint_6(int_t value, Container &output, std::size_t &byte_index) {
   append(((uint8_t)value) & 63, output, byte_index);
 }
 
-template <typename int_t = uint64_t>
-int_t decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
+template <typename int_t, typename Container>
+int_t decode_varint_firstbyte_6(const Container &input,
                                 std::size_t &current_index, bool &negative,
                                 bool &multibyte) {
   int octet = 0;
@@ -75,8 +75,8 @@ int_t decode_varint_firstbyte_6(const std::vector<uint8_t> &input,
   return static_cast<int_t>(octet);
 }
 
-template <typename int_t = uint64_t>
-int_t decode_varint_6(const std::vector<uint8_t> &input,
+template <typename int_t, typename Container>
+int_t decode_varint_6(const Container &input,
                       std::size_t &current_index) {
   int_t ret = 0;
   for (std::size_t i = 0; i < sizeof(int_t); ++i) {
@@ -106,8 +106,8 @@ void encode_varint_7(int_t value, Container &output, std::size_t &byte_index) {
   append(((uint8_t)value) & 127, output, byte_index);
 }
 
-template <typename int_t = uint64_t>
-int_t decode_varint_7(const std::vector<uint8_t> &input,
+template <typename int_t, typename Container>
+int_t decode_varint_7(const Container &input,
                       std::size_t &current_index) {
   int_t ret = 0;
   for (std::size_t i = 0; i < sizeof(int_t); ++i) {
@@ -129,11 +129,11 @@ encode_varint(int_t value, Container &output, std::size_t &byte_index) {
   encode_varint_7<int_t>(value, output, byte_index);
 }
 
-template <typename int_t = uint64_t>
+template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>,
                         int_t>::type
-decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
-  return decode_varint_7<int_t>(input, current_index);
+decode_varint(const Container &input, std::size_t &current_index) {
+  return decode_varint_7<int_t, Container>(input, current_index);
 }
 
 // Signed integer variable-length encoding functions
@@ -148,19 +148,19 @@ encode_varint(int_t value, Container &output, std::size_t &byte_index) {
   }
 }
 
-template <typename int_t = int64_t>
+template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
                         int_t>::type
-decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
+decode_varint(const Container &input, std::size_t &current_index) {
   // decode first byte
   bool is_negative = false, multibyte = false;
-  auto ret = decode_varint_firstbyte_6<int_t>(input, current_index, is_negative,
+  auto ret = decode_varint_firstbyte_6<int_t, Container>(input, current_index, is_negative,
                                               multibyte);
 
   // decode rest of the bytes
   // if continuation bit is set
   if (multibyte) {
-    ret |= decode_varint_7<int_t>(input, current_index);
+    ret |= decode_varint_7<int_t, Container>(input, current_index);
   }
 
   if (is_negative) {
