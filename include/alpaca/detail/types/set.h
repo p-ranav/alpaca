@@ -43,7 +43,8 @@ template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
 template <options O, typename T, typename Container>
-void to_bytes_from_set_type(const T &input, Container &bytes, std::size_t &byte_index) {
+void to_bytes_from_set_type(const T &input, Container &bytes,
+                            std::size_t &byte_index) {
   // save set size
   to_bytes_router<O, std::size_t, Container>(input.size(), bytes, byte_index);
 
@@ -55,12 +56,14 @@ void to_bytes_from_set_type(const T &input, Container &bytes, std::size_t &byte_
 }
 
 template <options O, typename Container, typename U>
-void to_bytes(Container &bytes, std::size_t &byte_index, const std::set<U> &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::set<U> &input) {
   to_bytes_from_set_type<O>(input, bytes, byte_index);
 }
 
 template <options O, typename Container, typename U>
-void to_bytes(Container &bytes, std::size_t &byte_index, const std::unordered_set<U> &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::unordered_set<U> &input) {
   to_bytes_from_set_type<O>(input, bytes, byte_index);
 }
 

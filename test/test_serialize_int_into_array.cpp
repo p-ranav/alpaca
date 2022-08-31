@@ -38,7 +38,8 @@ TEST_CASE("Serialize int16_t into std::array" * test_suite("signed_integer")) {
 
   {
     my_struct s{5};
-    auto bytes = serialize<my_struct, std::array<uint8_t, 2>, options::big_endian>(s);
+    auto bytes =
+        serialize<my_struct, std::array<uint8_t, 2>, options::big_endian>(s);
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
     REQUIRE(bytes[1] == static_cast<uint8_t>(0x05));
@@ -61,7 +62,8 @@ TEST_CASE("Serialize int16_t into std::array" * test_suite("signed_integer")) {
 
   {
     my_struct s{12345};
-    auto bytes = serialize<my_struct, std::array<uint8_t, 2>, options::big_endian>(s);
+    auto bytes =
+        serialize<my_struct, std::array<uint8_t, 2>, options::big_endian>(s);
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
     REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));

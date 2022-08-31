@@ -8,23 +8,24 @@ namespace alpaca {
 
 namespace detail {
 
-static inline
-void append(const uint8_t& value, std::vector<uint8_t>& container, std::size_t& index) {
-    container.push_back(value);
-    index += 1;
+static inline void append(const uint8_t &value, std::vector<uint8_t> &container,
+                          std::size_t &index) {
+  container.push_back(value);
+  index += 1;
 }
 
 template <std::size_t N>
-void append(const uint8_t& value, std::array<uint8_t, N>& container, std::size_t& index) {
-    container[index++] = value;
+void append(const uint8_t &value, std::array<uint8_t, N> &container,
+            std::size_t &index) {
+  container[index++] = value;
 }
 
-static inline
-void append(const uint8_t& value, std::ofstream& os, std::size_t& index) {
-    os << value;
-    index += 1;
+static inline void append(const uint8_t &value, std::ofstream &os,
+                          std::size_t &index) {
+  os << value;
+  index += 1;
 }
 
-}
+} // namespace detail
 
-}
+} // namespace alpaca

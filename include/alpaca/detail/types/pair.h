@@ -26,7 +26,8 @@ template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
 template <options O, typename Container, typename U, typename V>
-void to_bytes(Container &bytes, std::size_t &byte_index, const std::pair<U, V> &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::pair<U, V> &input) {
   to_bytes_router<O>(input.first, bytes, byte_index);
   to_bytes_router<O>(input.second, bytes, byte_index);
 }

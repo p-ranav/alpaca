@@ -1,8 +1,8 @@
 #pragma once
+#include <alpaca/detail/output_container.h>
 #include <cstdint>
 #include <utility>
 #include <vector>
-#include <alpaca/detail/output_container.h>
 
 namespace alpaca {
 
@@ -21,7 +21,8 @@ template <typename T> void RESET_BIT(T &value, uint8_t pos) {
 }
 
 template <typename int_t, typename Container>
-bool encode_varint_firstbyte_6(int_t &value, Container &output, std::size_t& byte_index) {
+bool encode_varint_firstbyte_6(int_t &value, Container &output,
+                               std::size_t &byte_index) {
   uint8_t octet = 0;
   if (value < 0) {
     value *= -1;
@@ -42,7 +43,7 @@ bool encode_varint_firstbyte_6(int_t &value, Container &output, std::size_t& byt
 }
 
 template <typename int_t, typename Container>
-void encode_varint_6(int_t value, Container &output, std::size_t& byte_index) {
+void encode_varint_6(int_t value, Container &output, std::size_t &byte_index) {
   // While more than 7 bits of data are left, occupy the last output byte
   // and set the next byte flag
   while (value > 63) {
@@ -90,7 +91,7 @@ int_t decode_varint_6(const std::vector<uint8_t> &input,
 }
 
 template <typename int_t, typename Container>
-void encode_varint_7(int_t value, Container &output, std::size_t& byte_index) {
+void encode_varint_7(int_t value, Container &output, std::size_t &byte_index) {
   if (value < 0) {
     value *= 1;
   }
@@ -124,7 +125,7 @@ int_t decode_varint_7(const std::vector<uint8_t> &input,
 template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && !std::is_signed_v<int_t>,
                         void>::type
-encode_varint(int_t value, Container &output, std::size_t& byte_index) {
+encode_varint(int_t value, Container &output, std::size_t &byte_index) {
   encode_varint_7<int_t>(value, output, byte_index);
 }
 
@@ -139,7 +140,7 @@ decode_varint(const std::vector<uint8_t> &input, std::size_t &current_index) {
 template <typename int_t, typename Container>
 typename std::enable_if<std::is_integral_v<int_t> && std::is_signed_v<int_t>,
                         void>::type
-encode_varint(int_t value, Container &output, std::size_t& byte_index) {
+encode_varint(int_t value, Container &output, std::size_t &byte_index) {
   // first octet
   if (encode_varint_firstbyte_6<int_t>(value, output, byte_index)) {
     // rest of the octets

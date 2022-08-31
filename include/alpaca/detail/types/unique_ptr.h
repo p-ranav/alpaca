@@ -24,7 +24,8 @@ template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
 template <options O, typename Container, typename U>
-void to_bytes(Container &bytes, std::size_t &byte_index, const std::unique_ptr<U> &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::unique_ptr<U> &input) {
   auto has_value = false;
   if (input) {
     has_value = true;

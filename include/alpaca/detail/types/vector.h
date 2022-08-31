@@ -22,7 +22,8 @@ template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
 template <options O, typename T, typename Container>
-void to_bytes_from_vector_type(const T &input, Container &bytes, std::size_t &byte_index) {
+void to_bytes_from_vector_type(const T &input, Container &bytes,
+                               std::size_t &byte_index) {
   // save vector size
   to_bytes_router<O, std::size_t>(input.size(), bytes, byte_index);
 
@@ -35,7 +36,8 @@ void to_bytes_from_vector_type(const T &input, Container &bytes, std::size_t &by
 }
 
 template <options O, typename Container, typename U>
-void to_bytes(Container &bytes, std::size_t& byte_index, const std::vector<U> &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::vector<U> &input) {
   to_bytes_from_vector_type<O>(input, bytes, byte_index);
 }
 

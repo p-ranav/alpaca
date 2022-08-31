@@ -4,16 +4,19 @@ using namespace alpaca;
 
 using doctest::test_suite;
 
-TEST_CASE("Serialize int with crc32" * test_suite("crc32")) {
+TEST_CASE("Serialize int with crc32 into array" * test_suite("crc32")) {
   struct my_struct {
     int value;
   };
 
   my_struct s{5};
-  auto bytes =
-      serialize<my_struct, std::vector<uint8_t>, options::with_checksum>(s);
 
-  REQUIRE(bytes.size() == 5);
+  std::array<uint8_t, 10> bytes;
+  auto bytes_written =
+      serialize<my_struct, std::array<uint8_t, 10>, options::with_checksum>(
+          s, bytes);
+
+  REQUIRE(bytes_written == 5);
 
   REQUIRE(bytes[0] == static_cast<uint32_t>(0x05));
   if constexpr (detail::is_system_little_endian()) {

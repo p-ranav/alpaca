@@ -14,7 +14,8 @@ TEST_CASE("Deserialize crc32 error - invalid_argument" * test_suite("crc32")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::with_checksum>(s);
+    bytes =
+        serialize<my_struct, std::vector<uint8_t>, options::with_checksum>(s);
   }
 
   // deserialize
@@ -40,7 +41,8 @@ TEST_CASE("Deserialize crc32 error - bad_message" * test_suite("crc32")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::with_checksum>(s);
+    bytes =
+        serialize<my_struct, std::vector<uint8_t>, options::with_checksum>(s);
   }
 
   // deserialize

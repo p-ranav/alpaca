@@ -22,7 +22,8 @@ template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
 template <options O, typename Container>
-void to_bytes(Container &bytes, std::size_t &byte_index, const std::string &input) {
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::string &input) {
   // save string length
   to_bytes_router<O>(input.size(), bytes, byte_index);
 
