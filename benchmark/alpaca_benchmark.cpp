@@ -169,6 +169,29 @@ static void BM_alpaca_serialize_to_vector(benchmark::State &state) {
   }
 }
 
+static void BM_alpaca_deserialize_from_array(benchmark::State &state) {
+  {
+    struct my_struct {
+      std::vector<Monster> values;
+    };
+
+    std::size_t data_size = 0;
+    my_struct s{createMonsters(state.range(0))};
+    // serialize
+    std::array<uint8_t, 150000> bytes = {};
+    data_size = serialize(s, bytes);
+
+    for (auto _ : state) {
+      // This code gets timed
+      // deserialize
+      std::error_code ec;
+      auto recovered = deserialize<my_struct>(bytes, ec);
+    }
+
+    state.counters["BytesOutput"] = data_size;
+  }
+}
+
 static void BM_alpaca_deserialize_from_vector(benchmark::State &state) {
   {
     struct my_struct {
@@ -198,17 +221,21 @@ BENCHMARK(BM_alpaca_serialize_to_array)
     ->Arg(10)
     ->Arg(100)
     ->Arg(1000);
+BENCHMARK(BM_alpaca_deserialize_from_array)
+    ->Arg(1)
+    ->Arg(10)
+    ->Arg(100)
+    ->Arg(1000);
 BENCHMARK(BM_alpaca_serialize_to_vector)
     ->Arg(1)
     ->Arg(10)
     ->Arg(100)
     ->Arg(1000);
 BENCHMARK(BM_alpaca_deserialize_from_vector)
-    ->Arg(50)
+    ->Arg(1)
+    ->Arg(10)
     ->Arg(100)
-    ->Arg(1E3)
-    ->Arg(1E4)
-    ->Arg(1E5);
+    ->Arg(1000);
 
 // Run the benchmark
 BENCHMARK_MAIN();
