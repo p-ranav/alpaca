@@ -24,10 +24,38 @@ operator|(E lhs, E rhs) {
                         static_cast<underlying>(rhs));
 }
 
+namespace detail {
+
 template <typename T, T value, T flag> constexpr bool enum_has_flag() {
   using underlying = typename std::underlying_type<T>::type;
   return (static_cast<underlying>(value) & static_cast<underlying>(flag)) ==
          static_cast<underlying>(flag);
+}
+
+template <options O> constexpr bool big_endian() {
+  return enum_has_flag<options, O, options::big_endian>();
+}
+
+template <options O> constexpr bool little_endian() {
+  return !big_endian<O>();
+}
+
+template <options O> constexpr bool fixed_length_encoding() {
+  return enum_has_flag<options, O, options::fixed_length_encoding>();
+}
+
+template <options O> constexpr bool with_version() {
+  return enum_has_flag<options, O, options::with_version>();
+}
+
+template <options O> constexpr bool with_checksum() {
+  return enum_has_flag<options, O, options::with_checksum>();
+}
+
+template <options O> constexpr bool error_checking() {
+  return !enum_has_flag<options, O, options::unchecked>();
+}
+
 }
 
 template <> struct enable_bitmask_operators<options> {

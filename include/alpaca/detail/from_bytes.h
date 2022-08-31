@@ -102,10 +102,10 @@ from_bytes(T &value, const Container &bytes, std::size_t &current_index,
       // little-endian
       // 3. If fixed length encoding is requested
       (is_system_little_endian() &&
-       enum_has_flag<options, O, options::big_endian>()) ||
+       detail::big_endian<O>()) ||
       (is_system_big_endian() &&
-       !enum_has_flag<options, O, options::big_endian>()) ||
-      (enum_has_flag<options, O, options::fixed_length_encoding>()));
+       detail::little_endian<O>()) ||
+      (detail::fixed_length_encoding<O>()));
 
   if constexpr (use_fixed_length_encoding) {
     constexpr auto num_bytes_to_read = sizeof(T);

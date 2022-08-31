@@ -171,7 +171,7 @@ Container serialize(const T &s) {
 template <typename T, typename Container, options O,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
 std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
-  if constexpr (N > 0 && enum_has_flag<options, O, options::with_version>()) {
+  if constexpr (N > 0 && detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
     std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
@@ -182,7 +182,7 @@ std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
 
   serialize_helper<O, T, Container, N, 0>(s, bytes, byte_index);
 
-  if constexpr (N > 0 && enum_has_flag<options, O, options::with_checksum>()) {
+  if constexpr (N > 0 && detail::with_checksum<O>()) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), byte_index);
@@ -297,7 +297,7 @@ template <typename T, typename Container, options O,
 void deserialize(T &s, const Container &bytes, std::size_t &byte_index,
                  std::size_t &end_index, std::error_code &error_code) {
 
-  if constexpr (N > 0 && enum_has_flag<options, O, options::with_version>()) {
+  if constexpr (N > 0 && detail::with_version<O>()) {
 
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
@@ -327,7 +327,7 @@ void deserialize(T &s, const Container &bytes, std::size_t &byte_index,
     }
   }
 
-  if constexpr (enum_has_flag<options, O, options::with_checksum>()) {
+  if constexpr (detail::with_checksum<O>()) {
     // bytes must be at least 4 bytes long
     if (end_index < 4) {
       error_code = std::make_error_code(std::errc::invalid_argument);
