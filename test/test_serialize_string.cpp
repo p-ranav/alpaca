@@ -10,7 +10,8 @@ TEST_CASE("Serialize std::string" * test_suite("string")) {
   };
 
   my_struct s{"Hello World!"};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 1 + s.value.size());
   REQUIRE(bytes[0] == static_cast<uint8_t>(12));
   // Value

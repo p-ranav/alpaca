@@ -16,7 +16,8 @@ TEST_CASE("Serialize uint8_t" * test_suite("unsigned_integer")) {
   };
 
   my_struct s{5};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 1);
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
 }
@@ -28,7 +29,8 @@ TEST_CASE("Serialize uint16_t" * test_suite("unsigned_integer")) {
 
   {
     my_struct s{5};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
     if constexpr (detail::is_system_little_endian()) {
       REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
@@ -41,7 +43,8 @@ TEST_CASE("Serialize uint16_t" * test_suite("unsigned_integer")) {
 
   {
     my_struct s{12345};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
 
     if constexpr (detail::is_system_little_endian()) {
@@ -61,14 +64,16 @@ TEST_CASE("Serialize uint32_t" * test_suite("unsigned_integer")) {
 
   {
     my_struct s{5};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(5));
   }
 
   {
     my_struct s{12345};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
 
     CONSTRUCT_EXPECTED_VALUE(s.value);
@@ -79,7 +84,8 @@ TEST_CASE("Serialize uint32_t" * test_suite("unsigned_integer")) {
 
   {
     my_struct s{12345678};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 4);
 
     CONSTRUCT_EXPECTED_VALUE(s.value);
@@ -96,14 +102,16 @@ TEST_CASE("Serialize uint64_t" * test_suite("unsigned_integer")) {
 
   {
     my_struct s{5};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(5));
   }
 
   {
     my_struct s{12345};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
 
     CONSTRUCT_EXPECTED_VALUE(s.value);
@@ -114,7 +122,8 @@ TEST_CASE("Serialize uint64_t" * test_suite("unsigned_integer")) {
 
   {
     my_struct s{12345678};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 4);
 
     CONSTRUCT_EXPECTED_VALUE(s.value);
@@ -125,7 +134,8 @@ TEST_CASE("Serialize uint64_t" * test_suite("unsigned_integer")) {
 
   {
     my_struct s{5294967295};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 5);
 
     CONSTRUCT_EXPECTED_VALUE(s.value);

@@ -11,7 +11,8 @@ TEST_CASE("Serialize enum class" * test_suite("enum_class")) {
   };
 
   my_struct s{my_struct::color::blue};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 1);
   REQUIRE(bytes[0] == static_cast<uint8_t>(1));
 }

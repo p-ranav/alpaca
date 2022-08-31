@@ -19,7 +19,8 @@ TEST_CASE("Serialize vector<char>" * test_suite("vector")) {
   };
 
   my_struct s{{'x', 'y', 'z'}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 4);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(3));
@@ -39,7 +40,8 @@ TEST_CASE("Serialize vector<uint64_t>" * test_suite("vector")) {
   };
 
   my_struct s{{1, 2, 3, 4, 5}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 6);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
@@ -57,7 +59,8 @@ TEST_CASE("Serialize vector<int>" * test_suite("vector")) {
   };
 
   my_struct s{{1, 2, 3, 4, 5}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 6);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
@@ -75,7 +78,8 @@ TEST_CASE("Serialize vector<float>" * test_suite("vector")) {
   };
 
   my_struct s{{1.1, 2.2, 3.3, 4.4, 5.5}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 21);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
@@ -96,7 +100,8 @@ TEST_CASE("Serialize vector<bool>" * test_suite("vector")) {
   };
 
   my_struct s{{true, false, true, false, true}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 6);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
@@ -117,7 +122,8 @@ TEST_CASE("Serialize vector<std::string>" * test_suite("vector")) {
   };
 
   my_struct s{{"a", "b", "c", "d", "e"}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 11);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
@@ -139,7 +145,8 @@ TEST_CASE("Serialize vector<vector<int>>" * test_suite("vector")) {
   };
 
   my_struct s{{{1, 2, 3}, {4, 5, 6}}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 9);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(2));
@@ -169,7 +176,8 @@ TEST_CASE("Serialize vector<tuple>" * test_suite("vector")) {
   my_struct s;
   s.values.push_back(std::make_tuple(true, 5, 3.14, "Hello", 'a'));
   s.values.push_back(std::make_tuple(false, -15, 2.718, "World", 'z'));
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
 
   REQUIRE(bytes.size() == 27);
   // vector of tuple

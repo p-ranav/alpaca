@@ -19,7 +19,8 @@ TEST_CASE("Serialize pair" * test_suite("pair")) {
   };
 
   my_struct s{std::make_pair(5, 3.14)};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 9);
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
 

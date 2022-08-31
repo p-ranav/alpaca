@@ -18,7 +18,8 @@ TEST_CASE("Serialize nested struct (1 level)" * test_suite("struct")) {
   s.value = 5;
   s.nested.value = 3.14f;
 
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 5);
 
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
@@ -49,7 +50,8 @@ TEST_CASE("Serialize nested struct (2 levels)" * test_suite("struct")) {
   s.nested.value = 3.14f;
   s.nested.nested.value = true;
 
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 6);
 
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));

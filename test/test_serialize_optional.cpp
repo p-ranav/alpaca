@@ -11,7 +11,8 @@ TEST_CASE("Serialize optional<int>" * test_suite("optional")) {
 
   {
     my_struct s{5};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 0); // fail, number of fields in struct deduced as 0
   }
 

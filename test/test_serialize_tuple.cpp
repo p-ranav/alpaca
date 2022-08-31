@@ -19,7 +19,8 @@ TEST_CASE("Serialize tuple<int, float, bool>" * test_suite("tuple")) {
   };
 
   my_struct s{std::make_tuple(5, 3.14, true, "Hello", 'i')};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 13);
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));
 

@@ -19,7 +19,8 @@ TEST_CASE("Serialize float" * test_suite("float")) {
   };
 
   my_struct s{3.14f};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 4);
 
   CONSTRUCT_EXPECTED_VALUE(float, s.value);
@@ -34,7 +35,8 @@ TEST_CASE("Serialize double" * test_suite("float")) {
   };
 
   my_struct s{2.71828};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 8);
 
   CONSTRUCT_EXPECTED_VALUE(double, s.value);

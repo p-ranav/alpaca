@@ -11,7 +11,8 @@ TEST_CASE("Serialize set<int>" * test_suite("set")) {
   };
 
   my_struct s{{1, 1, 1, 2, 3, 4}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 5);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(4));
@@ -28,7 +29,8 @@ TEST_CASE("Serialize unordered_set<int>" * test_suite("set")) {
   };
 
   my_struct s{{4, 3, 2, 1, 1, 1, 1, 2, 3, 4}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 5);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(4));

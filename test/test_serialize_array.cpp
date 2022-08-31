@@ -19,7 +19,8 @@ TEST_CASE("Serialize array<char, 3>" * test_suite("array")) {
   };
 
   my_struct s{{'x', 'y', 'z'}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 3);
   REQUIRE(bytes[0] == 'x');
   REQUIRE(bytes[1] == 'y');
@@ -32,7 +33,8 @@ TEST_CASE("Serialize array<uint64_t>" * test_suite("array")) {
   };
 
   my_struct s{{1, 2, 3, 4, 5}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 5);
   // values
   REQUIRE(bytes[0] == static_cast<uint8_t>(1));
@@ -48,7 +50,8 @@ TEST_CASE("Serialize array<int, 5>" * test_suite("array")) {
   };
 
   my_struct s{{1, 2, 3, 4, 5}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 5);
   // values
   REQUIRE(bytes[0] == static_cast<uint8_t>(1));
@@ -64,7 +67,8 @@ TEST_CASE("Serialize array<float, 5>" * test_suite("array")) {
   };
 
   my_struct s{{1.1, 2.2, 3.3, 4.4, 5.5}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 20);
   // values
   float current_value = 1.1;
@@ -83,7 +87,8 @@ TEST_CASE("Serialize array<bool, 5>" * test_suite("array")) {
   };
 
   my_struct s{{true, false, true, false, true}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 5);
   // values
   bool current_value = true;
@@ -102,7 +107,8 @@ TEST_CASE("Serialize array<std::string, 5>" * test_suite("array")) {
   };
 
   my_struct s{{"a", "b", "c", "d", "e"}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 10);
   // values
   char current_value = 'a';
@@ -122,7 +128,8 @@ TEST_CASE("Serialize array<vector<int>, 2>" * test_suite("array")) {
   };
 
   my_struct s{{{{1, 2, 3}, {4, 5, 6}}}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 8);
 
   // first sub-vector
@@ -150,7 +157,8 @@ TEST_CASE("Serialize array<tuple>" * test_suite("array")) {
   my_struct s;
   s.values[0] = std::make_tuple(true, 5, 3.14, "Hello", 'a');
   s.values[1] = std::make_tuple(false, -15, 2.718, "World", 'z');
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
 
   REQUIRE(bytes.size() == 26);
   // vector of tuple

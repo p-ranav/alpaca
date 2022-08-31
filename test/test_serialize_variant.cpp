@@ -11,7 +11,8 @@ TEST_CASE("Serialize variant" * test_suite("variant")) {
 
   {
     my_struct s{5};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0)); // index = 0, int
     REQUIRE(bytes[1] == static_cast<uint8_t>(5));
@@ -19,7 +20,8 @@ TEST_CASE("Serialize variant" * test_suite("variant")) {
 
   {
     my_struct s{"Hello!"};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
     REQUIRE(bytes.size() == 8);
     REQUIRE(bytes[0] == static_cast<uint8_t>(1)); // index = 1, string
     REQUIRE(bytes[1] == static_cast<uint8_t>(6)); // string size = 6
@@ -45,7 +47,8 @@ TEST_CASE("Serialize map<string, variant>" * test_suite("variant")) {
                  {"ip_address", std::string{"192.168.8.1"}},
                  {"subscriptions",
                   std::vector<std::string>{"motor_state", "battery_state"}}}};
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+  serialize(s, bytes);
 
     REQUIRE(bytes.size() == 87);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x04)); // 4-element map

@@ -10,7 +10,8 @@ TEST_CASE("Serialize map<char, int>" * test_suite("map")) {
   };
 
   my_struct s{{{'x', 1}, {'y', 2}, {'z', 3}}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 7);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(3));
@@ -29,7 +30,8 @@ TEST_CASE("Serialize map<std::string, vector<int>>" * test_suite("map")) {
   };
 
   my_struct s{{{"time", {0, 1, 2, 3, 4}}, {"x", {5, 10, 15}}}};
-  auto bytes = serialize(s);
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
   REQUIRE(bytes.size() == 18);
   // size
   REQUIRE(bytes[0] == static_cast<uint8_t>(2));
