@@ -13,8 +13,8 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{5};
-      bytes =
-          serialize<my_struct, 1>(s); // number of fields in struct specified
+      bytes = serialize<my_struct, std::vector<uint8_t>, 1>(
+          s); // number of fields in struct specified
       REQUIRE(bytes.size() == 2);
     }
     {
@@ -30,13 +30,13 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{5};
-      bytes =
-          serialize<my_struct, 1>(s); // number of fields in struct specified
+      bytes = serialize<my_struct, std::vector<uint8_t>, 1>(
+          s); // number of fields in struct specified
       REQUIRE(bytes.size() == 2);
     }
     {
       std::error_code ec;
-      auto result = deserialize<my_struct, 1>(
+      auto result = deserialize<my_struct, std::vector<uint8_t>, 1>(
           bytes, ec); // number of fields in struct specified
       REQUIRE((bool)ec == false);
       REQUIRE(result.value.has_value() == true);
@@ -48,13 +48,13 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{};
-      bytes =
-          serialize<my_struct, 1>(s); // number of fields in struct specified
+      bytes = serialize<my_struct, std::vector<uint8_t>, 1>(
+          s); // number of fields in struct specified
       REQUIRE(bytes.size() == 1);
     }
     {
       std::error_code ec;
-      auto result = deserialize<my_struct, 1>(
+      auto result = deserialize<my_struct, std::vector<uint8_t>, 1>(
           bytes, ec); // number of fields in struct specified
       REQUIRE((bool)ec == false);
       REQUIRE(result.value.has_value() == false);
@@ -75,13 +75,13 @@ TEST_CASE("Deserialize optional sandwiched by regular types" *
     {
       my_struct s{true, 5, 3.14f};
       // number of fields in struct needs to be specified
-      bytes = serialize<my_struct, 3>(s);
+      bytes = serialize<my_struct, std::vector<uint8_t>, 3>(s);
       REQUIRE(bytes.size() == 7);
     }
     {
       // number of fields in struct needs to be specified
       std::error_code ec;
-      auto result = deserialize<my_struct, 3>(bytes, ec);
+      auto result = deserialize<my_struct, std::vector<uint8_t>, 3>(bytes, ec);
       REQUIRE((bool)ec == false);
       REQUIRE(result.before == true);
       REQUIRE(result.value.has_value() == true);

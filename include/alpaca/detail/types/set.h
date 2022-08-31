@@ -39,38 +39,41 @@ type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T>
-void to_bytes_from_set_type(const T &input, std::vector<uint8_t> &bytes) {
+template <options O, typename T, typename Container>
+void to_bytes_from_set_type(const T &input, Container &bytes,
+                            std::size_t &byte_index) {
   // save set size
-  to_bytes_router<O>(input.size(), bytes);
+  to_bytes_router<O, std::size_t, Container>(input.size(), bytes, byte_index);
 
   // save values in set
   for (const auto &value : input) {
     using decayed_key_type = typename std::decay<typename T::value_type>::type;
-    to_bytes_router<O, decayed_key_type>(value, bytes);
+    to_bytes_router<O, decayed_key_type, Container>(value, bytes, byte_index);
   }
 }
 
-template <options O, typename T, typename U>
-void to_bytes(T &bytes, const std::set<U> &input) {
-  to_bytes_from_set_type<O>(input, bytes);
+template <options O, typename Container, typename U>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::set<U> &input) {
+  to_bytes_from_set_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T, typename U>
-void to_bytes(T &bytes, const std::unordered_set<U> &input) {
-  to_bytes_from_set_type<O>(input, bytes);
+template <options O, typename Container, typename U>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::unordered_set<U> &input) {
+  to_bytes_from_set_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
-void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_to_set(T &set, const Container &bytes,
                        std::size_t &current_index, std::size_t &end_index,
                        std::error_code &error_code) {
   // current byte is the size of the set
@@ -92,8 +95,8 @@ void from_bytes_to_set(T &set, const std::vector<uint8_t> &bytes,
   }
 }
 
-template <options O, typename T>
-bool from_bytes(std::set<T> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+bool from_bytes(std::set<T> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
@@ -107,10 +110,10 @@ bool from_bytes(std::set<T> &output, const std::vector<uint8_t> &bytes,
   return true;
 }
 
-template <options O, typename T>
-bool from_bytes(std::unordered_set<T> &output,
-                const std::vector<uint8_t> &bytes, std::size_t &byte_index,
-                std::size_t &end_index, std::error_code &error_code) {
+template <options O, typename T, typename Container>
+bool from_bytes(std::unordered_set<T> &output, const Container &bytes,
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
 
   if (byte_index >= end_index) {
     // end of input

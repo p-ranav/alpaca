@@ -18,31 +18,25 @@ typename std::enable_if<is_array_type<T>::value, void>::type type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T>
-void to_bytes_from_array_type(const T &input, std::vector<uint8_t> &bytes) {
-  using decayed_value_type = typename std::decay<typename T::value_type>::type;
-
+template <options O, typename Container, typename T, std::size_t N>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::array<T, N> &input) {
   // value of each element in list
   for (const auto &v : input) {
-    to_bytes_router<O, decayed_value_type>(v, bytes);
+    to_bytes_router<O, T, Container>(v, bytes, byte_index);
   }
 }
 
-template <options O, typename T, typename U, std::size_t N>
-void to_bytes(T &bytes, const std::array<U, N> &input) {
-  to_bytes_from_array_type<O>(input, bytes);
-}
-
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
-void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_to_array(T &value, const Container &bytes,
                          std::size_t &current_index, std::size_t &end_index,
                          std::error_code &error_code) {
 
@@ -66,8 +60,8 @@ void from_bytes_to_array(T &value, const std::vector<uint8_t> &bytes,
   }
 }
 
-template <options O, typename U, std::size_t N>
-bool from_bytes(std::array<U, N> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename U, typename Container, std::size_t N>
+bool from_bytes(std::array<U, N> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

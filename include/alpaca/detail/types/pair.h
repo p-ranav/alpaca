@@ -22,22 +22,23 @@ type_info(
   type_info<second_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T, typename U, typename V>
-void to_bytes(T &bytes, const std::pair<U, V> &input) {
-  to_bytes_router<O>(input.first, bytes);
-  to_bytes_router<O>(input.second, bytes);
+template <options O, typename Container, typename U, typename V>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::pair<U, V> &input) {
+  to_bytes_router<O>(input.first, bytes, byte_index);
+  to_bytes_router<O>(input.second, bytes, byte_index);
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T, typename U>
-bool from_bytes(std::pair<T, U> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename U, typename Container>
+bool from_bytes(std::pair<T, U> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

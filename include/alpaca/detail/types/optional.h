@@ -18,29 +18,30 @@ type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T, typename U>
-void to_bytes(T &bytes, const std::optional<U> &input) {
+template <options O, typename Container, typename U>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::optional<U> &input) {
   const auto has_value = input.has_value();
 
   // save if optional has value
-  to_bytes_router<O, bool>(has_value, bytes);
+  to_bytes_router<O, bool>(has_value, bytes, byte_index);
 
   // save value
   if (has_value) {
-    to_bytes_router<O, U>(input.value(), bytes);
+    to_bytes_router<O, U>(input.value(), bytes, byte_index);
   }
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
-bool from_bytes(std::optional<T> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+bool from_bytes(std::optional<T> &output, Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

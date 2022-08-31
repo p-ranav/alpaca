@@ -23,7 +23,7 @@ TEST_CASE("Serialize float" * test_suite("float")) {
   REQUIRE(bytes.size() == 4);
 
   CONSTRUCT_EXPECTED_VALUE(float, s.value);
-  for (std::size_t i = 0; i < bytes.size() - 1; ++i) {
+  for (std::size_t i = 0; i < bytes.size(); ++i) {
     REQUIRE(bytes[i] == expected[i]);
   }
 }
@@ -38,7 +38,7 @@ TEST_CASE("Serialize double" * test_suite("float")) {
   REQUIRE(bytes.size() == 8);
 
   CONSTRUCT_EXPECTED_VALUE(double, s.value);
-  for (std::size_t i = 0; i < bytes.size() - 1; ++i) {
+  for (std::size_t i = 0; i < bytes.size(); ++i) {
     REQUIRE(bytes[i] == expected[i]);
   }
 }

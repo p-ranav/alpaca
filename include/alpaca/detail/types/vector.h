@@ -18,35 +18,36 @@ type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T>
-void to_bytes_from_vector_type(const T &input, std::vector<uint8_t> &bytes) {
+template <options O, typename T, typename Container>
+void to_bytes_from_vector_type(const T &input, Container &bytes,
+                               std::size_t &byte_index) {
   // save vector size
-  to_bytes_router<O, std::size_t>(input.size(), bytes);
+  to_bytes_router<O, std::size_t>(input.size(), bytes, byte_index);
 
   // value of each element in list
   for (const auto &v : input) {
     // check if the value_type is a nested list type
     using decayed_value_type = typename std::decay<decltype(v)>::type;
-    to_bytes_router<O, decayed_value_type>(v, bytes);
+    to_bytes_router<O, decayed_value_type>(v, bytes, byte_index);
   }
 }
 
-template <options O, typename T, typename U>
-void to_bytes(T &bytes, const std::vector<U> &input) {
-  to_bytes_from_vector_type<O>(input, bytes);
+template <options O, typename Container, typename U>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::vector<U> &input) {
+  to_bytes_from_vector_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
-bool from_bytes_to_vector(std::vector<T> &value,
-                          const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+bool from_bytes_to_vector(std::vector<T> &value, const Container &bytes,
                           std::size_t &current_index, std::size_t &end_index,
                           std::error_code &error_code) {
 
@@ -81,8 +82,8 @@ bool from_bytes_to_vector(std::vector<T> &value,
   return true;
 }
 
-template <options O, typename T>
-bool from_bytes(std::vector<T> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+bool from_bytes(std::vector<T> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
   return from_bytes_to_vector<O>(output, bytes, byte_index, end_index,

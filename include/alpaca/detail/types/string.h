@@ -18,21 +18,22 @@ type_info(std::vector<uint8_t> &typeids,
   typeids.push_back(to_byte<field_type::string>());
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T>
-void to_bytes(T &bytes, const std::string &input) {
+template <options O, typename Container>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::string &input) {
   // save string length
-  to_bytes_router<O>(input.size(), bytes);
+  to_bytes_router<O>(input.size(), bytes, byte_index);
 
   for (auto &c : input) {
-    to_bytes<O>(bytes, c);
+    to_bytes<O>(bytes, byte_index, c);
   }
 }
 
-template <options O>
-bool from_bytes(std::string &value, const std::vector<uint8_t> &bytes,
+template <options O, typename Container>
+bool from_bytes(std::string &value, const Container &bytes,
                 std::size_t &current_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

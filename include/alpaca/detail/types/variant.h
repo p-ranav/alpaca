@@ -35,23 +35,26 @@ type_info(
   type_info_variant_helper<T, variant_size, 0>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T, typename... U>
-void to_bytes(T &bytes, const std::variant<U...> &input) {
+template <options O, typename Container, typename... U>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::variant<U...> &input) {
   std::size_t index = input.index();
 
   // save index of variant
-  to_bytes_router<O, std::size_t>(index, bytes);
+  to_bytes_router<O, std::size_t>(index, bytes, byte_index);
 
   // save value of variant
-  const auto visitor = [&bytes](auto &&arg) { to_bytes_router<O>(arg, bytes); };
+  const auto visitor = [&bytes, &byte_index](auto &&arg) {
+    to_bytes_router<O>(arg, bytes, byte_index);
+  };
   std::visit(visitor, input);
 }
 
-template <options O, typename... T>
-bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename Container, typename... T>
+bool from_bytes(std::variant<T...> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
@@ -65,7 +68,7 @@ bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
   std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
 
   // read bytes as value_type = variant@index
-  detail::set_variant_value<O, std::variant<T...>>(
+  detail::set_variant_value<O, std::variant<T...>, Container>(
       output, index, bytes, byte_index, end_index, error_code);
 
   return true;

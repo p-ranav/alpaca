@@ -35,42 +35,45 @@ type_info(
   type_info<mapped_type>(typeids, struct_visitor_map);
 }
 
-template <options O, typename T>
-void to_bytes_router(const T &input, std::vector<uint8_t> &bytes);
+template <options O, typename T, typename Container>
+void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename T>
-void to_bytes_from_map_type(const T &input, std::vector<uint8_t> &bytes) {
+template <options O, typename T, typename Container>
+void to_bytes_from_map_type(const T &input, Container &bytes,
+                            std::size_t &byte_index) {
   // save map size
-  to_bytes_router<O, std::size_t>(input.size(), bytes);
+  to_bytes_router<O, std::size_t, Container>(input.size(), bytes, byte_index);
 
   // save key,value pairs in map
   for (const auto &[key, value] : input) {
 
     using decayed_key_type = typename std::decay<decltype(key)>::type;
-    to_bytes_router<O, decayed_key_type>(key, bytes);
+    to_bytes_router<O, decayed_key_type, Container>(key, bytes, byte_index);
 
     using decayed_value_type = typename std::decay<decltype(value)>::type;
-    to_bytes_router<O, decayed_value_type>(value, bytes);
+    to_bytes_router<O, decayed_value_type, Container>(value, bytes, byte_index);
   }
 }
 
-template <options O, typename T, typename K, typename V>
-void to_bytes(T &bytes, const std::map<K, V> &input) {
-  to_bytes_from_map_type<O>(input, bytes);
+template <options O, typename Container, typename K, typename V>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::map<K, V> &input) {
+  to_bytes_from_map_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T, typename K, typename V>
-void to_bytes(T &bytes, const std::unordered_map<K, V> &input) {
-  to_bytes_from_map_type<O>(input, bytes);
+template <options O, typename Container, typename K, typename V>
+void to_bytes(Container &bytes, std::size_t &byte_index,
+              const std::unordered_map<K, V> &input) {
+  to_bytes_from_map_type<O>(input, bytes, byte_index);
 }
 
-template <options O, typename T>
-void from_bytes_router(T &output, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_router(T &output, const Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
-template <options O, typename T>
-void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
+template <options O, typename T, typename Container>
+void from_bytes_to_map(T &map, const Container &bytes,
                        std::size_t &current_index, std::size_t &end_index,
                        std::error_code &error_code) {
   // current byte is the size of the map
@@ -96,8 +99,8 @@ void from_bytes_to_map(T &map, const std::vector<uint8_t> &bytes,
   }
 }
 
-template <options O, typename K, typename V>
-bool from_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename K, typename V, typename Container>
+bool from_bytes(std::map<K, V> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
@@ -111,10 +114,10 @@ bool from_bytes(std::map<K, V> &output, const std::vector<uint8_t> &bytes,
   return true;
 }
 
-template <options O, typename K, typename V>
-bool from_bytes(std::unordered_map<K, V> &output,
-                const std::vector<uint8_t> &bytes, std::size_t &byte_index,
-                std::size_t &end_index, std::error_code &error_code) {
+template <options O, typename K, typename V, typename Container>
+bool from_bytes(std::unordered_map<K, V> &output, const Container &bytes,
+                std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
 
   if (byte_index >= end_index) {
     // end of input
