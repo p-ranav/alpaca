@@ -195,16 +195,14 @@ static void BM_alpaca_deserialize_from_vector(benchmark::State &state) {
 
 BENCHMARK(BM_alpaca_serialize_to_array)
     ->Arg(1)
-    ->Arg(5)
-    ->Arg(50)
+    ->Arg(10)
     ->Arg(100)
-    ->Arg(1E3);
+    ->Arg(1000);
 BENCHMARK(BM_alpaca_serialize_to_vector)
     ->Arg(1)
-    ->Arg(5)
-    ->Arg(50)
+    ->Arg(10)
     ->Arg(100)
-    ->Arg(1E3);
+    ->Arg(1000);
 BENCHMARK(BM_alpaca_deserialize_from_vector)
     ->Arg(50)
     ->Arg(100)
