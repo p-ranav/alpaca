@@ -77,7 +77,8 @@ void from_bytes_to_set(T &set, const Container &bytes,
                        std::size_t &current_index, std::size_t &end_index,
                        std::error_code &error_code) {
   // current byte is the size of the set
-  std::size_t size = detail::decode_varint<std::size_t>(bytes, current_index);
+  std::size_t size = 0;
+  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index, error_code);
 
   if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining

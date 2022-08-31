@@ -65,7 +65,8 @@ bool from_bytes(std::variant<T...> &output, const Container &bytes,
   }
 
   // current byte is the index of the variant value
-  std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
+  std::size_t index = 0;
+  detail::from_bytes<O, std::size_t>(index, bytes, byte_index, end_index, error_code);
 
   // read bytes as value_type = variant@index
   detail::set_variant_value<O, std::variant<T...>, Container>(

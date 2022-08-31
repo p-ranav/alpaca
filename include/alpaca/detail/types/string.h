@@ -44,7 +44,8 @@ bool from_bytes(std::string &value, const Container &bytes,
   }
 
   // current byte is the length of the string
-  std::size_t size = decode_varint<std::size_t>(bytes, current_index);
+  std::size_t size = 0;
+  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index, error_code);
 
   if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining
