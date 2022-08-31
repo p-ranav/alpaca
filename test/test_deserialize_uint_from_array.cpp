@@ -278,7 +278,7 @@ TEST_CASE("Deserialize unsigned integer types" *
     uint64_t d;
   };
 
-  std::array<uint8_t, 10> bytes;
+  std::array<uint8_t, 32> bytes;
 
   // serialize
   {
@@ -307,7 +307,7 @@ TEST_CASE("Deserialize unsigned integer types" *
     uint64_t h;
   };
 
-  std::array<uint8_t, 10> bytes;
+  std::array<uint8_t, 32> bytes;
 
   // serialize
   {
