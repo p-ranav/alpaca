@@ -129,15 +129,15 @@ std::vector<Monster> createMonsters(size_t count) {
   return res;
 }
 
-static void BM_alpaca_serialize_into_array(benchmark::State &state) {
+static void BM_alpaca_serialize_to_array(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
     };
 
     std::size_t data_size = 0;
-    my_struct s{createMonsters(50)};
-    std::array<uint8_t, 7000> bytes = {};
+    my_struct s{createMonsters(state.range(0))};
+    std::array<uint8_t, 150000> bytes = {};
 
     for (auto _ : state) {
       // This code gets timed
@@ -149,14 +149,14 @@ static void BM_alpaca_serialize_into_array(benchmark::State &state) {
   }
 }
 
-static void BM_alpaca_serialize_into_vector(benchmark::State &state) {
+static void BM_alpaca_serialize_to_vector(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
     };
 
     std::size_t data_size = 0;
-    my_struct s{createMonsters(50)};
+    my_struct s{createMonsters(state.range(0))};
     std::vector<uint8_t> bytes;
 
     for (auto _ : state) {
@@ -169,7 +169,7 @@ static void BM_alpaca_serialize_into_vector(benchmark::State &state) {
   }
 }
 
-static void BM_alpaca_deserialize(benchmark::State &state) {
+static void BM_alpaca_deserialize_from_vector(benchmark::State &state) {
   {
     struct my_struct {
       std::vector<Monster> values;
@@ -193,9 +193,19 @@ static void BM_alpaca_deserialize(benchmark::State &state) {
   }
 }
 
-BENCHMARK(BM_alpaca_serialize_into_array);
-BENCHMARK(BM_alpaca_serialize_into_vector);
-BENCHMARK(BM_alpaca_deserialize)
+BENCHMARK(BM_alpaca_serialize_to_array)
+    ->Arg(1)
+    ->Arg(5)
+    ->Arg(50)
+    ->Arg(100)
+    ->Arg(1E3);
+BENCHMARK(BM_alpaca_serialize_to_vector)
+    ->Arg(1)
+    ->Arg(5)
+    ->Arg(50)
+    ->Arg(100)
+    ->Arg(1E3);
+BENCHMARK(BM_alpaca_deserialize_from_vector)
     ->Arg(50)
     ->Arg(100)
     ->Arg(1E3)
