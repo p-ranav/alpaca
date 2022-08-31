@@ -53,8 +53,8 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   std::visit(visitor, input);
 }
 
-template <options O, typename... T>
-bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
+template <options O, typename Container, typename... T>
+bool from_bytes(std::variant<T...> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
@@ -68,7 +68,7 @@ bool from_bytes(std::variant<T...> &output, const std::vector<uint8_t> &bytes,
   std::size_t index = detail::decode_varint<std::size_t>(bytes, byte_index);
 
   // read bytes as value_type = variant@index
-  detail::set_variant_value<O, std::variant<T...>>(
+  detail::set_variant_value<O, std::variant<T...>, Container>(
       output, index, bytes, byte_index, end_index, error_code);
 
   return true;
