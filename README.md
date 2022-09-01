@@ -146,6 +146,41 @@ auto bytes = serialize(s); // 28 bytes
 // }
 ```
 
+For `std::string`, the general structure is as follows:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, the byte array is simply bytes of data
+
+```
+  string length    char array -->
++----+----+-----+  +----+----+-----+
+| A1 | A2 | ... |  | B1 | B2 | ... |
++----+----+-----+  +----+----+-----+
+```
+
+For `std::vector<T>`, the general structure is as follows:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, each value in the vector is encoding accordingly to the rules for value_type `T`
+
+```
+   vector size          value1                value2          value3
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+```
+
+For `std::array<T, N>`, since the (1) number of elements and (2) type of element in the array is known (both at serialization and deserialization time), this information is not stored in the byte array. 
+
+The byte array simply includes the encoding for value_type `T` for each value in the array. 
+
+```
+     value1             value2                value3          value4
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+```
+
 ### Maps and Sets
 
 For associative containers, alpaca supports `std::map`, `std::unordered_map`, `std::set`, and `std::unordered_set`.
