@@ -69,6 +69,7 @@ if (!ec) {
 *    [Configuration Options](#configuration-options)
      *    [Data Structure Versioning](#data-structure-versioning)
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
+     *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
 *    [Specification](#specification)
      *    [Supported Types](#supported-types)
      *    [Variable-length Encoding for Integers](#variable-length-encoding-for-integers)
@@ -529,7 +530,7 @@ if (!ec) {
 // source: https://crccalc.com/
 ```
 
-### Exclude STL containers
+### Macros to Exclude STL Data Structures
 
 alpaca includes headers for a number of STL containers and classes. As this can affect the compile time of applications, define any of the following macros to remove support for particular data structures. 
 
