@@ -194,16 +194,6 @@ std::size_t serialize(const T &s, Container &bytes) {
   return byte_index;
 }
 
-template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
-          typename Container>
-Container serialize(const T &s) {
-  Container bytes{};
-  std::size_t byte_index = 0;
-  serialize<O, T, N, Container>(s, bytes, byte_index);
-  return bytes;
-}
-
 // Forward declares
 template <options O, typename T, typename Container, std::size_t N,
           std::size_t index>
