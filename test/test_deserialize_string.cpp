@@ -23,7 +23,7 @@ TEST_CASE("Deserialize std::string" * test_suite("string")) {
   // serialize
   {
     my_struct s{"Hello World!"};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -46,7 +46,7 @@ TEST_CASE("Deserialize int and std::string" * test_suite("string")) {
   // serialize
   {
     my_struct s{5, "Hello World!"};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize

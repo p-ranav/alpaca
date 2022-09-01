@@ -34,7 +34,7 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
     auto const root =
         make_node(5, make_node(3, make_node(1), make_node(2)), make_node(4));
 
-    bytes = serialize(*root); // 15 bytes
+    serialize(*root, bytes); // 15 bytes
   }
 
   {

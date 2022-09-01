@@ -12,7 +12,7 @@ TEST_CASE("Deserialize tuple<int, float, bool>" * test_suite("tuple")) {
   std::vector<uint8_t> bytes;
   {
     my_struct s{std::make_tuple(5, 3.14, true, "Hello", 'i')};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
   {
     std::error_code ec;
@@ -38,7 +38,7 @@ TEST_CASE("Deserialize tuple<std::vector<int>, std::vector<tuple>>" *
         std::make_tuple(std::vector<int>{1, 2, 3},
                         std::vector<std::tuple<int, float>>{
                             std::make_tuple(4, 5.5), std::make_tuple(6, 7.7)})};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
   {
     std::error_code ec;

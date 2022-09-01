@@ -14,7 +14,7 @@ TEST_CASE("Deserialize enum class" * test_suite("enum_class")) {
 
   {
     my_struct s{my_struct::color::blue};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

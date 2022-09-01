@@ -13,7 +13,7 @@ TEST_CASE("Deserialize set<int>" * test_suite("map")) {
 
   {
     my_struct s{{1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4}};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

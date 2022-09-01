@@ -12,7 +12,7 @@ TEST_CASE("Deserialize float" * test_suite("float")) {
   std::vector<uint8_t> bytes;
   {
     my_struct s{3.14f};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
   {
     std::error_code ec;
@@ -30,7 +30,7 @@ TEST_CASE("Deserialize double" * test_suite("float")) {
   std::vector<uint8_t> bytes;
   {
     my_struct s{2.71828};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
   {
     std::error_code ec;

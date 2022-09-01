@@ -14,7 +14,7 @@ TEST_CASE("Deserialize int8_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -37,7 +37,7 @@ TEST_CASE("Deserialize int16_t (stored as int8_t)" *
   // serialize
   {
     my_struct s{99};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -59,7 +59,7 @@ TEST_CASE("Deserialize int16_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{512};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -82,7 +82,7 @@ TEST_CASE("Deserialize int32_t (packed as int8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -105,7 +105,7 @@ TEST_CASE("Deserialize int32_t (packed as int16_t)" *
   // serialize
   {
     my_struct s{1600};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -127,7 +127,7 @@ TEST_CASE("Deserialize int32_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{75535};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -150,7 +150,7 @@ TEST_CASE("Deserialize int64_t (packed as int8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -173,7 +173,7 @@ TEST_CASE("Deserialize int64_t (packed as int16_t)" *
   // serialize
   {
     my_struct s{12345};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -196,7 +196,7 @@ TEST_CASE("Deserialize int64_t (packed as int32_t)" *
   // serialize
   {
     my_struct s{12345678};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -218,7 +218,7 @@ TEST_CASE("Deserialize int64_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{5294967295};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -240,7 +240,7 @@ TEST_CASE("Deserialize int64_t (big positive)" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{12345678910111314};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -262,7 +262,7 @@ TEST_CASE("Deserialize int64_t (big negative)" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{-12345678910111314};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -287,7 +287,7 @@ TEST_CASE("Deserialize signed integer types" * test_suite("integer")) {
   // serialize
   {
     my_struct s{-5, -12345, -12345678, -5294967295};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -321,7 +321,7 @@ TEST_CASE("Deserialize signed and unsigned integer types" *
   {
     my_struct s{-5, -12345, -12345678, -5294967295,
                 5,  12345,  12345678,  5294967295};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize

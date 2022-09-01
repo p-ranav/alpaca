@@ -13,7 +13,7 @@ TEST_CASE("Deserialize vector<char>" * test_suite("vector")) {
 
   {
     my_struct s{{'x', 'y', 'z'}};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 4);
   }
 
@@ -34,7 +34,7 @@ TEST_CASE("Deserialize vector<size_t>" * test_suite("vector")) {
 
   {
     my_struct s{{1, 2, 3, 4, 5, 6}};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 7);
   }
 
@@ -55,7 +55,7 @@ TEST_CASE("Deserialize vector<int>" * test_suite("vector")) {
 
   {
     my_struct s{{1, 2, 3, 4, 5, 6}};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 7);
   }
 
@@ -76,7 +76,7 @@ TEST_CASE("Deserialize vector<vector<char>>" * test_suite("vector")) {
 
   {
     my_struct s{{{'a', 'b', 'c'}, {'d', 'e', 'f'}}};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {
@@ -103,7 +103,7 @@ TEST_CASE("Deserialize vector<nested_struct>" * test_suite("vector")) {
     my_struct s{{1.23, 4.56, 7.89},
                 {my_struct::nested_t{1}, my_struct::nested_t{2},
                  my_struct::nested_t{3}}};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

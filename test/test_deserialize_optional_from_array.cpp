@@ -75,8 +75,7 @@ TEST_CASE("Deserialize optional sandwiched by regular types" *
     {
       my_struct s{true, 5, 3.14f};
       // number of fields in struct needs to be specified
-      auto bytes_written =
-          serialize<my_struct, 3>(s, bytes);
+      auto bytes_written = serialize<my_struct, 3>(s, bytes);
       REQUIRE(bytes_written == 7);
     }
     {

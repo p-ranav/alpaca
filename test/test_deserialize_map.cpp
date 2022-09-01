@@ -13,7 +13,7 @@ TEST_CASE("Deserialize map<char, int>" * test_suite("map")) {
 
   {
     my_struct s{{{'x', 1}, {'y', 2}, {'z', 3}}};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {
@@ -37,7 +37,7 @@ TEST_CASE("Deserialize unordered_map<string, vector<int>>" *
 
   {
     my_struct s{{{"time", {0, 1, 2, 3, 4}}, {"x", {5, 10, 15}}}};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {
@@ -60,7 +60,7 @@ TEST_CASE("Deserialize unordered_map<string, vector<int>>" *
 
   {
     my_struct s{{{"time", {{0, 1.1}, {1, 2.2}}}, {"x", {{3, 4.4}, {4, 5.5}}}}};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

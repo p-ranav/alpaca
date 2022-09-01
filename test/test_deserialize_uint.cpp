@@ -23,7 +23,7 @@ TEST_CASE("Deserialize uint8_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 1);
   }
 
@@ -67,7 +67,7 @@ TEST_CASE("Deserialize uint16_t (stored as uint8_t)" *
   // serialize
   {
     my_struct s{99};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
   }
 
@@ -90,7 +90,7 @@ TEST_CASE("Deserialize uint16_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{512};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
   }
 
@@ -114,7 +114,7 @@ TEST_CASE("Deserialize uint32_t (packed as uint8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 1);
   }
 
@@ -138,7 +138,7 @@ TEST_CASE("Deserialize uint32_t (packed as uint16_t)" *
   // serialize
   {
     my_struct s{1600};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
   }
 
@@ -161,7 +161,7 @@ TEST_CASE("Deserialize uint32_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{75535};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 3);
   }
 
@@ -185,7 +185,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 1);
   }
 
@@ -209,7 +209,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint16_t)" *
   // serialize
   {
     my_struct s{12345};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 2);
   }
 
@@ -233,7 +233,7 @@ TEST_CASE("Deserialize uint64_t (packed as uint32_t)" *
   // serialize
   {
     my_struct s{12345678};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 4);
   }
 
@@ -256,7 +256,7 @@ TEST_CASE("Deserialize uint64_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{5294967295};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 5);
   }
 
@@ -283,7 +283,7 @@ TEST_CASE("Deserialize unsigned integer types" *
   // serialize
   {
     my_struct s{5, 12345, 12345678, 5294967295};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   // deserialize
@@ -312,7 +312,7 @@ TEST_CASE("Deserialize unsigned integer types" *
   // serialize
   {
     my_struct s{5, 12345, 12345678, 5294967295};
-    bytes = serialize(s);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 12);
   }
 

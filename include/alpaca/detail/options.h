@@ -35,9 +35,7 @@ template <options O> constexpr bool big_endian() {
   return enum_has_flag<options, O, options::big_endian>();
 }
 
-template <options O> constexpr bool little_endian() {
-  return !big_endian<O>();
-}
+template <options O> constexpr bool little_endian() { return !big_endian<O>(); }
 
 template <options O> constexpr bool fixed_length_encoding() {
   return enum_has_flag<options, O, options::fixed_length_encoding>();
@@ -51,7 +49,7 @@ template <options O> constexpr bool with_checksum() {
   return enum_has_flag<options, O, options::with_checksum>();
 }
 
-}
+} // namespace detail
 
 template <> struct enable_bitmask_operators<options> {
   static constexpr bool enable = true;

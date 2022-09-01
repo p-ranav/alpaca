@@ -16,7 +16,7 @@ TEST_CASE("Forwards Compatibility (new field added in struct)" *
     };
 
     my_struct s{5, 3.14f};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

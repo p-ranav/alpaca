@@ -101,10 +101,8 @@ from_bytes(T &value, const Container &bytes, std::size_t &current_index,
       // 2. if the system is big-endian and the requested byte order is
       // little-endian
       // 3. If fixed length encoding is requested
-      (is_system_little_endian() &&
-       detail::big_endian<O>()) ||
-      (is_system_big_endian() &&
-       detail::little_endian<O>()) ||
+      (is_system_little_endian() && detail::big_endian<O>()) ||
+      (is_system_big_endian() && detail::little_endian<O>()) ||
       (detail::fixed_length_encoding<O>()));
 
   if constexpr (use_fixed_length_encoding) {

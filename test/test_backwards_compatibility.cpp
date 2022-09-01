@@ -18,7 +18,7 @@ TEST_CASE("Backwards Compatibility (new field added in struct)" *
     };
 
     my_struct s{5, 3.14f, "Hello"};
-    bytes = serialize<my_struct>(s);
+    serialize(s, bytes);
   }
 
   {

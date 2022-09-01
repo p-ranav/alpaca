@@ -99,7 +99,7 @@ void type_info_helper(
 } // namespace detail
 
 // Forward declares
-template <options O, typename T, typename Container, std::size_t N,
+template <options O, typename T, std::size_t N, typename Container,
           std::size_t I>
 void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index);
 
@@ -112,8 +112,8 @@ namespace detail {
 template <options O, typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type
 to_bytes(T &bytes, std::size_t &byte_index, const U &input) {
-  serialize_helper<O, U, T,
-                   detail::aggregate_arity<std::remove_cv_t<U>>::size(), 0>(
+  serialize_helper<O, U,
+                   detail::aggregate_arity<std::remove_cv_t<U>>::size(), T, 0>(
       input, bytes, byte_index);
 }
 
@@ -132,10 +132,7 @@ void to_bytes_router(const T &input, Container &bytes,
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <options O,
-          typename T, 
-          std::size_t N, 
-          typename Container,
+template <options O, typename T, std::size_t N, typename Container,
           std::size_t I>
 void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (I < N) {
@@ -172,8 +169,7 @@ Container serialize(const T &s) {
 
 // overloads taking options template parameter
 
-template <options O,
-          typename T,
+template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
@@ -198,8 +194,7 @@ std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   return byte_index;
 }
 
-template <options O, 
-          typename T, 
+template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container = std::vector<uint8_t>>
 std::size_t serialize(const T &s, Container &bytes) {
@@ -208,9 +203,8 @@ std::size_t serialize(const T &s, Container &bytes) {
   return byte_index;
 }
 
-template <options O, 
-          typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),  
+template <options O, typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 Container serialize(const T &s) {
   Container bytes{};

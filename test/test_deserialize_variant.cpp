@@ -13,7 +13,7 @@ TEST_CASE("Deserialize variant" * test_suite("variant")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{5};
-      bytes = serialize(s);
+      serialize(s, bytes);
     }
     {
       std::error_code ec;
@@ -27,7 +27,7 @@ TEST_CASE("Deserialize variant" * test_suite("variant")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{"Hello"};
-      bytes = serialize(s);
+      serialize(s, bytes);
     }
     {
       std::error_code ec;
@@ -52,7 +52,7 @@ TEST_CASE("Deserialize map<string, variant>" * test_suite("variant")) {
                  {"ip_address", std::string{"192.168.8.1"}},
                  {"subscriptions",
                   std::vector<std::string>{"motor_state", "battery_state"}}}};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

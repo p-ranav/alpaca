@@ -13,7 +13,7 @@ TEST_CASE("Deserialize bool (true)" * test_suite("bool")) {
 
   {
     my_struct s{true};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {
@@ -33,7 +33,7 @@ TEST_CASE("Deserialize bool (true)" * test_suite("bool")) {
 
   {
     my_struct s{false};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

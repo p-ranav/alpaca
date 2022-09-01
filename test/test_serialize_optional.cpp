@@ -12,14 +12,14 @@ TEST_CASE("Serialize optional<int>" * test_suite("optional")) {
   {
     my_struct s{5};
     std::vector<uint8_t> bytes;
-  serialize(s, bytes);
+    serialize(s, bytes);
     REQUIRE(bytes.size() == 0); // fail, number of fields in struct deduced as 0
   }
 
   {
     my_struct s{5};
-    auto bytes = serialize<my_struct, 1>(
-        s); // number of fields in struct specified
+    auto bytes =
+        serialize<my_struct, 1>(s); // number of fields in struct specified
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(true)); // has_value
     REQUIRE(bytes[1] == static_cast<uint8_t>(5));    // value = 5
@@ -27,14 +27,16 @@ TEST_CASE("Serialize optional<int>" * test_suite("optional")) {
 
   {
     my_struct s{};
-    auto bytes = serialize<my_struct, 1>(s);
+    std::vector<uint8_t> bytes;
+    serialize<my_struct, 1>(s, bytes);
     REQUIRE(bytes.size() == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(false));
   }
 
   {
     my_struct s{std::nullopt};
-    auto bytes = serialize<my_struct, 1>(s);
+    std::vector<uint8_t> bytes;
+    serialize<my_struct, 1>(s, bytes);
     REQUIRE(bytes.size() == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(false));
   }

@@ -13,7 +13,7 @@ TEST_CASE("Deserialize pair<int, double>" * test_suite("pair")) {
 
   {
     my_struct s{std::make_pair(5, 3.14)};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {
@@ -36,7 +36,7 @@ TEST_CASE("Deserialize pair<std::vector<int>, std::vector<float>>" *
   {
     my_struct s{std::make_pair(std::vector<int>{1, 2, 3},
                                std::vector<float>{1.1, 2.2, 3.3})};
-    bytes = serialize(s);
+    serialize(s, bytes);
   }
 
   {

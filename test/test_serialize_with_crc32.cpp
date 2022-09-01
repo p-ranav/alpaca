@@ -10,8 +10,7 @@ TEST_CASE("Serialize int with crc32" * test_suite("crc32")) {
   };
 
   my_struct s{5};
-  auto bytes =
-      serialize<options::with_checksum>(s);
+  serialize<options::with_checksum>(s, bytes);
 
   REQUIRE(bytes.size() == 5);
 
