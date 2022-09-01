@@ -98,12 +98,12 @@ void type_info_helper(
 
 } // namespace detail
 
+namespace detail {
+
 // Forward declares
 template <options O, typename T, std::size_t N, typename Container,
           std::size_t I>
 void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index);
-
-namespace detail {
 
 // Start of serialization functions
 
@@ -127,8 +127,6 @@ void to_bytes_router(const T &input, Container &bytes,
   to_bytes<O>(bytes, byte_index, input);
 }
 
-} // namespace detail
-
 /// N -> number of fields in struct
 /// I -> field to start from
 template <options O, typename T, std::size_t N, typename Container,
@@ -148,12 +146,14 @@ void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
   }
 }
 
+} // namespace detail
+
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container = std::vector<uint8_t>>
 std::size_t serialize(const T &s, Container &bytes) {
   std::size_t byte_index = 0;
-  serialize_helper<options::none, T, N, Container, 0>(s, bytes, byte_index);
+  detail::serialize_helper<options::none, T, N, Container, 0>(s, bytes, byte_index);
   return byte_index;
 }
 
@@ -172,7 +172,7 @@ std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
   }
 
-  serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+  detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
 
   if constexpr (N > 0 && detail::with_checksum<O>()) {
     // calculate crc32 for byte array and
