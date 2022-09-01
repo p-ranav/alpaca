@@ -112,9 +112,8 @@ namespace detail {
 template <options O, typename T, typename U>
 typename std::enable_if<std::is_aggregate_v<U>, void>::type
 to_bytes(T &bytes, std::size_t &byte_index, const U &input) {
-  serialize_helper<O, U,
-                   detail::aggregate_arity<std::remove_cv_t<U>>::size(), T, 0>(
-      input, bytes, byte_index);
+  serialize_helper<O, U, detail::aggregate_arity<std::remove_cv_t<U>>::size(),
+                   T, 0>(input, bytes, byte_index);
 }
 
 template <options O, typename T, typename U>
