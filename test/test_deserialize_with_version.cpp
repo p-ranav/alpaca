@@ -14,7 +14,7 @@ TEST_CASE("Deserialize int into struct { int }" * test_suite("version")) {
   {
     my_struct s{5};
     bytes =
-        serialize<my_struct, std::vector<uint8_t>, options::with_version>(s);
+        serialize<options::with_version>(s);
   }
 
   {
@@ -38,7 +38,7 @@ TEST_CASE("Deserialize vector<int> into struct { vector<int> }" *
     };
     my_struct s{{1, 2, 3, 4, 5}};
     bytes =
-        serialize<my_struct, std::vector<uint8_t>, options::with_version>(s);
+        serialize<options::with_version>(s);
   }
 
   {

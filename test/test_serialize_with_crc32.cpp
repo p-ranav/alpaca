@@ -11,7 +11,7 @@ TEST_CASE("Serialize int with crc32" * test_suite("crc32")) {
 
   my_struct s{5};
   auto bytes =
-      serialize<my_struct, std::vector<uint8_t>, options::with_checksum>(s);
+      serialize<options::with_checksum>(s);
 
   REQUIRE(bytes.size() == 5);
 

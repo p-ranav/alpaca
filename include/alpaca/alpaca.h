@@ -132,9 +132,11 @@ void to_bytes_router(const T &input, Container &bytes,
 
 /// N -> number of fields in struct
 /// I -> field to start from
-template <options O, typename T, typename Container,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
-          std::size_t I = 0>
+template <options O,
+          typename T, 
+          std::size_t N, 
+          typename Container,
+          std::size_t I>
 void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (I < N) {
     const auto &ref = s;
@@ -146,30 +148,34 @@ void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
                                                               byte_index);
 
     // go to next field
-    serialize_helper<O, T, Container, N, I + 1>(s, bytes, byte_index);
+    serialize_helper<O, T, N, Container, I + 1>(s, bytes, byte_index);
   }
 }
 
-template <typename T, typename Container = std::vector<uint8_t>,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container = std::vector<uint8_t>>
 std::size_t serialize(const T &s, Container &bytes) {
   std::size_t byte_index = 0;
-  serialize_helper<options::none, T, Container, N, 0>(s, bytes, byte_index);
+  serialize_helper<options::none, T, N, Container, 0>(s, bytes, byte_index);
   return byte_index;
 }
 
-template <typename T, typename Container = std::vector<uint8_t>,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container = std::vector<uint8_t>>
 Container serialize(const T &s) {
   Container bytes{};
-  serialize<T, Container, N>(s, bytes);
+  serialize<T, N, Container>(s, bytes);
   return bytes;
 }
 
 // overloads taking options template parameter
 
-template <typename T, typename Container, options O,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+template <options O,
+          typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container>
 std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (N > 0 && detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
@@ -180,7 +186,7 @@ std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
   }
 
-  serialize_helper<O, T, Container, N, 0>(s, bytes, byte_index);
+  serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
 
   if constexpr (N > 0 && detail::with_checksum<O>()) {
     // calculate crc32 for byte array and
@@ -192,20 +198,24 @@ std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   return byte_index;
 }
 
-template <typename T, typename Container = std::vector<uint8_t>, options O,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+template <options O, 
+          typename T, 
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container = std::vector<uint8_t>>
 std::size_t serialize(const T &s, Container &bytes) {
   std::size_t byte_index = 0;
-  serialize<T, Container, O, N>(s, bytes, byte_index);
+  serialize<O, T, N, Container>(s, bytes, byte_index);
   return byte_index;
 }
 
-template <typename T, typename Container, options O,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+template <options O, 
+          typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),  
+          typename Container>
 Container serialize(const T &s) {
   Container bytes{};
   std::size_t byte_index = 0;
-  serialize<T, Container, O, N>(s, bytes, byte_index);
+  serialize<O, T, N, Container>(s, bytes, byte_index);
   return bytes;
 }
 

@@ -14,7 +14,7 @@ TEST_CASE("Deserialize int with crc32" * test_suite("crc32")) {
   // serialize
   {
     my_struct s{5};
-    serialize<my_struct, std::array<uint8_t, 5>, options::with_checksum>(s,
+    serialize<options::with_checksum>(s,
                                                                          bytes);
   }
 
@@ -41,7 +41,7 @@ TEST_CASE("Deserialize int with crc32 (error)" * test_suite("crc32")) {
   {
     my_struct s{5};
     bytes_written =
-        serialize<my_struct, std::array<uint8_t, 20>, options::with_checksum>(
+        serialize<options::with_checksum>(
             s, bytes);
   }
 

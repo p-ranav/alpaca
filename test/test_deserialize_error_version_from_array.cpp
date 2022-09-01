@@ -14,7 +14,7 @@ TEST_CASE("Deserialize int into another struct { uint16_t }" *
       int value;
     };
     my_struct s{5};
-    serialize<my_struct, std::array<uint8_t, 10>, options::with_version>(s,
+    serialize<options::with_version>(s,
                                                                          bytes);
   }
 
@@ -40,7 +40,7 @@ TEST_CASE("Deserialize int into struct { int,int,int }" *
       int value;
     };
     my_struct s{5};
-    serialize<my_struct, std::array<uint8_t, 10>, options::with_version>(s,
+    serialize<options::with_version>(s,
                                                                          bytes);
   }
 
@@ -68,7 +68,7 @@ TEST_CASE("Deserialize vector<int> into struct { vector<float> }" *
       std::vector<int> value;
     };
     my_struct s{{1, 2, 3, 4, 5}};
-    serialize<my_struct, std::array<uint8_t, 10>, options::with_version>(s,
+    serialize<options::with_version>(s,
                                                                          bytes);
   }
 

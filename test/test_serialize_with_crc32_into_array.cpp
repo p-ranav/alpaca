@@ -13,8 +13,7 @@ TEST_CASE("Serialize int with crc32 into array" * test_suite("crc32")) {
 
   std::array<uint8_t, 10> bytes;
   auto bytes_written =
-      serialize<my_struct, std::array<uint8_t, 10>, options::with_checksum>(
-          s, bytes);
+      serialize<ptions::with_checksum>(s, bytes);
 
   REQUIRE(bytes_written == 5);
 

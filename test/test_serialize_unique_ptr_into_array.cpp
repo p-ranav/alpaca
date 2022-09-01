@@ -32,7 +32,7 @@ TEST_CASE("Serialize unique_ptr<struct> into array" *
       make_node(5, make_node(3, make_node(1), make_node(2)), make_node(4));
 
   std::array<uint8_t, 20> bytes;
-  auto bytes_written = serialize<Node<int>>(*root, bytes);
+  auto bytes_written = serialize(*root, bytes);
   REQUIRE(bytes_written == 15);
   REQUIRE(bytes[0] == static_cast<uint8_t>(5));  // root = 5
   REQUIRE(bytes[1] == static_cast<uint8_t>(1));  // 5.has_left = true

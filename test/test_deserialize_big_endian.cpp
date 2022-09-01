@@ -23,7 +23,7 @@ TEST_CASE("Deserialize big-endian uint8_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 1);
   }
 
@@ -69,7 +69,7 @@ TEST_CASE("Deserialize big-endian uint16_t (stored as uint8_t)" *
   // serialize
   {
     my_struct s{99};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 2);
   }
 
@@ -94,7 +94,7 @@ TEST_CASE("Deserialize big-endian uint16_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{512};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 2);
   }
 
@@ -120,7 +120,7 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 4); // fixed-width encoding is used
   }
 
@@ -146,7 +146,7 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint16_t)" *
   // serialize
   {
     my_struct s{1600};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 4); // fixed-width encoding is used
   }
 
@@ -171,7 +171,7 @@ TEST_CASE("Deserialize big-endian uint32_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{75535};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 4); // fixed-width encoding is used
   }
 
@@ -197,7 +197,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 8); // fixed-width encoding is used
   }
 
@@ -223,7 +223,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint16_t)" *
   // serialize
   {
     my_struct s{12345};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 8); // fixed-width encoding is used
   }
 
@@ -249,7 +249,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint32_t)" *
   // serialize
   {
     my_struct s{12345678};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 8); // fixed-width encoding is used
   }
 
@@ -274,7 +274,7 @@ TEST_CASE("Deserialize big-endian uint64_t" * test_suite("unsigned_integer")) {
   // serialize
   {
     my_struct s{5294967295};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 8); // fixed-width encoding is used
   }
 
@@ -303,7 +303,7 @@ TEST_CASE("Deserialize big-endian unsigned integer types" *
   // serialize
   {
     my_struct s{5, 12345, 12345678, 5294967295};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -334,7 +334,7 @@ TEST_CASE("Deserialize big-endian unsigned integer types" *
   // serialize
   {
     my_struct s{5, 12345, 12345678, 5294967295};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() ==
             15); // fixed-width encoding is used for uint32 and uint64 types
   }
@@ -363,7 +363,7 @@ TEST_CASE("Deserialize big-endian int8_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -388,7 +388,7 @@ TEST_CASE("Deserialize big-endian int16_t (stored as int8_t)" *
   // serialize
   {
     my_struct s{99};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -412,7 +412,7 @@ TEST_CASE("Deserialize big-endian int16_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{512};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -437,7 +437,7 @@ TEST_CASE("Deserialize big-endian int32_t (packed as int8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -462,7 +462,7 @@ TEST_CASE("Deserialize big-endian int32_t (packed as int16_t)" *
   // serialize
   {
     my_struct s{1600};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -486,7 +486,7 @@ TEST_CASE("Deserialize big-endian int32_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{75535};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -511,7 +511,7 @@ TEST_CASE("Deserialize big-endian int64_t (packed as int8_t)" *
   // serialize
   {
     my_struct s{5};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -536,7 +536,7 @@ TEST_CASE("Deserialize big-endian int64_t (packed as int16_t)" *
   // serialize
   {
     my_struct s{12345};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -561,7 +561,7 @@ TEST_CASE("Deserialize big-endian int64_t (packed as int32_t)" *
   // serialize
   {
     my_struct s{12345678};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -585,7 +585,7 @@ TEST_CASE("Deserialize big-endian int64_t" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{5294967295};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -610,7 +610,7 @@ TEST_CASE("Deserialize big-endian int64_t (big positive)" *
   // serialize
   {
     my_struct s{12345678910111314};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -635,7 +635,7 @@ TEST_CASE("Deserialize big-endian int64_t (big negative)" *
   // serialize
   {
     my_struct s{-12345678910111314};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -663,7 +663,7 @@ TEST_CASE("Deserialize big-endian signed integer types" *
   // serialize
   {
     my_struct s{-5, -12345, -12345678, -5294967295};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize
@@ -699,7 +699,7 @@ TEST_CASE("Deserialize big-endian signed and unsigned integer types" *
   {
     my_struct s{-5, -12345, -12345678, -5294967295,
                 5,  12345,  12345678,  5294967295};
-    bytes = serialize<my_struct, std::vector<uint8_t>, options::big_endian>(s);
+    serialize<options::big_endian>(s, bytes);
   }
 
   // deserialize

@@ -20,7 +20,7 @@ TEST_CASE("Serialize optional<int> into array" * test_suite("optional")) {
   {
     my_struct s{5};
     std::array<uint8_t, 5> bytes;
-    auto bytes_written = serialize<my_struct, std::array<uint8_t, 5>, 1>(
+    auto bytes_written = serialize<my_struct, 1>(
         s, bytes); // number of fields in struct specified
     REQUIRE(bytes_written == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(true)); // has_value
@@ -31,7 +31,7 @@ TEST_CASE("Serialize optional<int> into array" * test_suite("optional")) {
     my_struct s{};
     std::array<uint8_t, 5> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 5>, 1>(s, bytes);
+        serialize<my_struct, 1>(s, bytes);
     REQUIRE(bytes_written == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(false));
   }
@@ -40,7 +40,7 @@ TEST_CASE("Serialize optional<int> into array" * test_suite("optional")) {
     my_struct s{std::nullopt};
     std::array<uint8_t, 5> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 5>, 1>(s, bytes);
+        serialize<my_struct, 1>(s, bytes);
     REQUIRE(bytes_written == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(false));
   }

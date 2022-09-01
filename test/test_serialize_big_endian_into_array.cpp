@@ -16,7 +16,7 @@ TEST_CASE("Serialize uint8_t big endian" * test_suite("signed_integer")) {
     my_struct s{5};
     std::array<uint8_t, 100> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 100>, options::big_endian>(
+        serialize<options::big_endian>(
             s, bytes);
     REQUIRE(bytes_written == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
@@ -35,7 +35,7 @@ TEST_CASE("Serialize uint16_t big endian" * test_suite("signed_integer")) {
     my_struct s{5};
     std::array<uint8_t, 100> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 100>, options::big_endian>(
+        serialize<options::big_endian>(
             s, bytes);
     REQUIRE(bytes_written == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
@@ -47,7 +47,7 @@ TEST_CASE("Serialize uint16_t big endian" * test_suite("signed_integer")) {
     my_struct s{12345};
     std::array<uint8_t, 100> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 100>, options::big_endian>(
+        serialize<options::big_endian>(
             s, bytes);
     REQUIRE(bytes_written == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
@@ -68,7 +68,7 @@ TEST_CASE("Serialize positive int8_t big endian" *
     my_struct s{5};
     std::array<uint8_t, 100> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 100>, options::big_endian>(
+        serialize<options::big_endian>(
             s, bytes);
     REQUIRE(bytes_written == 1);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
@@ -88,7 +88,7 @@ TEST_CASE("Serialize positive int16_t big endian" *
     my_struct s{5};
     std::array<uint8_t, 100> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 100>, options::big_endian>(
+        serialize<options::big_endian>(
             s, bytes);
     REQUIRE(bytes_written == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
@@ -100,7 +100,7 @@ TEST_CASE("Serialize positive int16_t big endian" *
     my_struct s{12345};
     std::array<uint8_t, 100> bytes;
     auto bytes_written =
-        serialize<my_struct, std::array<uint8_t, 100>, options::big_endian>(
+        serialize<options::big_endian>(
             s, bytes);
     REQUIRE(bytes_written == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
