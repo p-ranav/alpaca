@@ -531,26 +531,24 @@ if (!ec) {
 
 ### Exclude STL containers
 
-alpaca includes headers for a number of STL containers. As this can affect the compile time of applications, there are defines that can be used to disable support for particular data structures. 
-
-Use these macros to remove support for any data structuers you don't care about:
+alpaca includes headers for a number of STL containers and classes. As this can affect the compile time of applications, define any of the following macros to remove support for particular data structures. 
 
 ```cpp
 #define ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
 #define ALPACA_EXCLUDE_SUPPORT_STD_MAP
-#define ALPACA_EXCLUDE_SUPPORT_STD_UNIQUE_PTR
 #define ALPACA_EXCLUDE_SUPPORT_STD_OPTIONAL
 #define ALPACA_EXCLUDE_SUPPORT_STD_SET
 #define ALPACA_EXCLUDE_SUPPORT_STD_STRING
 #define ALPACA_EXCLUDE_SUPPORT_STD_TUPLE
+#define ALPACA_EXCLUDE_SUPPORT_STD_PAIR
+#define ALPACA_EXCLUDE_SUPPORT_STD_UNIQUE_PTR
 #define ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
 #define ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
-#define ALPACA_EXCLUDE_SUPPORT_STD_PAIR
 #define ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 #define ALPACA_EXCLUDE_SUPPORT_STD_VECTOR
 ```
 
-Example:
+Here's an example that only uses `std::vector`, `std::unordered_map`, and `std::string`
 
 ```cpp
 #define ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
