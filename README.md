@@ -560,6 +560,28 @@ std::vector<uint8_t> bytes;
 	
 By default, alpaca uses little endian. This option can be switched using `options::big_endian`
 
+```cpp
+#include <alpaca/alpaca.h>
+
+int main() {
+  struct my_struct {
+    uint16_t id;
+  };
+
+  my_struct s { 12345 };
+  
+  // little endian
+  {
+    auto bytes = alpaca::serialize(s); // {0x39, 0x30}
+  }
+
+  // big endian
+  {
+    auto bytes = alpaca::serialize<my_struct, std::vector<uint8_t>, alpaca::options::big_endian>(s); // {0x30, 0x39}
+  }  
+}
+```
+
 ### Fixed or Variable-length Encoding
 	
 #### Unsigned integers
