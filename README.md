@@ -72,14 +72,6 @@ if (!ec) {
      *    [Data Structure Versioning](#data-structure-versioning)
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
-*    [Specification](#specification)
-     *    [Supported Types](#supported-types)
-     *    [Variable-length Encoding for Integers](#variable-length-encoding-for-integers)
-     * 	  [Sequence Containers](#sequence-containers)
-     *    [Associative Containers](#associative-containers)
-     *    [Tuples and Pairs](#tuples-and-pairs)
-     *    [Unique Pointers](#unique-pointers)
-     *    [Variants](#variants)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
 
@@ -322,6 +314,15 @@ auto bytes = serialize<MyStruct, 4>(s); // 14 bytes
 // }
 ```
 
+For `std::optional<T>`, a leading byte is used to represent if the optional has value
+
+```
+has_value?    value (if previous byte is 0x01)         
++----------+  +----+----+----+-----+
+|    A1    |  | B1 | B2 | B3 | ... |
++----------+  +----+----+----+-----+
+```
+
 ### Type-safe Unions - Variant Types
 
 ```cpp
@@ -367,6 +368,15 @@ auto bytes = serialize(s); // 87 bytes
 //   0x0d                                                                // 13-byte string
 //   0x62 0x61 0x74 0x74 0x65 0x72 0x79 0x5f 0x73 0x74 0x61 0x74 0x65    // string "battery_state"
 // }
+```
+
+For `std::variant<T, U, ...>`, the leading bytes represent the index of the variant that is used by the value
+
+```
+variant index       value       
++-----------+  +----+----+-----+
+|    A1     |  | B1 | B2 | ... |
++-----------+  +----+----+-----+
 ```
 
 ### Smart Pointers and Recursive Data Structures
@@ -436,6 +446,15 @@ auto bytes = serialize<Node<int>>(*root); // 15 bytes
 //   0x00 // 4.has_left = false
 //   0x00 // 4.has_right = false
 // }
+```
+
+For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
+
+```
+ptr != null?  value (if previous byte is 0x01)          
++----------+  +----+----+----+-----+
+|    A1    |  | B1 | B2 | B3 | ... |
++----------+  +----+----+----+-----+
 ```
 
 ## Backward and Forward Compatibility
@@ -667,186 +686,6 @@ int main() {
   std::vector<std::uint8_t> bytes;
   auto bytes_written = alpaca::serialize<my_struct, std::vector<uint8_t>, alpaca::options::fixed_length_encoding>(s, bytes);
 }
-```
-
-## Specification
-
-### Supported Types
-
-```cpp
-uint8_t
-uint16_t 
-uint32_t 
-uint64_t
-int8_t 
-int16_t 
-int32_t 
-int64_t
-enum class
-float
-double 
-bool
-char
-std::string
-std::optional<T>
-std_array<T, N>
-std::vector<T>
-std::tuple<T, U...>
-std::pair<T, U>
-std::map<T, U>
-std::unordered_map<T, U>
-std::set<T>
-std::unordered_set<T>
-std::unique_ptr<T>
-std::variant<T, U...>
-struct
-```
-
-### Variable-length Encoding for Integers
-
-#### Unsigned integers
-
-* `uint8_t` and `uint16_t` are stored as-is without any encoding. 
-* `uint32_t` and `uint64_t` are represented as variable-length quantities (VLQ) with 7-bits for data and 1-bit to represent continuation
-
-<table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td colspan="7">B₀</td><td>A</td><td colspan="7">Bₙ (n &gt; 0)</td></tr></tbody></table>
-
-* If A is 0, then this is the last VLQ octet of the integer. If A is 1, then another VLQ octet follows.
-
-#### Signed integers
-
-* `int8_t` and `int16_t` are stored as-is without any encoding. 
-* `int32_t` and `int64_t` are represented as VLQ, similar to the unsigned version. The only difference is that the first VLQ has the sixth bit reserved to indicate whether the encoded integer is positive or negative. Any consecutive VLQ octet follows the general structure.
-
-<table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td>B</td><td colspan="6">C₀</td><td>B</td><td colspan="7">Cₙ (n &gt; 0)</td></tr></tbody></table>
-
-* If A is 0, then the VLQ represents a positive integer. If A is 1, then the VLQ represents a negative number.
-* If B is 0, then this is the last VLQ octet of the integer. If B is 1, then another VLQ octet follows.
-
-### Sequence Containers
-
-#### Strings
-
-For `std::string`, the general structure is as follows:
-
-* The first N bytes is a VLQ encoding of the size of the container
-* Then, the byte array is simply bytes of data
-
-```
-  string length    char array -->
-+----+----+-----+  +----+----+-----+
-| A1 | A2 | ... |  | B1 | B2 | ... |
-+----+----+-----+  +----+----+-----+
-```
-
-#### Vectors
-
-For `std::vector<T>`, the general structure is as follows:
-
-* The first N bytes is a VLQ encoding of the size of the container
-* Then, each value in the vector is encoding accordingly to the rules for value_type `T`
-
-```
-   vector size          value1                value2          value3
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-```
-
-#### Arrays
-
-For `std::array<T, N>`, since the (1) number of elements and (2) type of element in the array is known (both at serialization and deserialization time), this information is not stored in the byte array. 
-
-The byte array simply includes the encoding for value_type `T` for each value in the array. 
-
-```
-     value1             value2                value3          value4
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-```
-
-### Associative Containers
-
-#### Maps
-
-For `std::map<K, V>` and `std::unordered_map<K, V>`, the structure is similar to sequence containers:
-
-* The first N bytes is a VLQ encoding of the size of the container
-* Then, the byte array is `K₁, V₁, K₂, V₂, K₃, V₃, ...` for each key `Kᵢ` and value `Vᵢ` in the map
-
-```
-     map size            key1                  value1         key2
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-```
-
-#### Sets
-
-The format is the same as with `std::vector<T>`:
-
-* The first N bytes is a VLQ encoding of the size of the container
-* Then, for each value in the set, is encoding accordingly to the rules for value_type `T`
-
-```
-     set size            value1              value2           value3
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
-+----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
-```
-
-### Tuples and Pairs
-
-For `std::tuple<T, U, V, ...>`, alpaca already knows, during serialization/deserialization, the tuple_size and type of each element in the tuple. So only the value at each index is stored:
-
-```
-     value1             value2             value3        value4
-+----+----+-----+  +----+----+-----+  +----+----+-----+  +---
-| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | ... |  |...
-+----+----+-----+  +----+----+-----+  +----+----+-----+  +---
-```
-
-For `std::pair<T, U>`, the general structure is exactly the same as a 2-tuple
-
-```
-      first             second
-+----+----+-----+  +----+----+-----+
-| A1 | A2 | ... |  | B1 | B2 | ... |
-+----+----+-----+  +----+----+-----+
-```
-
-### Optional Values
-
-For `std::optional<T>`, a leading byte is used to represent if the optional has value
-
-```
-has_value?    value (if previous byte is 0x01)         
-+----------+  +----+----+----+-----+
-|    A1    |  | B1 | B2 | B3 | ... |
-+----------+  +----+----+----+-----+
-```
-
-### Unique Pointers
-
-For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
-
-```
-ptr != null?  value (if previous byte is 0x01)          
-+----------+  +----+----+----+-----+
-|    A1    |  | B1 | B2 | B3 | ... |
-+----------+  +----+----+----+-----+
-```
-
-### Variants
-
-For `std::variant<T, U, ...>`, the leading bytes represent the index of the variant that is used by the value
-
-```
-variant index       value       
-+-----------+  +----+----+-----+
-|    A1     |  | B1 | B2 | ... |
-+-----------+  +----+----+-----+
 ```
 
 ## Building, Installing, and Testing
