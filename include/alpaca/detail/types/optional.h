@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_OPTIONAL
 #include <alpaca/detail/type_info.h>
 #include <optional>
 #include <system_error>
@@ -78,3 +79,4 @@ bool from_bytes(std::optional<T> &output, Container &bytes,
 } // namespace detail
 
 } // namespace alpaca
+#endif

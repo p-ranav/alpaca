@@ -529,6 +529,57 @@ if (!ec) {
 // source: https://crccalc.com/
 ```
 
+### Exclude STL containers
+
+alpaca includes headers for a number of STL containers. As this can affect the compile time of applications, there are defines that can be used to disable support for particular data structures. 
+
+Use these macros to remove support for any data structuers you don't care about:
+
+```cpp
+#define ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
+#define ALPACA_EXCLUDE_SUPPORT_STD_MAP
+#define ALPACA_EXCLUDE_SUPPORT_STD_UNIQUE_PTR
+#define ALPACA_EXCLUDE_SUPPORT_STD_OPTIONAL
+#define ALPACA_EXCLUDE_SUPPORT_STD_SET
+#define ALPACA_EXCLUDE_SUPPORT_STD_STRING
+#define ALPACA_EXCLUDE_SUPPORT_STD_TUPLE
+#define ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
+#define ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
+#define ALPACA_EXCLUDE_SUPPORT_STD_PAIR
+#define ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
+#define ALPACA_EXCLUDE_SUPPORT_STD_VECTOR
+```
+
+Example:
+
+```cpp
+#define ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
+#define ALPACA_EXCLUDE_SUPPORT_STD_MAP
+#define ALPACA_EXCLUDE_SUPPORT_STD_UNIQUE_PTR
+#define ALPACA_EXCLUDE_SUPPORT_STD_OPTIONAL
+#define ALPACA_EXCLUDE_SUPPORT_STD_SET
+#define ALPACA_EXCLUDE_SUPPORT_STD_TUPLE
+#define ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
+#define ALPACA_EXCLUDE_SUPPORT_STD_PAIR
+#define ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
+#include <alpaca/alpaca.h>
+
+int main() {
+  struct my_struct {
+    uint16_t id;
+    std::vector<char> alphabet;
+    std::unordered_map<std::string, int> config;
+  };
+
+  my_struct s {12345,
+	       {'a', 'b', 'c'},
+	       {{"x", -20}, {"y", 45}}};
+  
+  std::vector<std::uint8_t> bytes;
+  auto bytes_written = alpaca::serialize<my_struct, std::vector<uint8_t>, alpaca::options::fixed_length_encoding>(s, bytes);
+}
+```
+
 ## Specification
 
 ### Supported Types

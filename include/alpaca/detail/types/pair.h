@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_PAIR
 #include <alpaca/detail/type_info.h>
 #include <system_error>
 #include <utility>
@@ -57,3 +58,4 @@ bool from_bytes(std::pair<T, U> &output, const Container &bytes,
 } // namespace detail
 
 } // namespace alpaca
+#endif

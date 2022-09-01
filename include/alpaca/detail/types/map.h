@@ -1,8 +1,13 @@
 #pragma once
 #include <alpaca/detail/type_info.h>
 #include <alpaca/detail/variable_length_encoding.h>
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 #include <map>
+#endif
+
 #include <system_error>
+
 #include <unordered_map>
 #include <vector>
 
@@ -10,6 +15,7 @@ namespace alpaca {
 
 namespace detail {
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 template <typename T>
 typename std::enable_if<is_specialization<T, std::map>::value, void>::type
 type_info(
@@ -21,7 +27,9 @@ type_info(
   using mapped_type = typename T::mapped_type;
   type_info<mapped_type>(typeids, struct_visitor_map);
 }
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
 template <typename T>
 typename std::enable_if<is_specialization<T, std::unordered_map>::value,
                         void>::type
@@ -34,6 +42,7 @@ type_info(
   using mapped_type = typename T::mapped_type;
   type_info<mapped_type>(typeids, struct_visitor_map);
 }
+#endif
 
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
@@ -55,17 +64,21 @@ void to_bytes_from_map_type(const T &input, Container &bytes,
   }
 }
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 template <options O, typename Container, typename K, typename V>
 void to_bytes(Container &bytes, std::size_t &byte_index,
               const std::map<K, V> &input) {
   to_bytes_from_map_type<O>(input, bytes, byte_index);
 }
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
 template <options O, typename Container, typename K, typename V>
 void to_bytes(Container &bytes, std::size_t &byte_index,
               const std::unordered_map<K, V> &input) {
   to_bytes_from_map_type<O>(input, bytes, byte_index);
 }
+#endif
 
 template <options O, typename T, typename Container>
 void from_bytes_router(T &output, const Container &bytes,
@@ -100,6 +113,7 @@ void from_bytes_to_map(T &map, const Container &bytes,
   }
 }
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 template <options O, typename K, typename V, typename Container>
 bool from_bytes(std::map<K, V> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
@@ -114,7 +128,9 @@ bool from_bytes(std::map<K, V> &output, const Container &bytes,
   from_bytes_to_map<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
 template <options O, typename K, typename V, typename Container>
 bool from_bytes(std::unordered_map<K, V> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
@@ -129,6 +145,7 @@ bool from_bytes(std::unordered_map<K, V> &output, const Container &bytes,
   from_bytes_to_map<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }
+#endif
 
 } // namespace detail
 

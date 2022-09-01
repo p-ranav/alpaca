@@ -1,23 +1,54 @@
 #pragma once
 #include <alpaca/detail/field_type.h>
 #include <alpaca/detail/is_specialization.h>
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
 #include <array>
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 #include <map>
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNIQUE_PTR
 #include <memory>
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_OPTIONAL
 #include <optional>
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_SET
 #include <set>
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_STRING
 #include <string>
+#endif
+
 #include <string_view>
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_TUPLE
 #include <tuple>
+#endif
+
 #include <unordered_map>
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
 #include <unordered_set>
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_PAIR
 #include <utility>
+#endif
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 #include <variant>
 #endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_VECTOR
 #include <vector>
+#endif
 
 namespace alpaca {
 
@@ -130,67 +161,86 @@ type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
 // array types
 template <typename T>
 typename std::enable_if<is_array_type<T>::value, void>::type type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 // map
 template <typename T>
 typename std::enable_if<is_specialization<T, std::map>::value, void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
 template <typename T>
 typename std::enable_if<is_specialization<T, std::unordered_map>::value,
                         void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_OPTIONAL
 // optional
 template <typename T>
 typename std::enable_if<is_specialization<T, std::optional>::value, void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_PAIR
 // pair
 template <typename T>
 typename std::enable_if<is_specialization<T, std::pair>::value, void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_SET
 // set
 template <typename T>
 typename std::enable_if<is_specialization<T, std::set>::value, void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
 template <typename T>
 typename std::enable_if<is_specialization<T, std::unordered_set>::value,
                         void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_STRING
 // string
 template <typename T>
 typename std::enable_if<is_specialization<T, std::basic_string>::value,
                         void>::type
 type_info(std::vector<uint8_t> &typeids,
           std::unordered_map<std::string_view, std::size_t> &);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_TUPLE
 // tuple
 template <typename T, std::size_t N, std::size_t I>
 void type_info_tuple_helper(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNIQUE_PTR
 // unique_ptr
 template <typename T>
 typename std::enable_if<is_specialization<T, std::unique_ptr>::value,
@@ -198,6 +248,7 @@ typename std::enable_if<is_specialization<T, std::unique_ptr>::value,
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 // variant
@@ -208,12 +259,14 @@ type_info(
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 #endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_VECTOR
 // vector
 template <typename T>
 typename std::enable_if<is_specialization<T, std::vector>::value, void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
 
 } // namespace detail
 

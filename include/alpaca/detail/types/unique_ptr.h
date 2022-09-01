@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNIQUE_PTR
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_info.h>
 #include <memory>
@@ -85,3 +86,4 @@ bool from_bytes(std::unique_ptr<T> &output, const Container &bytes,
 } // namespace detail
 
 } // namespace alpaca
+#endif

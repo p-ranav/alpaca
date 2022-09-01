@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_VECTOR
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_info.h>
 #include <system_error>
@@ -95,3 +96,4 @@ bool from_bytes(std::vector<T> &output, const Container &bytes,
 } // namespace detail
 
 } // namespace alpaca
+#endif

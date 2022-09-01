@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_STRING
 #include <alpaca/detail/from_bytes.h>
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_info.h>
@@ -69,3 +70,4 @@ bool from_bytes(std::string &value, const Container &bytes,
 } // namespace detail
 
 } // namespace alpaca
+#endif

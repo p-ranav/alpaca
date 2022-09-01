@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_TUPLE
 #include <alpaca/detail/type_info.h>
 #include <system_error>
 #include <tuple>
@@ -103,3 +104,4 @@ bool from_bytes(std::tuple<T...> &output, const Container &bytes,
 } // namespace detail
 
 } // namespace alpaca
+#endif

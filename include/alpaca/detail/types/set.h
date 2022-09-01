@@ -1,23 +1,24 @@
 #pragma once
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_info.h>
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_SET
 #include <set>
+#endif
+
 #include <system_error>
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
 #include <unordered_set>
+#endif
+
 #include <vector>
 
 namespace alpaca {
 
 namespace detail {
 
-template <typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
-typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
-                        void>::type
-type_info(
-    std::vector<uint8_t> &typeids,
-    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
-
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_SET
 template <typename T>
 typename std::enable_if<is_specialization<T, std::set>::value, void>::type
 type_info(
@@ -27,7 +28,9 @@ type_info(
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);
 }
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
 template <typename T>
 typename std::enable_if<is_specialization<T, std::unordered_set>::value,
                         void>::type
@@ -38,6 +41,7 @@ type_info(
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);
 }
+#endif
 
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
@@ -55,17 +59,21 @@ void to_bytes_from_set_type(const T &input, Container &bytes,
   }
 }
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_SET
 template <options O, typename Container, typename U>
 void to_bytes(Container &bytes, std::size_t &byte_index,
               const std::set<U> &input) {
   to_bytes_from_set_type<O>(input, bytes, byte_index);
 }
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
 template <options O, typename Container, typename U>
 void to_bytes(Container &bytes, std::size_t &byte_index,
               const std::unordered_set<U> &input) {
   to_bytes_from_set_type<O>(input, bytes, byte_index);
 }
+#endif
 
 template <options O, typename T, typename Container>
 void from_bytes_router(T &output, const Container &bytes,
@@ -96,6 +104,7 @@ void from_bytes_to_set(T &set, const Container &bytes,
   }
 }
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_SET
 template <options O, typename T, typename Container>
 bool from_bytes(std::set<T> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
@@ -110,7 +119,9 @@ bool from_bytes(std::set<T> &output, const Container &bytes,
   from_bytes_to_set<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }
+#endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
 template <options O, typename T, typename Container>
 bool from_bytes(std::unordered_set<T> &output, const Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
@@ -125,6 +136,7 @@ bool from_bytes(std::unordered_set<T> &output, const Container &bytes,
   from_bytes_to_set<O>(output, bytes, byte_index, end_index, error_code);
   return true;
 }
+#endif
 
 } // namespace detail
 
