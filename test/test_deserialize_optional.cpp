@@ -13,8 +13,7 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{5};
-      bytes =
-          serialize<my_struct, 1>(s); // number of fields in struct specified
+      serialize<my_struct, 1>(s, bytes); // number of fields in struct specified
       REQUIRE(bytes.size() == 2);
     }
     {
@@ -30,8 +29,7 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{5};
-      bytes =
-          serialize<my_struct, 1>(s); // number of fields in struct specified
+      serialize<my_struct, 1>(s, bytes); // number of fields in struct specified
       REQUIRE(bytes.size() == 2);
     }
     {
@@ -48,8 +46,7 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     std::vector<uint8_t> bytes;
     {
       my_struct s{};
-      bytes =
-          serialize<my_struct, 1>(s); // number of fields in struct specified
+      serialize<my_struct, 1>(s, bytes); // number of fields in struct specified
       REQUIRE(bytes.size() == 1);
     }
     {

@@ -201,7 +201,8 @@ static void BM_alpaca_deserialize_from_vector(benchmark::State &state) {
     std::size_t data_size = 0;
     my_struct s{createMonsters(state.range(0))};
     // serialize
-    auto bytes = serialize(s);
+    std::vector<uint8_t> bytes;
+    serialize(s, bytes);
 
     data_size = bytes.size();
 

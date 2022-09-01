@@ -25,11 +25,10 @@ TEST_CASE("Serialize uint16_t big endian" * test_suite("signed_integer")) {
     uint16_t value;
   };
 
-  std::vector<uint8_t> bytes;
-
   // serialize
   {
     my_struct s{5};
+    std::vector<uint8_t> bytes;
     serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
@@ -39,6 +38,7 @@ TEST_CASE("Serialize uint16_t big endian" * test_suite("signed_integer")) {
   // serialize
   {
     my_struct s{12345};
+    std::vector<uint8_t> bytes;
     serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
@@ -69,11 +69,10 @@ TEST_CASE("Serialize positive int16_t big endian" *
     int16_t value;
   };
 
-  std::vector<uint8_t> bytes;
-
   // serialize
   {
     my_struct s{5};
+    std::vector<uint8_t> bytes;
     serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
@@ -83,6 +82,7 @@ TEST_CASE("Serialize positive int16_t big endian" *
   // serialize
   {
     my_struct s{12345};
+    std::vector<uint8_t> bytes;
     serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 2);
     REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
