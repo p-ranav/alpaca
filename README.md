@@ -57,6 +57,7 @@ if (!ec) {
 
 ## Table of Contents
 
+*    [Usage and API](#usage-and-api)
 *    [Examples](#examples)
      *    [Fundamental types](#fundamental-types)
      *    [Arrays, Vectors, and Strings](#arrays-vectors-and-strings)
@@ -74,6 +75,10 @@ if (!ec) {
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [License](#license)
+
+## Usage and API
+
+Text here
 
 ## Examples
 
