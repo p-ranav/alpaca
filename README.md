@@ -117,6 +117,8 @@ In the above example, `c` is a `uint64_t` but its value is only `5`. Here, alpac
 
 ### Arrays, Vectors, and Strings
 
+alpaca supports sequence containers including `std::array`, `std::vector`, and `std::string`. Nested arrays and vectors work seamlessly.
+
 ```cpp
 struct MyStruct {
   std::array<int, 3> a;
@@ -145,6 +147,8 @@ auto bytes = serialize(s); // 28 bytes
 ```
 
 ### Maps and Sets
+
+For associative containers, alpaca supports `std::map`, `std::unordered_map`, `std::set`, and `std::unordered_set`.
 
 ```cpp
 struct MyStruct {
@@ -175,6 +179,30 @@ auto bytes = serialize(s); // 30 bytes
 //   0x04                      // 4-element set
 //   0x01 0x02 0x03 0x04       // set {1, 2, 3, 4}
 // }
+```
+
+For `std::map<K, V>` and `std::unordered_map<K, V>`, the structure is similar to sequence containers:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, the byte array is `K₁, V₁, K₂, V₂, K₃, V₃, ...` for each key `Kᵢ` and value `Vᵢ` in the map
+
+```
+     map size            key1                  value1         key2
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+```
+
+The format for `std::set` and `std::unordered_set` is the same as with `std::vector<T>`:
+
+* The first N bytes is a VLQ encoding of the size of the container
+* Then, for each value in the set, is encoding accordingly to the rules for value_type `T`
+
+```
+     set size            value1              value2           value3
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+| A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
++----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 ```
 
 ### Nested Structures
