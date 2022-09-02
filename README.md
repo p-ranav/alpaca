@@ -122,7 +122,7 @@ auto bytes_written = serialize<OPTIONS>(object, bytes);
 
 ### Deserialization
 
-The `alpaca::deserialize(...)` function, likewis,e accepts 2 arguments: a container like `std::vector<uint8_t>` or `std::array<uint8_t, N>` and an `std::error_code` that will be set in case of error conditions. Deserialization will attempt to unpack the container of bytes into an aggregate class type, returning the class object.
+The `alpaca::deserialize(...)` function, likewise, accepts 2 arguments: a container like `std::vector<uint8_t>` or `std::array<uint8_t, N>` and an `std::error_code` that will be set in case of error conditions. Deserialization will attempt to unpack the container of bytes into an aggregate class type, returning the class object.
 
 Like `serialize()`, deserialization has two variants, one of which accepts an `alpaca::options` template parameter.  
 
@@ -248,7 +248,7 @@ For `std::vector<T>`, the general structure is as follows:
 +----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 ```
 
-For `std::array<T, N>`, since the (1) number of elements and (2) type of element in the array is known (both at serialization and deserialization time), this information is not stored in the byte array. 
+For `std::array<T, N>`, since the (1) number of elements and (2) type of element in the array is known (both at serialization and deserialization time), this information is not stored in the byte array. Note that, for this reason, deserialization cannot unpack the bytes into an array of a different size. ***Important***: Make sure to use the same array size on both the serialization and deserialization side. 
 
 The byte array simply includes the encoding for value_type `T` for each value in the array. 
 
