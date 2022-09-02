@@ -72,7 +72,7 @@ if (!ec) {
 *    [Backward and Forward Compatibility](#backward-and-forward-compatibility)
 *    [Configuration Options](#configuration-options)
      *    [Endianness](#endianness)
-     *    [Fixed or Variable-length Encoding](#fixed-or-variable--length-encoding)
+     *    [Fixed or Variable-length Encoding](#fixed-or-variable-length-encoding)
      *    [Data Structure Versioning](#data-structure-versioning)
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
