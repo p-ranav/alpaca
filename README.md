@@ -380,6 +380,41 @@ auto bytes_written = alpaca::serialize(s, bytes); // 45 bytes
 
 ### Optional Values
 
+#### Failure Case
+
+```cpp
+#include <optional>
+
+struct filler {
+  template <typename type> operator type();
+};
+
+int main() {
+
+  struct MyStruct {
+    std::optional<int> value;
+  };
+
+  MyStruct s { filler{} }; // error here 
+}
+```
+
+```console
+optional.cpp: In function ‘int main()’:
+optional.cpp:13:16: error: conversion from ‘filler’ to ‘std::optional<int>’ is ambiguous
+   13 |   MyStruct s { filler{} };
+      |                ^~~~~~~~
+optional.cpp:4:28: note: candidate: ‘filler::operator type() [with type = std::optional<int>]’
+    4 |   template <typename type> operator type();
+      |                            ^~~~~~~~
+In file included from optional.cpp:1:
+/usr/include/c++/10/optional:700:2: note: candidate: ‘constexpr std::optional<_Tp>::optional(_Up&&) [with _Up = filler; typename std::enable_if<__and_v<std::__not_<std::is_same<std::optional<_Tp>, typename std::remove_cv<typename std::remove_reference<_Up>::type>::type> >, std::__not_<std::is_same<std::in_place_t, typename std::remove_cv<typename std::remove_reference<_Up>::type>::type> >, std::is_constructible<_Tp, _Up&&>, std::is_convertible<_Up&&, _Tp> >, bool>::type <anonymous> = true; _Tp = int]’
+  700 |  optional(_Up&& __t)
+      |  ^~~~~~~~
+```
+
+#### Solution
+
 ```cpp
 struct MyStruct {
   std::optional<int> a;
