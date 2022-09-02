@@ -45,13 +45,14 @@ Config c{"/dev/video0", {640, 480},
 	  {"model_path", std::string{"foo/bar.pt"}}}};
 
 // Serialize
-auto bytes = alpaca::serialize(c);
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize(c, bytes);
 
 // Deserialize
 std::error_code ec;
-auto c_recovered = alpaca::deserialize<Config>(bytes, ec);
+auto object = alpaca::deserialize<Config>(bytes, ec);
 if (!ec) {
-  // use config
+  // use object
 }
 ```
 
