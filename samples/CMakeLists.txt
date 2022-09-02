@@ -6,3 +6,15 @@ target_link_libraries(arrays_vectors_strings PRIVATE alpaca::alpaca)
 
 add_executable(maps_and_sets maps_and_sets.cpp)
 target_link_libraries(maps_and_sets PRIVATE alpaca::alpaca)
+
+add_executable(nested_structures nested_structures.cpp)
+target_link_libraries(nested_structures PRIVATE alpaca::alpaca)
+
+add_executable(optional_values optional_values.cpp)
+target_link_libraries(optional_values PRIVATE alpaca::alpaca)
+
+add_executable(variant variant.cpp)
+target_link_libraries(variant PRIVATE alpaca::alpaca)
+
+add_executable(unique_ptr unique_ptr.cpp)
+target_link_libraries(unique_ptr PRIVATE alpaca::alpaca)
