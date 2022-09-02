@@ -18,3 +18,6 @@ target_link_libraries(variant PRIVATE alpaca::alpaca)
 
 add_executable(unique_ptr unique_ptr.cpp)
 target_link_libraries(unique_ptr PRIVATE alpaca::alpaca)
+
+add_executable(demo demo.cpp)
+target_link_libraries(demo PRIVATE alpaca::alpaca)
