@@ -1,0 +1,2 @@
+add_executable(fundamental_types fundamental_types.cpp)
+target_link_libraries(fundamental_types PRIVATE alpaca::alpaca)

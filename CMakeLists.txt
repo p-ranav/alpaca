@@ -27,6 +27,10 @@ if(ALPACA_BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
+if(ALPACA_BUILD_SAMPLES)
+  add_subdirectory(samples)
+endif()
+
 include(cmake/project-is-top-level.cmake)
 
 # ---- Benchmarks ----
