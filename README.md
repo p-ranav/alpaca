@@ -770,6 +770,8 @@ std::vector<uint8_t> bytes;
 ```
 
 ### Integrity Checking with Checksums
+	
+In addition to type hashing, checksums can be added to the end of the output using `options::with_checksum`. This will generate a `CRC32` checksum for all the bytes in the serialized output and then append the four additional bytes to the end of the output. 
 
 ```cpp
 struct MyStruct {
