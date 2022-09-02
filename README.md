@@ -426,6 +426,8 @@ has_value?    value (if previous byte is 0x01)
 
 ### Type-safe Unions - Variant Types
 
+alpaca also support `std::variant`. Although this is an uncommon data structure for one to use in a messaging framework, it is supported and available. Miscellaneous configuration parameters, like in JSON, can be serialized as variant values and sent to servers. For each variant, a byte of information is used to represent the `variant_index`. As long as the deserialization is performed on the same variant type (where the indices of each type matches exactly), the `std::get<index>` will work fine.
+
 ```cpp
 struct MyStruct {
   std::map<std::string, 
@@ -483,22 +485,14 @@ variant index       value
 
 ### Smart Pointers and Recursive Data Structures
 
+alpaca supports `std::unique_ptr<T>`. Alpaca does not support raw pointers or shared pointers at the moment. Using unique pointers, recursive data structures, e.g., tree structures, can be easily modeled and serialized. See below for an example:
+
 ```cpp
 template <class T> 
 struct Node {
   T data;
   std::unique_ptr<Node<T>> left;
   std::unique_ptr<Node<T>> right;
-
-  Node(const T &data = T(), std::unique_ptr<Node<T>> lhs = nullptr,
-       std::unique_ptr<Node<T>> rhs = nullptr)
-      : data(data), left(std::move(lhs)), right(std::move(rhs)) {}
-
-  Node(const Node &n) {
-    data = n.data;
-    left = n.left ? std::unique_ptr<Node<T>>{new Node<T>{*n.left}} : nullptr;
-    right = n.right ? std::unique_ptr<Node<T>>{new Node<T>{*n.right}} : nullptr;
-  }
 };
 
 template <class T>
