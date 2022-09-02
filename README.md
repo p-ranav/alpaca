@@ -326,9 +326,7 @@ The format for `std::set` and `std::unordered_set` is the same as with `std::vec
 
 ### Nested Structures
 
-alpaca works with nested structures
-
-***NOTE*** Nested structures work as long `std::optional` is not used in the inner struct. This is because (1) alpaca will fail to correctly detect the number of fields in a struct when `std::optional` is used and (2) the API does not provide the means for the user to specify the number of fields in inner structs. More on this [here](#optional-values). 
+alpaca works with nested structures and doubly-nested structures seamlessly:
 
 ```cpp
 struct MyStruct {
@@ -379,6 +377,8 @@ auto bytes_written = alpaca::serialize(s, bytes); // 45 bytes
 ```
 
 ### Optional Values
+
+alpaca has some difficulty with optional values. 
 
 #### Failure Case
 
@@ -445,6 +445,8 @@ auto bytes_written = alpaca::serialize<MyStruct, 4>(s, bytes); // 14 bytes
 //   0x01 0x00 0x01 0x00     // {true, false, true, false}
 // }
 ```
+
+***NOTE*** Nested structures work as long `std::optional` is not used in the inner struct. This is because (1) alpaca will fail to correctly detect the number of fields in a struct when `std::optional` is used and (2) the API does not provide the means for the user to specify the number of fields in inner structs.
 
 For `std::optional<T>`, a leading byte is used to represent if the optional has value
 
