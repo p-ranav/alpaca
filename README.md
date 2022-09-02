@@ -81,11 +81,11 @@ if (!ec) {
 ```cpp
 // Serialize a struct T (with N fields) into Container
 tmeplate <class T, size_t N, class Container>
-auto serialize(const T&, Container&) -> size_t;
+auto serialize(const T&, Container&) -> size_t /* bytes_written */;
 
 // Serialize a struct T (with N fields) into Container using options O
 tmeplate <options O, class T, size_t N, class Container>
-auto serialize(const T&, Container&) -> size_t;
+auto serialize(const T&, Container&) -> size_t /* bytes_written */;
 
 // Deserialize a Container into struct T (with N fields)
 template <class T, size_t N, class Container>
