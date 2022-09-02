@@ -59,6 +59,8 @@ if (!ec) {
 ## Table of Contents
 
 *    [Usage and API](#usage-and-api)
+     *    [Serialization](#serialization)
+     *    [Deserialization](#deserialization)
 *    [Examples](#examples)
      *    [Fundamental types](#fundamental-types)
      *    [Arrays, Vectors, and Strings](#arrays-vectors-and-strings)
