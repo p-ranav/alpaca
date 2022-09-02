@@ -78,7 +78,23 @@ if (!ec) {
 
 ## Usage and API
 
-Text here
+```cpp
+// Serialize a struct T (with N fields) into Container
+tmeplate <class T, size_t N, class Container>
+auto serialize(const T&, Container&) -> size_t;
+
+// Serialize a struct T (with N fields) into Container using options O
+tmeplate <options O, class T, size_t N, class Container>
+auto serialize(const T&, Container&) -> size_t;
+
+// Deserialize a Container into struct T (with N fields)
+template <class T, size_t N, class Container>
+auto deserialize(const Container&, std::error_code&) -> T;
+
+// Deserialize a Container into struct T (with N fields) using options O
+template <options O, class T, size_t N, class Container>
+auto deserialize(const Container&, std::error_code&) -> T;
+```
 
 ## Examples
 
