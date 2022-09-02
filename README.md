@@ -677,7 +677,9 @@ int main() {
 ```
 
 ### Fixed or Variable-length Encoding
-	
+
+By default, large integer types (32 and 64-bit values), e.g., `int32_t`, `uint64_t` are encoded as variable-length quantities (VLQ). This can be changed with `alpaca::options::fixed_length_encoding`. 
+
 #### Unsigned integers
 
 * `uint8_t` and `uint16_t` are stored as-is without any encoding. 
@@ -823,7 +825,7 @@ cd alpaca
 # Build
 mkdir build
 cd build
-cmake -DALPACA_BUILD_TESTS=on -DCMAKE_BUILD_TYPE=Release ..
+cmake -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release ..
 make
 
 # Test
