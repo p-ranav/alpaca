@@ -78,6 +78,12 @@ if (!ec) {
 
 ## Usage and API
 
+### Serialization
+
+The `alpaca::serialize(...)` function accepts 2 arguments: an input aggregate class type (typically a `struct`), and an output container, e.g.,  `std::vector<uint8_t>`, `std::array<uint8_T, N>` etc. Serialization will attempt to pack the aggregate input into the container. 
+
+There are two variants to `serialize`, one of which takes an `alpaca::options` for additional configuration:
+
 ```cpp
 // Serialize a struct T (with N fields) into Container
 tmeplate <class T, size_t N, class Container>
@@ -86,7 +92,41 @@ auto serialize(const T&, Container&) -> size_t /* bytes_written */;
 // Serialize a struct T (with N fields) into Container using options O
 tmeplate <options O, class T, size_t N, class Container>
 auto serialize(const T&, Container&) -> size_t /* bytes_written */;
+```
 
+Examples of valid serialize calls include:
+
+```cpp
+struct MyStruct { 
+  int value; 
+};
+
+// Construct object
+MyStruct object{5};
+
+// Serialize to array
+std::array<uint8_t, 5> bytes;
+auto bytes_written = serialize(object, bytes);
+
+// Serialize to vector
+std::vector<uint8_t> bytes;
+auto bytes_written = serialize(object, bytes);
+
+// Serialize with options
+std::vector<uint8_t> bytes;
+constexpr auto OPTIONS = options::fixed_length_encoding | 
+                         options::with_version | 
+			 options::with_checksum;
+auto bytes_written = serialize<OPTIONS>(object, bytes);
+```
+
+### Deserialization
+
+The `alpaca::deserialize(...)` function, likewis,e accepts 2 arguments: a container like `std::vector<uint8_t>` or `std::array<uint8_t, N>` and an `std::error_code` that will be set in case of error conditions. Deserialization will attempt to unpack the container of bytes into an aggregate class type, returning the class object.
+
+Like `serialize()`, deserialization has two variants, one of which accepts an `alpaca::options` template parameter.  
+
+```cpp
 // Deserialize a Container into struct T (with N fields)
 template <class T, size_t N, class Container>
 auto deserialize(const Container&, std::error_code&) -> T;
@@ -94,6 +134,29 @@ auto deserialize(const Container&, std::error_code&) -> T;
 // Deserialize a Container into struct T (with N fields) using options O
 template <options O, class T, size_t N, class Container>
 auto deserialize(const Container&, std::error_code&) -> T;
+```
+
+Examples of valid `deserialize` calls include:
+
+```cpp
+std::vector<uint8_t> bytes; // or std::array<uint8_t, 256> bytes;
+
+// Default options
+std::error_code ec;
+auto object = deserialize<MyStruct>(bytes, ec);
+if (!ec) {
+    // use object
+}
+
+// Configured options
+std::error_code ec;
+constexpr auto OPTIONS = options::fixed_length_encoding | 
+                         options::with_version |
+			 options::with_checksum;
+auto object = deserialize<OPTIONS, MyStruct>(bytes, ec);
+if (!ec) {
+    // use object
+}
 ```
 
 ## Examples
