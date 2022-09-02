@@ -26,8 +26,7 @@ TEST_CASE("Deserialize crc32 error - invalid_argument" * test_suite("crc32")) {
     // CRC32 check requires at least 4 bytes
 
     std::error_code ec;
-    deserialize<my_struct, std::array<uint8_t, 2>, options::with_checksum>(
-        received, ec);
+    deserialize<options::with_checksum, my_struct>(received, ec);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::invalid_argument));
   }
@@ -52,8 +51,7 @@ TEST_CASE("Deserialize crc32 error - bad_message" * test_suite("crc32")) {
     //                                           ^^^^^^^^^^^^^^^^^^^^^^ bad crc
 
     std::error_code ec;
-    deserialize<my_struct, std::array<uint8_t, 5>, options::with_checksum>(
-        received, ec);
+    deserialize<options::with_checksum, my_struct>(received, ec);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::bad_message));
   }

@@ -18,9 +18,7 @@ TEST_CASE("Deserialize int into struct { int }" * test_suite("version")) {
 
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::with_version>(
-            bytes, ec);
+    auto result = deserialize<options::with_version, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -44,9 +42,7 @@ TEST_CASE("Deserialize vector<int> into struct { vector<int> }" *
       std::vector<int> value;
     };
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::with_version>(
-            bytes, ec);
+    auto result = deserialize<options::with_version, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE((result.value == std::vector<int>{1, 2, 3, 4, 5}));
   }

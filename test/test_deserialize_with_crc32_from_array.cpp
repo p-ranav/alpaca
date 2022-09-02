@@ -20,9 +20,7 @@ TEST_CASE("Deserialize int with crc32" * test_suite("crc32")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::array<uint8_t, 5>, options::with_checksum>(
-            bytes, ec);
+    auto result = deserialize<options::with_checksum, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -46,8 +44,7 @@ TEST_CASE("Deserialize int with crc32 (error)" * test_suite("crc32")) {
   {
     std::error_code ec;
     bytes[bytes_written - 1] = 0x00; // clear 1 byte
-    deserialize<my_struct, std::array<uint8_t, 20>, options::with_checksum>(
-        bytes, ec);
+    deserialize<options::with_checksum, my_struct>(bytes, ec);
     REQUIRE((bool)ec == true);
     REQUIRE(ec.value() == static_cast<int>(std::errc::bad_message));
   }

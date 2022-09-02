@@ -30,9 +30,7 @@ TEST_CASE("Deserialize big-endian uint8_t" * test_suite("unsigned_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -76,9 +74,7 @@ TEST_CASE("Deserialize big-endian uint16_t (stored as uint8_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 99);
   }
@@ -101,9 +97,7 @@ TEST_CASE("Deserialize big-endian uint16_t" * test_suite("unsigned_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 512);
   }
@@ -127,9 +121,7 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint8_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -153,9 +145,7 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint16_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 1600);
   }
@@ -178,9 +168,7 @@ TEST_CASE("Deserialize big-endian uint32_t" * test_suite("unsigned_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 75535);
   }
@@ -204,9 +192,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint8_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -230,9 +216,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint16_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345);
   }
@@ -256,9 +240,7 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint32_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345678);
   }
@@ -281,9 +263,7 @@ TEST_CASE("Deserialize big-endian uint64_t" * test_suite("unsigned_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5294967295);
   }
@@ -309,9 +289,7 @@ TEST_CASE("Deserialize big-endian unsigned integer types" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.a == 5);
     REQUIRE(result.b == 12345);
@@ -342,9 +320,7 @@ TEST_CASE("Deserialize big-endian unsigned integer types" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.e == 5);
     REQUIRE(result.f == 12345);
@@ -369,9 +345,7 @@ TEST_CASE("Deserialize big-endian int8_t" * test_suite("signed_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -394,9 +368,7 @@ TEST_CASE("Deserialize big-endian int16_t (stored as int8_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 99);
   }
@@ -418,9 +390,7 @@ TEST_CASE("Deserialize big-endian int16_t" * test_suite("signed_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 512);
   }
@@ -443,9 +413,7 @@ TEST_CASE("Deserialize big-endian int32_t (packed as int8_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -468,9 +436,7 @@ TEST_CASE("Deserialize big-endian int32_t (packed as int16_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 1600);
   }
@@ -492,9 +458,7 @@ TEST_CASE("Deserialize big-endian int32_t" * test_suite("signed_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 75535);
   }
@@ -517,9 +481,7 @@ TEST_CASE("Deserialize big-endian int64_t (packed as int8_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5);
   }
@@ -542,9 +504,7 @@ TEST_CASE("Deserialize big-endian int64_t (packed as int16_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345);
   }
@@ -567,9 +527,7 @@ TEST_CASE("Deserialize big-endian int64_t (packed as int32_t)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345678);
   }
@@ -591,9 +549,7 @@ TEST_CASE("Deserialize big-endian int64_t" * test_suite("signed_integer")) {
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5294967295);
   }
@@ -616,9 +572,7 @@ TEST_CASE("Deserialize big-endian int64_t (big positive)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 12345678910111314);
   }
@@ -641,9 +595,7 @@ TEST_CASE("Deserialize big-endian int64_t (big negative)" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == -12345678910111314);
   }
@@ -669,9 +621,7 @@ TEST_CASE("Deserialize big-endian signed integer types" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.a == -5);
     REQUIRE(result.b == -12345);
@@ -705,9 +655,7 @@ TEST_CASE("Deserialize big-endian signed and unsigned integer types" *
   // deserialize
   {
     std::error_code ec;
-    auto result =
-        deserialize<my_struct, std::vector<uint8_t>, options::big_endian>(bytes,
-                                                                          ec);
+    auto result = deserialize<options::big_endian, my_struct>(bytes, ec);
     REQUIRE((bool)ec == false);
     REQUIRE(result.a == -5);
     REQUIRE(result.b == -12345);
