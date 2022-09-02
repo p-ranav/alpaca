@@ -182,7 +182,8 @@ struct MyStruct {
 MyStruct s{'a', 5, 12345, 3.14f, true};
 
 // Serialize
-auto bytes = alpaca::serialize(s); // 9 bytes
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize(s, bytes); // 9 bytes
 
 // bytes:
 // {
@@ -210,7 +211,8 @@ struct MyStruct {
 MyStruct s{{1, 2, 3}, {{3.14, 1.61}, {2.71, -1}}, {"Hello"}};
 
 // Serialize
-auto bytes = serialize(s); // 28 bytes
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize(s, bytes); // 28 bytes
 
 // bytes:
 // {
@@ -278,7 +280,8 @@ MyStruct s{{{"red", std::make_tuple(255, 0, 0)},
            {1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 4}};
 
 // Serialize
-auto bytes = serialize(s); // 30 bytes
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize(s, bytes); // 30 bytes
 
 // bytes:
 // {
@@ -352,7 +355,8 @@ MyStruct s{{41.13, -73.70},
             {MyStruct::image::format::type::yuyv_422}}};
 
 // Serialize
-auto bytes = serialize(s); // 45 bytes
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize(s, bytes); // 45 bytes
 
 // bytes:
 // {
@@ -383,10 +387,12 @@ struct MyStruct {
 MyStruct s{5, 3.14f, std::nullopt, std::vector<bool>{true, false, true, false}};
 
 // Serialize
-auto bytes = serialize<MyStruct, 4>(s); // 14 bytes
-	            // ^^^^^^^^^^^^^ 
-	            //    specify the number of fields (4) in struct manually
-	            //    alpaca fails at correctly detecting this due to the nature of std::optional
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize<MyStruct, 4>(s, bytes); // 14 bytes
+	                            // ^^^^^^^^^^^^^ 
+	                            //  specify the number of fields (4) in struct manually
+	                            //  alpaca fails at correctly detecting 
+				    //  this due to the nature of std::optional
 
 // bytes:
 // {
@@ -428,7 +434,8 @@ Config s{{{"keepalive", true},
           {"subscriptions", std::vector<std::string>{"motor_state", "battery_state"}}}};
   
 // serialize
-auto bytes = serialize(s); // 87 bytes
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize(s, bytes); // 87 bytes
 
 // bytes:
 // {
@@ -513,7 +520,8 @@ auto const root = make_node(
 );  
 
 // serialize
-auto bytes = serialize<Node<int>>(*root); // 15 bytes
+std::vector<uint8_t> bytes;
+auto bytes_written = alpaca::serialize(*root, bytes); // 15 bytes
 
 // bytes:
 // {
@@ -582,7 +590,7 @@ std::vector<uint8_t> bytes;
     };
 
     my_struct s{5, 3.14f, "Hello"};
-    bytes = serialize<my_struct>(s);
+    auto bytes_written = alpaca::serialize(s, bytes);
 }
 
 {
@@ -613,7 +621,7 @@ std::vector<uint8_t> bytes;
     };
 
     my_struct s{5, 3.14f};
-    bytes = serialize<my_struct>(s);
+    auto bytes_written = alpaca::serialize(s, bytes);
 }
     
 {
@@ -654,12 +662,14 @@ int main() {
   
   // little endian
   {
-    auto bytes = alpaca::serialize(s); // {0x39, 0x30}
+    std::vector<uint8_t> bytes;
+    auto bytes_written = alpaca::serialize(s, bytes); // {0x39, 0x30}
   }
 
   // big endian
   {
-    auto bytes = alpaca::serialize<my_struct, std::vector<uint8_t>, alpaca::options::big_endian>(s); // {0x30, 0x39}
+    std::vector<uint8_t> bytes;
+    auto bytes_written = alpaca::serialize<options::big_endian>(s, bytes); // {0x30, 0x39}
   }  
 }
 ```
@@ -697,7 +707,8 @@ std::vector<uint8_t> bytes;
   };
 
   MyStruct s{5};
-  bytes = serialize<MyStruct, options::with_version>(s);
+  std::vector<uint8_t> bytes;
+  auto bytes_written = serialize<options::with_version>(s, bytes);
 }
 
 // deserialize
@@ -709,7 +720,7 @@ std::vector<uint8_t> bytes;
   };
 
   std::error_code ec;
-  auto object = deserialize<MyStruct, options::with_version>(bytes, ec);
+  auto object = deserialize<options::with_version, MyStruct>(bytes, ec);
   // ec.value() == std::errc::invalid_argument here
 }
 ```
@@ -724,14 +735,16 @@ struct MyStruct {
 };
 
 MyStruct s{'m', 54321, -987.654};
+	
+std::vector<uint8_t> bytes;
 
 // Serialize and append CRC32 hash
 constexpr auto OPTIONS = options::with_checksum;
-auto bytes = serialize<MyStruct, OPTIONS>(s); // 11 bytes
+auto bytes_written = serialize<OPTIONS>(s, bytes); // 11 bytes
 
 // Check CRC32 hash and deserialize
 std::error_code ec;
-auto object = deserialize<MyStruct, OPTIONS>(bytes, ec);
+auto object = deserialize<OPTIONS, MyStruct>(bytes, ec);
 if (!ec) {
   // use object
 }
@@ -780,6 +793,7 @@ Here's an example that only uses `std::vector`, `std::unordered_map`, and `std::
 #define ALPACA_EXCLUDE_SUPPORT_STD_PAIR
 #define ALPACA_EXCLUDE_SUPPORT_STD_VARIANT
 #include <alpaca/alpaca.h>
+using namespace alpaca;
 
 int main() {
   struct my_struct {
@@ -793,7 +807,7 @@ int main() {
 	       {{"x", -20}, {"y", 45}}};
   
   std::vector<std::uint8_t> bytes;
-  auto bytes_written = alpaca::serialize<my_struct, std::vector<uint8_t>, alpaca::options::fixed_length_encoding>(s, bytes);
+  auto bytes_written = serialize<options::fixed_length_encoding>(s, bytes);
 }
 ```
 
