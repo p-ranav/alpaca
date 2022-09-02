@@ -678,9 +678,45 @@ int main() {
 
 ### Fixed or Variable-length Encoding
 
-By default, large integer types (32 and 64-bit values), e.g., `int32_t`, `uint64_t` are encoded as variable-length quantities (VLQ). This can be changed with `alpaca::options::fixed_length_encoding`. 
+By default, large integer types (32 and 64-bit values), e.g., `int32_t`, `uint64_t` are encoded as variable-length quantities (VLQ). 
 
-#### Unsigned integers
+This can be changed with `alpaca::options::fixed_length_encoding`. In fixed-length encoding, an `uint32_t` will take up 4 bytes.
+
+```cpp
+#include <alpaca/alpaca.h>
+using namespace alpaca;
+
+int main() {
+
+  struct MyStruct {
+    uint32_t value;
+  };
+  MyStruct s{5};
+
+  // Variable-length encoding
+  {
+    std::vector<uint8_t> bytes;
+    auto bytes_written = serialize(s, bytes); // {0x05}
+  }
+
+  // Fixed-length encoding
+  {
+    std::vector<uint8_t> bytes;
+    constexpr auto OPTIONS = options::fixed_length_encoding;
+    auto bytes_written = serialize<OPTIONS>(s, bytes); // {0x05, 0x00, 0x00, 0x00}
+  }
+
+  // Fixed-length encoding in big endian
+  {
+    std::vector<uint8_t> bytes;
+    constexpr auto OPTIONS = options::fixed_length_encoding |
+                             options::big_endian;
+    auto bytes_written = serialize<OPTIONS>(s, bytes); // {0x00, 0x00, 0x00, 0x05}
+  }
+}
+```
+
+#### VLQ for Unsigned integers
 
 * `uint8_t` and `uint16_t` are stored as-is without any encoding. 
 * `uint32_t` and `uint64_t` are represented as variable-length quantities (VLQ) with 7-bits for data and 1-bit to represent continuation
@@ -689,7 +725,7 @@ By default, large integer types (32 and 64-bit values), e.g., `int32_t`, `uint64
 
 * If A is 0, then this is the last VLQ octet of the integer. If A is 1, then another VLQ octet follows.
 
-#### Signed integers
+#### VLQ for Signed integers
 
 * `int8_t` and `int16_t` are stored as-is without any encoding. 
 * `int32_t` and `int64_t` are represented as VLQ, similar to the unsigned version. The only difference is that the first VLQ has the sixth bit reserved to indicate whether the encoded integer is positive or negative. Any consecutive VLQ octet follows the general structure.
