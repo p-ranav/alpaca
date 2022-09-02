@@ -652,6 +652,7 @@ By default, alpaca uses little endian. This option can be switched using `option
 
 ```cpp
 #include <alpaca/alpaca.h>
+using namespace alpaca;
 
 int main() {
   struct my_struct {
@@ -663,13 +664,14 @@ int main() {
   // little endian
   {
     std::vector<uint8_t> bytes;
-    auto bytes_written = alpaca::serialize(s, bytes); // {0x39, 0x30}
+    auto bytes_written = serialize(s, bytes); // {0x39, 0x30}
   }
 
   // big endian
   {
     std::vector<uint8_t> bytes;
-    auto bytes_written = alpaca::serialize<options::big_endian>(s, bytes); // {0x30, 0x39}
+    constexpr auto OPTIONS = options::big_endian;
+    auto bytes_written = serialize<OPTIONS>(s, bytes); // {0x30, 0x39}
   }  
 }
 ```
