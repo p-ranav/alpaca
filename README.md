@@ -326,6 +326,10 @@ The format for `std::set` and `std::unordered_set` is the same as with `std::vec
 
 ### Nested Structures
 
+alpaca works with nested structures
+
+***NOTE*** Nested structures work as long `std::optional` is not used in the inner struct. This is because (1) alpaca will fail to correctly detect the number of fields in a struct when `std::optional` is used and (2) the API does not provide the means for the user to specify the number of fields in inner structs. More on this [here](#optional-values). 
+
 ```cpp
 struct MyStruct {
   struct gps {
