@@ -20,6 +20,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
   - Variable-length encoding by default for large integer types. Configurable to use fixed-width encoding
   - Optional type hashing and data structure versioning - recursively generates a type hash that is checked during deserialization
   - Optional integrity checking - detects data corruption during deserialization using checksums
+  - Macros are available to exclude support for specific STL data structures to reduce compile times
 * MIT license
 
 ```cpp
