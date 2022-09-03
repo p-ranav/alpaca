@@ -37,7 +37,7 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
 }
 
 template <options O, typename T, typename Container>
-void from_bytes_router(T &output, const Container &bytes,
+void from_bytes_router(T &output, Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 

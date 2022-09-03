@@ -230,14 +230,14 @@ namespace detail {
 // Forward declares
 template <options O, typename T, std::size_t N, typename Container,
           std::size_t index>
-void deserialize_helper(T &s, const Container &bytes, std::size_t &byte_index,
+void deserialize_helper(T &s, Container &bytes, std::size_t &byte_index,
                         std::size_t &end_index, std::error_code &error_code);
 
 // version for nested struct/class types
 template <options O, typename T, typename Container>
 typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
                         bool>::type
-from_bytes(T &value, const Container &bytes, std::size_t &byte_index,
+from_bytes(T &value, Container &bytes, std::size_t &byte_index,
            std::size_t &end_index, std::error_code &error_code) {
   deserialize_helper<O, T, detail::aggregate_arity<std::remove_cv_t<T>>::size(),
                      Container, 0>(value, bytes, byte_index, end_index,
@@ -246,7 +246,7 @@ from_bytes(T &value, const Container &bytes, std::size_t &byte_index,
 }
 
 template <options O, typename T, typename Container>
-void from_bytes_router(T &output, const Container &bytes,
+void from_bytes_router(T &output, Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code) {
   detail::from_bytes<O>(output, bytes, byte_index, end_index, error_code);
@@ -256,7 +256,7 @@ void from_bytes_router(T &output, const Container &bytes,
 /// I -> field to start from
 template <options O, typename T, std::size_t N, typename Container,
           std::size_t I>
-void deserialize_helper(T &s, const Container &bytes, std::size_t &byte_index,
+void deserialize_helper(T &s, Container &bytes, std::size_t &byte_index,
                         std::size_t &end_index, std::error_code &error_code) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
@@ -282,7 +282,7 @@ void deserialize_helper(T &s, const Container &bytes, std::size_t &byte_index,
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-void deserialize(T &s, const Container &bytes, std::size_t &byte_index,
+void deserialize(T &s, Container &bytes, std::size_t &byte_index,
                  std::size_t &end_index, std::error_code &error_code) {
   detail::deserialize_helper<options::none, T, N, Container, 0>(
       s, bytes, byte_index, end_index, error_code);
@@ -291,7 +291,7 @@ void deserialize(T &s, const Container &bytes, std::size_t &byte_index,
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-T deserialize(const Container &bytes, std::error_code &error_code) {
+T deserialize(Container &bytes, std::error_code &error_code) {
   T object{};
 
   if (bytes.empty()) {
@@ -309,7 +309,7 @@ T deserialize(const Container &bytes, std::error_code &error_code) {
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-T deserialize(const Container &bytes, const std::size_t size,
+T deserialize(Container &bytes, const std::size_t size,
               std::error_code &error_code) {
   T object{};
 
@@ -332,7 +332,7 @@ template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<!std::is_array_v<Container>, void>::type
-deserialize(T &s, const Container &bytes, std::size_t &byte_index,
+deserialize(T &s, Container &bytes, std::size_t &byte_index,
             std::size_t &end_index, std::error_code &error_code) {
 
   if constexpr (N > 0 && detail::with_version<O>()) {
@@ -403,7 +403,7 @@ template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<std::is_array_v<Container>, void>::type
-deserialize(T &s, const Container &bytes, std::size_t &byte_index,
+deserialize(T &s, Container &bytes, std::size_t &byte_index,
             std::size_t &end_index, std::error_code &error_code) {
 
   if constexpr (N > 0 && detail::with_version<O>()) {
@@ -472,7 +472,7 @@ deserialize(T &s, const Container &bytes, std::size_t &byte_index,
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-T deserialize(const Container &bytes, std::error_code &error_code) {
+T deserialize(Container &bytes, std::error_code &error_code) {
   T object{};
 
   if (bytes.empty()) {
@@ -490,7 +490,7 @@ T deserialize(const Container &bytes, std::error_code &error_code) {
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-T deserialize(const Container &bytes, std::size_t size,
+T deserialize(Container &bytes, std::size_t size,
               std::error_code &error_code) {
   T object{};
 

@@ -54,7 +54,7 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
 }
 
 template <options O, typename Container, typename... T>
-bool from_bytes(std::variant<T...> &output, const Container &bytes,
+bool from_bytes(std::variant<T...> &output, Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

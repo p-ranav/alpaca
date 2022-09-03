@@ -34,7 +34,7 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
 }
 
 template <options O, typename Container>
-bool from_bytes(std::string &value, const Container &bytes,
+bool from_bytes(std::string &value, Container &bytes,
                 std::size_t &current_index, std::size_t &end_index,
                 std::error_code &error_code) {
 

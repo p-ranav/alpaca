@@ -10,14 +10,14 @@ namespace alpaca {
 namespace detail {
 
 template <options O, typename T, typename Container>
-void from_bytes_router(T &output, const Container &bytes,
+void from_bytes_router(T &output, Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
 template <options O, typename type, typename Container,
           std::size_t variant_size = std::variant_size_v<type>>
 constexpr void
-set_variant_value(type &variant, std::size_t index, const Container &bytes,
+set_variant_value(type &variant, std::size_t index, Container &bytes,
                   std::size_t &byte_index, std::size_t &end_index,
                   std::error_code &error_code) noexcept {
   if constexpr (variant_size == 1) {

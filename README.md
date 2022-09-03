@@ -140,19 +140,19 @@ Like `serialize()`, deserialization has two variants, one of which accepts an `a
 ```cpp
 // Deserialize a Container into struct T (with N fields)
 template <class T, size_t N, class Container>
-auto deserialize(const Container&, std::error_code&) -> T;
+auto deserialize(Container&, std::error_code&) -> T;
 
 // Deserialize `size` bytes from a Container into struct T (with N fields)
 template <class T, size_t N, class Container>
-auto deserialize(const Container&, const std::size_t, std::error_code&) -> T;
+auto deserialize(Container&, const std::size_t, std::error_code&) -> T;
 
 // Deserialize a Container into struct T (with N fields) using options O
 template <options O, class T, size_t N, class Container>
-auto deserialize(const Container&, std::error_code&) -> T;
+auto deserialize(Container&, std::error_code&) -> T;
 
 // Deserialize `size` bytes from a Container into struct T (with N fields) using options O
 template <options O, class T, size_t N, class Container>
-auto deserialize(const Container&, const std::size_t, std::error_code&) -> T;
+auto deserialize(Container&, const std::size_t, std::error_code&) -> T;
 ```
 
 Examples of valid `deserialize` calls include:

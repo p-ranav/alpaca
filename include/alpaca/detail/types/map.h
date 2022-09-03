@@ -81,12 +81,12 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
 #endif
 
 template <options O, typename T, typename Container>
-void from_bytes_router(T &output, const Container &bytes,
+void from_bytes_router(T &output, Container &bytes,
                        std::size_t &byte_index, std::size_t &end_index,
                        std::error_code &error_code);
 
 template <options O, typename T, typename Container>
-void from_bytes_to_map(T &map, const Container &bytes,
+void from_bytes_to_map(T &map, Container &bytes,
                        std::size_t &current_index, std::size_t &end_index,
                        std::error_code &error_code) {
   // current byte is the size of the map
@@ -116,7 +116,7 @@ void from_bytes_to_map(T &map, const Container &bytes,
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 template <options O, typename K, typename V, typename Container>
-bool from_bytes(std::map<K, V> &output, const Container &bytes,
+bool from_bytes(std::map<K, V> &output, Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
@@ -133,7 +133,7 @@ bool from_bytes(std::map<K, V> &output, const Container &bytes,
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
 template <options O, typename K, typename V, typename Container>
-bool from_bytes(std::unordered_map<K, V> &output, const Container &bytes,
+bool from_bytes(std::unordered_map<K, V> &output, Container &bytes,
                 std::size_t &byte_index, std::size_t &end_index,
                 std::error_code &error_code) {
 
