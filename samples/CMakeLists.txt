@@ -21,3 +21,6 @@ target_link_libraries(unique_ptr PRIVATE alpaca::alpaca)
 
 add_executable(demo demo.cpp)
 target_link_libraries(demo PRIVATE alpaca::alpaca)
+
+add_executable(write_file write_file.cpp)
+target_link_libraries(write_file PRIVATE alpaca::alpaca)

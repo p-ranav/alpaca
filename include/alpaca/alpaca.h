@@ -164,7 +164,9 @@ std::size_t serialize(const T &s, Container &bytes) {
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-typename std::enable_if<!std::is_same_v<Container, std::ofstream> && !std::is_array_v<Container>, std::size_t>::type
+typename std::enable_if<!std::is_same_v<Container, std::ofstream> &&
+                            !std::is_array_v<Container>,
+                        std::size_t>::type
 serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (N > 0 && detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
@@ -191,10 +193,13 @@ serialize(const T &s, Container &bytes, std::size_t &byte_index) {
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-typename std::enable_if<std::is_same_v<Container, std::ofstream>, std::size_t>::type
+typename std::enable_if<std::is_same_v<Container, std::ofstream>,
+                        std::size_t>::type
 serialize(const T &s, Container &bytes, std::size_t &byte_index) {
-  static_assert(!detail::with_version<O>(), "options::with_version is not supported when writing to file");
-  static_assert(!detail::with_checksum<O>(), "options::with_checksum is not supported when writing to file");
+  static_assert(!detail::with_version<O>(),
+                "options::with_version is not supported when writing to file");
+  static_assert(!detail::with_checksum<O>(),
+                "options::with_checksum is not supported when writing to file");
   detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
   return byte_index;
 }
@@ -203,7 +208,9 @@ serialize(const T &s, Container &bytes, std::size_t &byte_index) {
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-typename std::enable_if<!std::is_same_v<Container, std::ofstream> && std::is_array_v<Container>, std::size_t>::type
+typename std::enable_if<!std::is_same_v<Container, std::ofstream> &&
+                            std::is_array_v<Container>,
+                        std::size_t>::type
 serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (N > 0 && detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
@@ -342,7 +349,9 @@ T deserialize(Container &bytes, const std::size_t size,
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-typename std::enable_if<!std::is_same_v<Container, std::ifstream> && !std::is_array_v<Container>, void>::type
+typename std::enable_if<!std::is_same_v<Container, std::ifstream> &&
+                            !std::is_array_v<Container>,
+                        void>::type
 deserialize(T &s, Container &bytes, std::size_t &byte_index,
             std::size_t &end_index, std::error_code &error_code) {
 
@@ -416,8 +425,12 @@ template <options O, typename T,
 typename std::enable_if<std::is_same_v<Container, std::ifstream>, void>::type
 deserialize(T &s, Container &bytes, std::size_t &byte_index,
             std::size_t &end_index, std::error_code &error_code) {
-  static_assert(!detail::with_version<O>(), "options::with_version is not supported when reading from file");
-  static_assert(!detail::with_checksum<O>(), "options::with_checksum is not supported when reading from file");
+  static_assert(
+      !detail::with_version<O>(),
+      "options::with_version is not supported when reading from file");
+  static_assert(
+      !detail::with_checksum<O>(),
+      "options::with_checksum is not supported when reading from file");
   detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
                                                     end_index, error_code);
 }
@@ -426,7 +439,9 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-typename std::enable_if<!std::is_same_v<Container, std::ifstream> && std::is_array_v<Container>, void>::type
+typename std::enable_if<!std::is_same_v<Container, std::ifstream> &&
+                            std::is_array_v<Container>,
+                        void>::type
 deserialize(T &s, Container &bytes, std::size_t &byte_index,
             std::size_t &end_index, std::error_code &error_code) {
 

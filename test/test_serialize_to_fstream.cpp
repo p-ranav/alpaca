@@ -32,7 +32,8 @@ TEST_CASE("Serialize complex struct to fstream" * test_suite("fstream")) {
   std::filesystem::remove("tmp3.bin");
 }
 
-TEST_CASE("Serialize complex struct to fstream with options" * test_suite("fstream")) {
+TEST_CASE("Serialize complex struct to fstream with options" *
+          test_suite("fstream")) {
   struct my_struct {
     int a;
     bool b;
@@ -49,8 +50,7 @@ TEST_CASE("Serialize complex struct to fstream with options" * test_suite("fstre
               {6, 5, 4, 3, 2, 1},
               {{"abc", {1, 2, 3}}, {"def", {4, 5, 6}}}};
 
-  constexpr auto OPTIONS = options::big_endian |
-                           options::fixed_length_encoding;
+  constexpr auto OPTIONS = options::big_endian | options::fixed_length_encoding;
 
   // Serialize to file
   std::ofstream os;

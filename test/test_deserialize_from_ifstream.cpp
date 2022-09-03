@@ -50,7 +50,8 @@ TEST_CASE("Deserialize complex struct from ifstream" * test_suite("fstream")) {
   }
 }
 
-TEST_CASE("Deserialize complex struct from ifstream with options" * test_suite("fstream")) {
+TEST_CASE("Deserialize complex struct from ifstream with options" *
+          test_suite("fstream")) {
   struct my_struct {
     int a;
     bool b;
@@ -67,8 +68,7 @@ TEST_CASE("Deserialize complex struct from ifstream with options" * test_suite("
               {6, 5, 4, 3, 2, 1},
               {{"abc", {1, 2, 3}}, {"def", {4, 5, 6}}}};
 
-  constexpr auto OPTIONS = options::big_endian |
-                           options::fixed_length_encoding;
+  constexpr auto OPTIONS = options::big_endian | options::fixed_length_encoding;
   {
     // Serialize to file
     std::ofstream os;

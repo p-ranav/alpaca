@@ -70,6 +70,7 @@ if (!ec) {
      *    [Optional Values](#optional-values)
      *    [Type-safe Unions - Variant Types](#type-safe-unions---variant-types)
      *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
+     *    [Saving/Loading to/from files (ofstream/ifstream)]()
 *    [Backward and Forward Compatibility](#backward-and-forward-compatibility)
 *    [Configuration Options](#configuration-options)
      *    [Endianness](#endianness)
@@ -599,6 +600,76 @@ ptr != null?  value (if previous byte is 0x01)
 +----------+  +----+----+----+-----+
 |    A1    |  | B1 | B2 | B3 | ... |
 +----------+  +----+----+----+-----+
+```
+
+### Saving/Loading to/from files (`std::ofstream`/`std::ifstream`)
+
+alpaca supports directly writing to files instead of using intermediate buffers. Serialize to files using `std::ofstream` and deserialize from files using `std::ifstream` objects. For deserialization, the size of the file must be provided as an argument:
+
+```cpp
+#include <alpaca/alpaca.h>
+#include <filesystem>
+using namespace alpaca;
+
+struct GameState {
+  int a;
+  bool b;
+  char c;
+  std::string d;
+  std::vector<uint64_t> e;
+  std::map<std::string, std::array<uint8_t, 3>> f;
+};
+
+int main() {
+
+  GameState s{5,
+              true,
+              'a',
+              "Hello World",
+              {6, 5, 4, 3, 2, 1},
+              {{"abc", {1, 2, 3}}, {"def", {4, 5, 6}}}};
+
+  const auto filename = "savefile.bin";
+
+  {
+    // Serialize to file
+    std::ofstream os;
+    os.open(filename, std::ios::out | std::ios::binary);
+    auto bytes_written = serialize(s, os);
+    os.close();
+
+    assert(bytes_written == 37);
+    assert(std::filesystem::file_size(filename) == 37);
+  }
+
+  {
+    // Deserialize from file
+    auto size = std::filesystem::file_size(filename);
+    std::error_code ec;
+    std::ifstream is;
+    is.open(filename, std::ios::in | std::ios::binary);
+    auto recovered = deserialize<GameState>(is, size, ec);
+    is.close();
+
+    assert(recovered.a == s.a);
+    assert(recovered.b == s.b);
+    assert(recovered.c == s.c);
+    assert(recovered.d == s.d);
+    assert(recovered.e == s.e);
+    assert(recovered.f == s.f);
+  }
+
+  // delete file
+  std::filesystem::remove(filename);
+}
+```
+
+```console
+pranav@ubuntu:~/dev/alpaca/build$ hexdump -C savefile.bin 
+00000000  05 01 61 0b 48 65 6c 6c  6f 20 57 6f 72 6c 64 06  |..a.Hello World.|
+00000010  06 05 04 03 02 01 02 03  61 62 63 01 02 03 03 64  |........abc....d|
+00000020  65 66 04 05 06                                    |ef...|
+00000025
 ```
 
 ## Backward and Forward Compatibility
