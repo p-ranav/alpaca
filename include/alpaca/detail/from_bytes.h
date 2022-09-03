@@ -46,10 +46,11 @@ from_bytes_crc32(uint32_t &value, Container &bytes, std::size_t &current_index,
 // read as is
 template <options O, typename T, typename Container>
 typename std::enable_if<
-    std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
-        std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
-        std::is_same_v<T, char> || std::is_same_v<T, bool> ||
-        std::is_same_v<T, float> || std::is_same_v<T, double>,
+    !std::is_same_v<Container, std::ifstream> &&
+        (std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
+         std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
+         std::is_same_v<T, char> || std::is_same_v<T, bool> ||
+         std::is_same_v<T, float> || std::is_same_v<T, double>),
     bool>::type
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &error_code) {
@@ -93,14 +94,15 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
 // char, bool, small ints, float, double
 // read as is
 // ifstream version
-template <options O, typename T>
+template <options O, typename T, typename Container>
 typename std::enable_if<
-    std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
-        std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
-        std::is_same_v<T, char> || std::is_same_v<T, bool> ||
-        std::is_same_v<T, float> || std::is_same_v<T, double>,
+    std::is_same_v<Container, std::ifstream> &&
+        (std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
+         std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
+         std::is_same_v<T, char> || std::is_same_v<T, bool> ||
+         std::is_same_v<T, float> || std::is_same_v<T, double>),
     bool>::type
-from_bytes(T &value, std::ifstream &bytes, std::size_t &current_index,
+from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &error_code) {
 
   if (current_index >= end_index) {
@@ -145,8 +147,9 @@ from_bytes(T &value, std::ifstream &bytes, std::size_t &current_index,
 // decode variable-length encoding
 template <options O, typename T, typename Container>
 typename std::enable_if<
-    std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
-        std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>,
+    !std::is_same_v<Container, std::ifstream> &&
+        (std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
+         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>),
     bool>::type
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
@@ -191,12 +194,13 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
 // large ints
 // decode variable-length encoding
 // ifstream version
-template <options O, typename T>
+template <options O, typename T, typename Container>
 typename std::enable_if<
-    std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
-        std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>,
+    std::is_same_v<Container, std::ifstream> &&
+        (std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
+         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>),
     bool>::type
-from_bytes(T &value, std::ifstream &bytes, std::size_t &current_index,
+from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
 
   if (current_index >= end_index) {

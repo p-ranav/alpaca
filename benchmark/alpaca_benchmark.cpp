@@ -2,6 +2,7 @@
 #include <benchmark/benchmark.h>
 #include <cassert>
 #include <chrono>
+#include <filesystem>
 #include <functional>
 #include <random>
 #include <type_traits>
@@ -169,6 +170,29 @@ static void BM_alpaca_serialize_to_vector(benchmark::State &state) {
   }
 }
 
+static void BM_alpaca_serialize_to_ofstream(benchmark::State &state) {
+  {
+    struct my_struct {
+      std::vector<Monster> values;
+    };
+
+    std::size_t data_size = 0;
+    my_struct s{createMonsters(state.range(0))};
+    std::ofstream os;
+    os.open("benchmark.bin", std::ios::out | std::ios::binary);
+
+    for (auto _ : state) {
+      // This code gets timed
+      // serialize
+      data_size = serialize(s, os);
+    }
+
+    state.counters["BytesOutput"] = data_size;
+    std::filesystem::remove("benchmark.bin");
+    os.close();
+  }
+}
+
 static void BM_alpaca_deserialize_from_array(benchmark::State &state) {
   {
     struct my_struct {
@@ -217,6 +241,34 @@ static void BM_alpaca_deserialize_from_vector(benchmark::State &state) {
   }
 }
 
+static void BM_alpaca_deserialize_from_ifstream(benchmark::State &state) {
+  {
+    struct my_struct {
+      std::vector<Monster> values;
+    };
+
+    my_struct s{createMonsters(state.range(0))};
+    // serialize
+    std::ofstream os;
+    os.open("benchmark.bin", std::ios::out | std::ios::binary);
+    auto bytes_written = serialize(s, os);
+    os.close();
+
+    std::ifstream is;
+    is.open("benchmark.bin", std::ios::in | std::ios::binary);
+
+    for (auto _ : state) {
+      // This code gets timed
+      // deserialize
+      std::error_code ec;
+      auto recovered = deserialize<my_struct>(is, bytes_written, ec);
+    }
+
+    state.counters["BytesOutput"] = bytes_written;
+    is.close();
+  }
+}
+
 BENCHMARK(BM_alpaca_serialize_to_array)
     ->Arg(1)
     ->Arg(10)
@@ -236,6 +288,16 @@ BENCHMARK(BM_alpaca_serialize_to_vector)
     ->Arg(100)
     ->Arg(1000);
 BENCHMARK(BM_alpaca_deserialize_from_vector)
+    ->Arg(1)
+    ->Arg(10)
+    ->Arg(100)
+    ->Arg(1000);
+BENCHMARK(BM_alpaca_serialize_to_ofstream)
+    ->Arg(1)
+    ->Arg(10)
+    ->Arg(100)
+    ->Arg(1000);
+BENCHMARK(BM_alpaca_deserialize_from_ifstream)
     ->Arg(1)
     ->Arg(10)
     ->Arg(100)
