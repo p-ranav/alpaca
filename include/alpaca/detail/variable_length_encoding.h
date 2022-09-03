@@ -56,9 +56,9 @@ void encode_varint_6(int_t value, Container &output, std::size_t &byte_index) {
 }
 
 template <typename int_t, typename Container>
-int_t decode_varint_firstbyte_6(Container &input,
-                                std::size_t &current_index, bool &negative,
-                                bool &multibyte) {
+typename std::enable_if<!std::is_same_v<Container, std::ifstream>, int_t>::type
+decode_varint_firstbyte_6(Container &input, std::size_t &current_index,
+                          bool &negative, bool &multibyte) {
   int octet = 0;
   int_t current = input[current_index];
   if (CHECK_BIT(current, 7)) {
@@ -76,12 +76,62 @@ int_t decode_varint_firstbyte_6(Container &input,
 }
 
 template <typename int_t, typename Container>
-int_t decode_varint_6(Container &input, std::size_t &current_index) {
+typename std::enable_if<std::is_same_v<Container, std::ifstream>, int_t>::type
+decode_varint_firstbyte_6(Container &input, std::size_t &current_index,
+                          bool &negative, bool &multibyte) {
+  int octet = 0;
+
+  // read byte from file stream
+  char current_byte;
+  input.read(&current_byte, 1);
+  uint8_t byte = static_cast<uint8_t>(current_byte);
+
+  int_t current = byte;
+  if (CHECK_BIT(current, 7)) {
+    // negative number
+    RESET_BIT(current, 7);
+    negative = true;
+  }
+  if (CHECK_BIT(current, 6)) {
+    RESET_BIT(current, 6);
+    multibyte = true;
+  }
+
+  octet |= byte & 63;
+  current_index += 1;
+  return static_cast<int_t>(octet);
+}
+
+template <typename int_t, typename Container>
+typename std::enable_if<!std::is_same_v<Container, std::ifstream>, int_t>::type
+decode_varint_6(Container &input, std::size_t &current_index) {
   int_t ret = 0;
   for (std::size_t i = 0; i < sizeof(int_t); ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 63)) << (6 * i);
     // If the next-byte flag is set
     if (!(input[current_index + i] & 64)) {
+      current_index += i + 1;
+      break;
+    }
+  }
+  return ret;
+}
+
+// ifstream version
+template <typename int_t, typename Container>
+typename std::enable_if<std::is_same_v<Container, std::ifstream>, int_t>::type
+decode_varint_6(Container &input, std::size_t &current_index) {
+  int_t ret = 0;
+  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+
+    // read byte from file stream
+    char current_byte;
+    input.read(&current_byte, 1);
+    uint8_t byte = static_cast<uint8_t>(current_byte);
+
+    ret |= (static_cast<int_t>(byte & 63)) << (6 * i);
+    // If the next-byte flag is set
+    if (!(byte & 64)) {
       current_index += i + 1;
       break;
     }

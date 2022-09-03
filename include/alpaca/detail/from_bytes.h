@@ -14,9 +14,8 @@ namespace detail {
 
 template <options O, typename Container>
 typename std::enable_if<!std::is_array_v<Container>, bool>::type
-from_bytes_crc32(uint32_t &value, Container &bytes,
-                 std::size_t &current_index, std::size_t &end_index,
-                 std::error_code &) {
+from_bytes_crc32(uint32_t &value, Container &bytes, std::size_t &current_index,
+                 std::size_t &end_index, std::error_code &) {
   constexpr auto num_bytes_to_read = 4;
 
   if (end_index < num_bytes_to_read) {
@@ -30,9 +29,8 @@ from_bytes_crc32(uint32_t &value, Container &bytes,
 
 template <options O, typename Container>
 typename std::enable_if<std::is_array_v<Container>, bool>::type
-from_bytes_crc32(uint32_t &value, Container &bytes,
-                 std::size_t &current_index, std::size_t &end_index,
-                 std::error_code &) {
+from_bytes_crc32(uint32_t &value, Container &bytes, std::size_t &current_index,
+                 std::size_t &end_index, std::error_code &) {
   constexpr auto num_bytes_to_read = 4;
 
   if (end_index < num_bytes_to_read) {

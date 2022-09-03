@@ -76,14 +76,12 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
 #endif
 
 template <options O, typename T, typename Container>
-void from_bytes_router(T &output, Container &bytes,
-                       std::size_t &byte_index, std::size_t &end_index,
-                       std::error_code &error_code);
+void from_bytes_router(T &output, Container &bytes, std::size_t &byte_index,
+                       std::size_t &end_index, std::error_code &error_code);
 
 template <options O, typename T, typename Container>
-void from_bytes_to_set(T &set, Container &bytes,
-                       std::size_t &current_index, std::size_t &end_index,
-                       std::error_code &error_code) {
+void from_bytes_to_set(T &set, Container &bytes, std::size_t &current_index,
+                       std::size_t &end_index, std::error_code &error_code) {
   // current byte is the size of the set
   std::size_t size = 0;
   detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
@@ -107,9 +105,8 @@ void from_bytes_to_set(T &set, Container &bytes,
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_SET
 template <options O, typename T, typename Container>
-bool from_bytes(std::set<T> &output, Container &bytes,
-                std::size_t &byte_index, std::size_t &end_index,
-                std::error_code &error_code) {
+bool from_bytes(std::set<T> &output, Container &bytes, std::size_t &byte_index,
+                std::size_t &end_index, std::error_code &error_code) {
 
   if (byte_index >= end_index) {
     // end of input

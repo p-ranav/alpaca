@@ -32,14 +32,12 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
 }
 
 template <options O, typename T, typename Container>
-void from_bytes_router(T &output, Container &bytes,
-                       std::size_t &byte_index, std::size_t &end_index,
-                       std::error_code &error_code);
+void from_bytes_router(T &output, Container &bytes, std::size_t &byte_index,
+                       std::size_t &end_index, std::error_code &error_code);
 
 template <options O, typename T, typename Container>
-void from_bytes_to_array(T &value, Container &bytes,
-                         std::size_t &current_index, std::size_t &end_index,
-                         std::error_code &error_code) {
+void from_bytes_to_array(T &value, Container &bytes, std::size_t &current_index,
+                         std::size_t &end_index, std::error_code &error_code) {
 
   using decayed_value_type = typename std::decay<typename T::value_type>::type;
 

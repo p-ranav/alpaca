@@ -246,9 +246,8 @@ from_bytes(T &value, Container &bytes, std::size_t &byte_index,
 }
 
 template <options O, typename T, typename Container>
-void from_bytes_router(T &output, Container &bytes,
-                       std::size_t &byte_index, std::size_t &end_index,
-                       std::error_code &error_code) {
+void from_bytes_router(T &output, Container &bytes, std::size_t &byte_index,
+                       std::size_t &end_index, std::error_code &error_code) {
   detail::from_bytes<O>(output, bytes, byte_index, end_index, error_code);
 }
 
@@ -490,8 +489,7 @@ T deserialize(Container &bytes, std::error_code &error_code) {
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-T deserialize(Container &bytes, std::size_t size,
-              std::error_code &error_code) {
+T deserialize(Container &bytes, std::size_t size, std::error_code &error_code) {
   T object{};
 
   if (size == 0) {
