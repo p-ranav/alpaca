@@ -174,6 +174,20 @@ auto deserialize(Container&, const std::size_t, std::error_code&) -> T;
 Examples of valid `deserialize` calls include:
 
 ```cpp
+// Deserialize from flie
+std::ifstream is;
+is.open("foo.bin", std::ios::in | std::ios::binary);
+auto file_size = std::filesystem::file_size("foo.bin");
+
+std::error_code ec;
+auto object = deserialize<MyStruct>(is, file_size, ec);
+if (!ec) {
+  // use object
+}
+```
+
+```cpp
+// Deserialize from std::array, std::vector, or C-style array
 // Default options
 std::error_code ec;
 auto object = deserialize<MyStruct>(bytes, ec);
@@ -183,6 +197,7 @@ if (!ec) {
 ```
 
 ```cpp
+// Deserialize from std::array, std::vector, or C-style array
 // Custom options
 std::error_code ec;
 constexpr auto OPTIONS = options::fixed_length_encoding | 
