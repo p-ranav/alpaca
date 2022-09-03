@@ -19,6 +19,11 @@ void append(const uint8_t &value, std::array<uint8_t, N> &container,
   container[index++] = value;
 }
 
+static inline void append(const uint8_t &value, uint8_t container[],
+                          std::size_t &index) {
+  container[index++] = value;
+}
+
 } // namespace detail
 
 } // namespace alpaca

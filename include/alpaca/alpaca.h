@@ -160,10 +160,12 @@ std::size_t serialize(const T &s, Container &bytes) {
 
 // overloads taking options template parameter
 
+// for std::vector and std::array
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
+typename std::enable_if<!std::is_array_v<Container>, std::size_t>::type
+serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (N > 0 && detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
@@ -179,6 +181,33 @@ std::size_t serialize(const T &s, Container &bytes, std::size_t &byte_index) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes.data(), byte_index);
+    detail::to_bytes_crc32<O, Container>(bytes, byte_index, crc);
+  }
+
+  return byte_index;
+}
+
+// for C-style arrays
+template <options O, typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container>
+typename std::enable_if<std::is_array_v<Container>, std::size_t>::type
+serialize(const T &s, Container &bytes, std::size_t &byte_index) {
+  if constexpr (N > 0 && detail::with_version<O>()) {
+    // calculate typeid hash and save it to the bytearray
+    std::vector<uint8_t> typeids;
+    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
+    detail::type_info<T, N>(typeids, struct_visitor_map);
+    uint32_t version = crc32_fast(typeids.data(), typeids.size());
+    detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
+  }
+
+  detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+
+  if constexpr (N > 0 && detail::with_checksum<O>()) {
+    // calculate crc32 for byte array and
+    // pack uint32_t to the end
+    uint32_t crc = crc32_fast(bytes, byte_index);
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, crc);
   }
 
@@ -277,12 +306,34 @@ T deserialize(const Container &bytes, std::error_code &error_code) {
   return object;
 }
 
-// Overloads to check crc in bytes
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container>
+T deserialize(const Container &bytes, const std::size_t size,
+              std::error_code &error_code) {
+  T object{};
+
+  if (size == 0) {
+    error_code = std::make_error_code(std::errc::message_size);
+    return object;
+  }
+
+  std::size_t byte_index = 0;
+  std::size_t end_index = size;
+  deserialize<T, N, Container>(object, bytes, byte_index, end_index,
+                               error_code);
+  return object;
+}
+
+// Overloads to use options
+
+// For std::vector and std::array
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
-void deserialize(T &s, const Container &bytes, std::size_t &byte_index,
-                 std::size_t &end_index, std::error_code &error_code) {
+typename std::enable_if<!std::is_array_v<Container>, void>::type
+deserialize(T &s, const Container &bytes, std::size_t &byte_index,
+            std::size_t &end_index, std::error_code &error_code) {
 
   if constexpr (N > 0 && detail::with_version<O>()) {
 
@@ -347,6 +398,77 @@ void deserialize(T &s, const Container &bytes, std::size_t &byte_index,
   }
 }
 
+// For C-style arrays
+template <options O, typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container>
+typename std::enable_if<std::is_array_v<Container>, void>::type
+deserialize(T &s, const Container &bytes, std::size_t &byte_index,
+            std::size_t &end_index, std::error_code &error_code) {
+
+  if constexpr (N > 0 && detail::with_version<O>()) {
+
+    // calculate typeid hash and save it to the bytearray
+    std::vector<uint8_t> typeids;
+    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
+    detail::type_info<T, N>(typeids, struct_visitor_map);
+    uint32_t computed_version = crc32_fast(typeids.data(), typeids.size());
+
+    // check computed version with version in input
+    // there should be at least 4 bytes in input
+    if (end_index < 4) {
+      error_code = std::make_error_code(std::errc::invalid_argument);
+      return;
+    } else {
+      std::vector<uint8_t> version_bytes{};
+      for (std::size_t i = 0; i < 4; ++i) {
+        version_bytes.push_back(bytes[byte_index++]);
+      }
+      uint32_t version = 0;
+      std::size_t index = 0;
+      detail::from_bytes_crc32<O>(version, bytes, index, end_index,
+                                  error_code); // first 4 bytes
+
+      if (version != computed_version) {
+        error_code = std::make_error_code(std::errc::invalid_argument);
+        return;
+      }
+    }
+  }
+
+  if constexpr (detail::with_checksum<O>()) {
+    // bytes must be at least 4 bytes long
+    if (end_index < 4) {
+      error_code = std::make_error_code(std::errc::invalid_argument);
+      return;
+    } else {
+      // check crc bytes
+      uint32_t trailing_crc;
+      std::size_t index = end_index - 4;
+      detail::from_bytes_crc32<O>(trailing_crc, bytes, index, end_index,
+                                  error_code); // last 4 bytes
+
+      auto computed_crc = crc32_fast(bytes, end_index - 4);
+
+      if (trailing_crc == computed_crc) {
+        // message is good!
+        end_index -= 4;
+        detail::deserialize_helper<O, T, N, Container, 0>(
+            s, bytes, byte_index, end_index, error_code);
+      } else {
+        // message is bad
+        error_code = std::make_error_code(std::errc::bad_message);
+        return;
+      }
+    }
+  } else {
+    // bytes does not have any CRC
+    // just deserialize everything into type T
+    detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
+                                                      end_index, error_code);
+  }
+}
+
 template <options O, typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
@@ -360,6 +482,25 @@ T deserialize(const Container &bytes, std::error_code &error_code) {
 
   std::size_t byte_index = 0;
   std::size_t end_index = bytes.size();
+  deserialize<O, T, N, Container>(object, bytes, byte_index, end_index,
+                                  error_code);
+  return object;
+}
+
+template <options O, typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          typename Container>
+T deserialize(const Container &bytes, std::size_t size,
+              std::error_code &error_code) {
+  T object{};
+
+  if (size == 0) {
+    error_code = std::make_error_code(std::errc::message_size);
+    return object;
+  }
+
+  std::size_t byte_index = 0;
+  std::size_t end_index = size;
   deserialize<O, T, N, Container>(object, bytes, byte_index, end_index,
                                   error_code);
   return object;

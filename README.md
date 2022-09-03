@@ -107,6 +107,10 @@ struct MyStruct {
 // Construct object
 MyStruct object{5};
 
+// Serialize to a C-style array
+uint8_t buffer[10];
+auto bytes_written = serialize(object, buffer);
+
 // Serialize to array
 std::array<uint8_t, 5> bytes;
 auto bytes_written = serialize(object, bytes);
@@ -134,21 +138,61 @@ Like `serialize()`, deserialization has two variants, one of which accepts an `a
 template <class T, size_t N, class Container>
 auto deserialize(const Container&, std::error_code&) -> T;
 
+// Deserialize `size` bytes from a Container into struct T (with N fields)
+template <class T, size_t N, class Container>
+auto deserialize(const Container&, const std::size_t, std::error_code&) -> T;
+
 // Deserialize a Container into struct T (with N fields) using options O
 template <options O, class T, size_t N, class Container>
 auto deserialize(const Container&, std::error_code&) -> T;
+
+// Deserialize `size` bytes from a Container into struct T (with N fields) using options O
+template <options O, class T, size_t N, class Container>
+auto deserialize(const Container&, const std::size_t, std::error_code&) -> T;
 ```
 
 Examples of valid `deserialize` calls include:
 
+* from C-style array
+
 ```cpp
-std::vector<uint8_t> bytes; // or std::array<uint8_t, 256> bytes;
+// uint8_t buffer[128];
+// auto bytes_written = serialize(object, buffer);
+
+// Default options
+std::error_code ec;
+auto foo = deserialize<MyStruct>(buffer, bytes_written, ec);
+                                    //   ^^^^^^^^^^^^^
+                                    //   how many bytes to read 
+                                    //   from buffer
+if (!ec) {
+  // use object
+}
+
+// Custom options
+constexpr auto OPTIONS = options::with_version | options::with_checksum;
+std::error_code ec;
+auto foo = deserialize<OPTIONS, MyStruct>(buffer, bytes_written, ec);
+                                             //   ^^^^^^^^^^^^^
+                                             //   how many bytes to read 
+                                             //   from buffer
+if (!ec) {
+  // use object
+}
+```
+
+* from `std::vector<uint8_t>` and `std::array<uint8_t, N>`
+
+```cpp
+// std::vector<uint8_t> bytes; 
+//            OR
+// std::array<uint8_t, 256> bytes;
 
 // Default options
 std::error_code ec;
 auto object = deserialize<MyStruct>(bytes, ec);
 if (!ec) {
-    // use object
+  // use object
 }
 
 // Configured options
@@ -158,7 +202,7 @@ constexpr auto OPTIONS = options::fixed_length_encoding |
 			 options::with_checksum;
 auto object = deserialize<OPTIONS, MyStruct>(bytes, ec);
 if (!ec) {
-    // use object
+  // use object
 }
 ```
 
