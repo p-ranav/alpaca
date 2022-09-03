@@ -917,7 +917,10 @@ cd alpaca
 # Build
 mkdir build
 cd build
-cmake -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release ..
+cmake -DALPACA_BUILD_TESTS=on \
+      -DALPACA_BUILD_BENCHMARKS=on \
+      -DALPACA_BUILD_SAMPLES=on \
+      -DCMAKE_BUILD_TYPE=Release ..
 make
 
 # Test
