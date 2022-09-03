@@ -129,7 +129,9 @@ auto bytes_written = serialize<OPTIONS>(object, bytes);
 
 ### Deserialization
 
-The `alpaca::deserialize(...)` function, likewise, accepts 2 arguments: a container like `std::vector<uint8_t>` or `std::array<uint8_t, N>` and an `std::error_code` that will be set in case of error conditions. Deserialization will attempt to unpack the container of bytes into an aggregate class type, returning the class object.
+The `alpaca::deserialize(...)` function, likewise, accepts a container like `std::vector<uint8_t>` or `std::array<uint8_t, N>` and an `std::error_code` that will be set in case of error conditions. Deserialization will attempt to unpack the container of bytes into an aggregate class type, returning the class object.
+
+Deserialization from C-style arrays is supported as well, though in this case, the number of bytes to read from the buffer needs to be provided.
 
 Like `serialize()`, deserialization has two variants, one of which accepts an `alpaca::options` template parameter.  
 
