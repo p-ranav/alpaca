@@ -70,7 +70,7 @@ if (!ec) {
      *    [Optional Values](#optional-values)
      *    [Type-safe Unions - Variant Types](#type-safe-unions---variant-types)
      *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
-     *    [Saving/Loading to/from files (ofstream/ifstream)]()
+     *    [Saving/Loading to/from files](#savingloading-tofrom-files)
 *    [Backward and Forward Compatibility](#backward-and-forward-compatibility)
 *    [Configuration Options](#configuration-options)
      *    [Endianness](#endianness)
@@ -602,7 +602,7 @@ ptr != null?  value (if previous byte is 0x01)
 +----------+  +----+----+----+-----+
 ```
 
-### Saving/Loading to/from files (`std::ofstream`/`std::ifstream`)
+### Saving/Loading to/from files
 
 alpaca supports directly writing to files instead of using intermediate buffers. Serialize to files using `std::ofstream` and deserialize from files using `std::ifstream` objects. For deserialization, the size of the file must be provided as an argument:
 
