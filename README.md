@@ -21,6 +21,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
   - Variable-length encoding by default for large integer types. Configurable to use fixed-width encoding
   - Optional type hashing and data structure versioning - recursively generates a type hash that is checked during deserialization
   - Optional integrity checking - detects data corruption during deserialization using checksums
+* Samples [here](https://github.com/p-ranav/alpaca/tree/master/samples)
 * MIT license
 
 ```cpp
@@ -56,6 +57,8 @@ if (!ec) {
   // use object
 }
 ```
+
+The source for the above example can be found [here](https://github.com/p-ranav/alpaca/blob/master/samples/demo.cpp).
 
 ## Table of Contents
 
@@ -218,6 +221,8 @@ if (!ec) {
 * For larger integer types including `int32_t`, alpaca may use variable-length encoding where applicable. If fixed-width encoding is preferred, this can be changed using `options::fixed_width_encoding`.
 * By default, alpaca uses little endian for the byte order. This can be changed to use big-endian byte order using `options::big_endian`
 
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/fundamental_types.cpp)
+
 ```cpp
 struct MyStruct {
   char a;
@@ -248,6 +253,8 @@ In the above example, `c` is a `uint64_t` but its value is only `5`. Here, alpac
 ### Arrays, Vectors, and Strings
 
 alpaca supports sequence containers including `std::array`, `std::vector`, and `std::string`. Nested arrays and vectors work seamlessly.
+
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/arrays_vectors_strings.cpp)
 
 ```cpp
 struct MyStruct {
@@ -316,6 +323,8 @@ The byte array simply includes the encoding for value_type `T` for each value in
 
 For associative containers, alpaca supports `std::map`, `std::unordered_map`, `std::set`, and `std::unordered_set`.
 
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/maps_and_sets.cpp)
+
 ```cpp
 struct MyStruct {
   std::map<std::string, std::tuple<uint8_t, uint8_t, uint8_t>> a;
@@ -376,6 +385,8 @@ The format for `std::set` and `std::unordered_set` is the same as with `std::vec
 
 alpaca works with nested structures and doubly-nested structures seamlessly:
 
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/nested_structures.cpp)
+
 ```cpp
 struct MyStruct {
   struct gps {
@@ -430,6 +441,8 @@ alpaca has some difficulty with `std::optional`. Due to the implementation of [a
 
 So, to help out, specify the number of fields manually using `serialize<MyStruct, N>(...)`. 
 
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/optional_values.cpp)
+
 ```cpp
 struct MyStruct {
   std::optional<int> a;
@@ -475,6 +488,8 @@ has_value?    value (if previous byte is 0x01)
 ### Type-safe Unions - Variant Types
 
 alpaca also support `std::variant`. Although this is an uncommon data structure for one to use in a messaging framework, it is supported and available. Miscellaneous configuration parameters, like in JSON, can be serialized as variant values and sent to servers. For each variant, a byte of information is used to represent the `variant_index`. As long as the deserialization is performed on the same variant type (where the indices of each type matches exactly), the `std::get<index>` will work fine.
+
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/variant.cpp)
 
 ```cpp
 struct MyStruct {
@@ -534,6 +549,8 @@ variant index       value
 ### Smart Pointers and Recursive Data Structures
 
 alpaca supports `std::unique_ptr<T>`. Alpaca does not support raw pointers or shared pointers at the moment. Using unique pointers, recursive data structures, e.g., tree structures, can be easily modeled and serialized. See below for an example:
+
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/unique_ptr.cpp)
 
 ```cpp
 template <class T> 
@@ -605,6 +622,8 @@ ptr != null?  value (if previous byte is 0x01)
 ### Saving/Loading to/from files
 
 alpaca supports directly writing to files instead of using intermediate buffers. Serialize to files using `std::ofstream` and deserialize from files using `std::ifstream` objects. For deserialization, the size of the file must be provided as an argument:
+
+[Source](https://github.com/p-ranav/alpaca/blob/master/samples/write_file.cpp)
 
 ```cpp
 #include <alpaca/alpaca.h>
