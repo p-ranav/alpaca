@@ -111,11 +111,11 @@ MyStruct object{5};
 uint8_t buffer[10];
 auto bytes_written = serialize(object, buffer);
 
-// Serialize to array
+// Serialize to std::array
 std::array<uint8_t, 5> bytes;
 auto bytes_written = serialize(object, bytes);
 
-// Serialize to vector
+// Serialize to std::vector
 std::vector<uint8_t> bytes;
 auto bytes_written = serialize(object, bytes);
 
