@@ -157,36 +157,6 @@ auto deserialize(const Container&, const std::size_t, std::error_code&) -> T;
 
 Examples of valid `deserialize` calls include:
 
-* from C-style array
-
-```cpp
-// uint8_t buffer[128];
-// auto bytes_written = serialize(object, buffer);
-
-// Default options
-std::error_code ec;
-auto foo = deserialize<MyStruct>(buffer, bytes_written, ec);
-                                    //   ^^^^^^^^^^^^^
-                                    //   how many bytes to read 
-                                    //   from buffer
-if (!ec) {
-  // use object
-}
-
-// Custom options
-constexpr auto OPTIONS = options::with_version | options::with_checksum;
-std::error_code ec;
-auto foo = deserialize<OPTIONS, MyStruct>(buffer, bytes_written, ec);
-                                             //   ^^^^^^^^^^^^^
-                                             //   how many bytes to read 
-                                             //   from buffer
-if (!ec) {
-  // use object
-}
-```
-
-* from `std::vector<uint8_t>` and `std::array<uint8_t, N>`
-
 ```cpp
 // std::vector<uint8_t> bytes; 
 //            OR
@@ -199,7 +169,7 @@ if (!ec) {
   // use object
 }
 
-// Configured options
+// Custom options
 std::error_code ec;
 constexpr auto OPTIONS = options::fixed_length_encoding | 
                          options::with_version |
