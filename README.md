@@ -130,6 +130,13 @@ auto bytes_written = serialize(object, bytes);
 ```
 
 ```cpp
+// Serialize to file
+std::ofstream os;
+os.open("foo.bin", std::ios::out | std::ios::binary);
+auto bytes_written = serialize(object, os);
+```
+
+```cpp
 // Serialize with options
 std::vector<uint8_t> bytes;
 constexpr auto OPTIONS = options::fixed_length_encoding | 
