@@ -97,6 +97,8 @@ tmeplate <options O, class T, size_t N, class Container>
 auto serialize(const T&, Container&) -> size_t /* bytes_written */;
 ```
 
+***NOTE*** Under most circumstances, the number of fields in the struct, `N`, need not be provided. In certain use-cases, e.g., `std::optional`, the user will need to provide this `N` for correct operation. More on this [here](#optional-values).
+
 Examples of valid serialize calls include:
 
 ```cpp
