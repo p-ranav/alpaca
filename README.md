@@ -73,6 +73,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
      *    [Optional Values](#optional-values)
      *    [Type-safe Unions - Variant Types](#type-safe-unions---variant-types)
      *    [Smart Pointers and Recursive Data Structures](#smart-pointers-and-recursive-data-structures)
+     *    [Chrono Duration](#chrono-duration)
      *    [Saving/Loading to/from files](#savingloading-tofrom-files)
 *    [Backward and Forward Compatibility](#backward-and-forward-compatibility)
 *    [Configuration Options](#configuration-options)
@@ -617,6 +618,33 @@ ptr != null?  value (if previous byte is 0x01)
 +----------+  +----+----+----+-----+
 |    A1    |  | B1 | B2 | B3 | ... |
 +----------+  +----+----+----+-----+
+```
+
+### Chrono Duration
+
+alpaca support `std::chrono::duration<Rep, Period>` type, including `std::chrono::milliseconds` and the like. The `Rep` arithmetic value is serialized and the duration is reconstructed during deserialization
+
+```cpp
+#include <alpaca/alpaca.h>
+using namespace alpaca;
+
+int main() {
+
+  struct MyStruct {
+    std::chrono::milliseconds period;
+  };
+
+  MyStruct s{std::chrono::milliseconds{500}};
+
+  // Serialize
+  std::vector<uint8_t> bytes;
+  auto bytes_written = alpaca::serialize(s, bytes);
+
+  // Deserialize
+  std::error_code ec;
+  auto recovered = alpaca::deserialize<MyStruct>(bytes, ec);
+  // period == 500ms
+}
 ```
 
 ### Saving/Loading to/from files
