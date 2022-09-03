@@ -187,7 +187,7 @@ if (!ec) {
 ```
 
 ```cpp
-// Deserialize from std::array, std::vector, or C-style array
+// Deserialize from std::array or std::vector
 // Default options
 std::error_code ec;
 auto object = deserialize<MyStruct>(bytes, ec);
@@ -197,7 +197,7 @@ if (!ec) {
 ```
 
 ```cpp
-// Deserialize from std::array, std::vector, or C-style array
+// Deserialize from std::array or std::vector
 // Custom options
 std::error_code ec;
 constexpr auto OPTIONS = options::fixed_length_encoding | 
