@@ -158,10 +158,6 @@ auto deserialize(const Container&, const std::size_t, std::error_code&) -> T;
 Examples of valid `deserialize` calls include:
 
 ```cpp
-// std::vector<uint8_t> bytes; 
-//            OR
-// std::array<uint8_t, 256> bytes;
-
 // Default options
 std::error_code ec;
 auto object = deserialize<MyStruct>(bytes, ec);
