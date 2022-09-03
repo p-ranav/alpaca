@@ -230,9 +230,8 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
       /// TODO: report error
       return false;
     }
-    char value_bytes[sizeof(T)];
-    bytes.read(&value_bytes[0], sizeof(T));
-    current_index += sizeof(T);
+    char value_bytes[num_bytes_to_read];
+    bytes.read(&value_bytes[0], num_bytes_to_read);
     current_index += num_bytes_to_read;
     value = *(reinterpret_cast<const T *>(value_bytes));
   } else {

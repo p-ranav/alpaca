@@ -24,12 +24,12 @@ TEST_CASE("Serialize complex struct to fstream" * test_suite("fstream")) {
 
   // Serialize to file
   std::ofstream os;
-  os.open("tmp.bin", std::ios::out | std::ios::binary);
+  os.open("tmp3.bin", std::ios::out | std::ios::binary);
   auto bytes_written = serialize(s, os);
   os.close();
   REQUIRE(bytes_written == 37);
-  REQUIRE(std::filesystem::file_size("tmp.bin") == 37);
-  std::filesystem::remove("tmp.bin");
+  REQUIRE(std::filesystem::file_size("tmp3.bin") == 37);
+  std::filesystem::remove("tmp3.bin");
 }
 
 TEST_CASE("Serialize complex struct to fstream with options" * test_suite("fstream")) {
@@ -50,15 +50,14 @@ TEST_CASE("Serialize complex struct to fstream with options" * test_suite("fstre
               {{"abc", {1, 2, 3}}, {"def", {4, 5, 6}}}};
 
   constexpr auto OPTIONS = options::big_endian |
-                           options::fixed_length_encoding |
-                           options::with_version;
+                           options::fixed_length_encoding;
 
   // Serialize to file
   std::ofstream os;
-  os.open("tmp.bin", std::ios::out | std::ios::binary);
+  os.open("tmp4.bin", std::ios::out | std::ios::binary);
   auto bytes_written = serialize<OPTIONS>(s, os);
   os.close();
-  REQUIRE(bytes_written == 121);
-  REQUIRE(std::filesystem::file_size("tmp.bin") == 121);
-  std::filesystem::remove("tmp.bin");
+  REQUIRE(bytes_written == 117);
+  REQUIRE(std::filesystem::file_size("tmp4.bin") == 117);
+  std::filesystem::remove("tmp4.bin");
 }
