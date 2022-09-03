@@ -658,9 +658,6 @@ int main() {
     assert(recovered.e == s.e);
     assert(recovered.f == s.f);
   }
-
-  // delete file
-  std::filesystem::remove(filename);
 }
 ```
 
