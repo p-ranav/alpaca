@@ -31,7 +31,8 @@ enum class field_type : uint8_t {
   tuple,
   variant,
   unique_ptr,
-  struct_
+  struct_,
+  chrono_duration
 };
 
 template <field_type value> constexpr uint8_t to_byte() {

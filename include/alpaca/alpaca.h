@@ -10,6 +10,7 @@
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_info.h>
 #include <alpaca/detail/types/array.h>
+#include <alpaca/detail/types/duration.h>
 #include <alpaca/detail/types/map.h>
 #include <alpaca/detail/types/optional.h>
 #include <alpaca/detail/types/pair.h>
