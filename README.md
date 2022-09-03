@@ -15,6 +15,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 * *No macros or boilerplate, no source code generation, no external dependencies*
 * Simple, fast, and easy to use
 * Supports basic data types, STL containers, unique pointers, recursive data structures, optionals, variants and more
+* Serialize to C-style arrays, `std::array`, `std::vector`, or even directly to files
 * Highly configurable at compile time
   - Little endian by default. Configurable to use big endian byte order
   - Variable-length encoding by default for large integer types. Configurable to use fixed-width encoding
@@ -108,19 +109,27 @@ struct MyStruct {
 
 // Construct object
 MyStruct object{5};
+```
 
+```cpp
 // Serialize to a C-style array
 uint8_t buffer[10];
 auto bytes_written = serialize(object, buffer);
+```
 
+```cpp
 // Serialize to std::array
 std::array<uint8_t, 5> bytes;
 auto bytes_written = serialize(object, bytes);
+```
 
+```cpp
 // Serialize to std::vector
 std::vector<uint8_t> bytes;
 auto bytes_written = serialize(object, bytes);
+```
 
+```cpp
 // Serialize with options
 std::vector<uint8_t> bytes;
 constexpr auto OPTIONS = options::fixed_length_encoding | 
@@ -164,7 +173,9 @@ auto object = deserialize<MyStruct>(bytes, ec);
 if (!ec) {
   // use object
 }
+```
 
+```cpp
 // Custom options
 std::error_code ec;
 constexpr auto OPTIONS = options::fixed_length_encoding | 
