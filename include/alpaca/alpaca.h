@@ -42,8 +42,7 @@ void type_info_helper(
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 
 // for aggregates
-template <typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+template <typename T, std::size_t N>
 typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
                         void>::type
 type_info(

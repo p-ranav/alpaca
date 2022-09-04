@@ -44,6 +44,18 @@
 #define ALPACA_PREFETCH(location) ;
 #endif
 #endif
+#elif defined(__APPLE__)
+// Apple MacOS uses big endian
+#define __BYTE_ORDER __ALPACA_BIG_ENDIAN
+
+// intrinsics / prefetching
+#ifdef __GNUC__
+#define ALPACA_PREFETCH(location) __builtin_prefetch(location)
+#else
+// no prefetching
+#define ALPACA_PREFETCH(location) ;
+#endif
+
 #else
 // defines __BYTE_ORDER as __ALPACA_LITTLE_ENDIAN or __ALPACA_BIG_ENDIAN
 #include <sys/param.h>

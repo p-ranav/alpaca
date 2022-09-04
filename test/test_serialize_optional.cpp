@@ -9,12 +9,14 @@ TEST_CASE("Serialize optional<int>" * test_suite("optional")) {
     std::optional<int> value;
   };
 
+#if !defined(_MSC_VER) && !defined(__MINGW32__)
   {
     my_struct s{5};
     std::vector<uint8_t> bytes;
     serialize(s, bytes);
     REQUIRE(bytes.size() == 0); // fail, number of fields in struct deduced as 0
   }
+#endif
 
   {
     my_struct s{5};

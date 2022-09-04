@@ -9,6 +9,7 @@ TEST_CASE("Serialize optional<int> into array" * test_suite("optional")) {
     std::optional<int> value;
   };
 
+#if !defined(_MSC_VER) && !defined(__MINGW32__)
   {
     my_struct s{5};
     std::array<uint8_t, 5> bytes;
@@ -16,6 +17,7 @@ TEST_CASE("Serialize optional<int> into array" * test_suite("optional")) {
     REQUIRE(bytes_written ==
             0); // fail, number of fields in struct deduced as 0
   }
+#endif
 
   {
     my_struct s{5};

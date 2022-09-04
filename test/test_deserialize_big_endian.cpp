@@ -115,7 +115,11 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint8_t)" *
   {
     my_struct s{5};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() == 4); // fixed-width encoding is used
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() == 4); // fixed-width encoding is used
+    } else {
+      REQUIRE(bytes.size() == 1); // VLQ
+    }
   }
 
   // deserialize
@@ -139,7 +143,11 @@ TEST_CASE("Deserialize big-endian uint32_t (packed as uint16_t)" *
   {
     my_struct s{1600};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() == 4); // fixed-width encoding is used
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() == 4); // fixed-width encoding is used
+    } else {
+      REQUIRE(bytes.size() == 2); // VLQ
+    }
   }
 
   // deserialize
@@ -162,7 +170,11 @@ TEST_CASE("Deserialize big-endian uint32_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{75535};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() == 4); // fixed-width encoding is used
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() == 4); // fixed-width encoding is used
+    } else {
+      REQUIRE(bytes.size() == 3); // VLQ
+    }
   }
 
   // deserialize
@@ -186,7 +198,11 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint8_t)" *
   {
     my_struct s{5};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    } else {
+      REQUIRE(bytes.size() == 1); // VLQ
+    }
   }
 
   // deserialize
@@ -210,7 +226,11 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint16_t)" *
   {
     my_struct s{12345};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    } else {
+      REQUIRE(bytes.size() == 2); // VLQ
+    }
   }
 
   // deserialize
@@ -234,7 +254,11 @@ TEST_CASE("Deserialize big-endian uint64_t (packed as uint32_t)" *
   {
     my_struct s{12345678};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    } else {
+      REQUIRE(bytes.size() == 4); // VLQ
+    }
   }
 
   // deserialize
@@ -257,7 +281,11 @@ TEST_CASE("Deserialize big-endian uint64_t" * test_suite("unsigned_integer")) {
   {
     my_struct s{5294967295};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() == 8); // fixed-width encoding is used
+    } else {
+      REQUIRE(bytes.size() == 5); // VLQ
+    }
   }
 
   // deserialize
@@ -313,8 +341,12 @@ TEST_CASE("Deserialize big-endian unsigned integer types" *
   {
     my_struct s{5, 12345, 12345678, 5294967295};
     serialize<options::big_endian>(s, bytes);
-    REQUIRE(bytes.size() ==
-            15); // fixed-width encoding is used for uint32 and uint64 types
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes.size() ==
+              15); // fixed-width encoding is used for uint32 and uint64 types
+    } else {
+      REQUIRE(bytes.size() == 12); // VLQ
+    }
   }
 
   // deserialize
