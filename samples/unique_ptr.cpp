@@ -1,5 +1,7 @@
 #include <alpaca/alpaca.h>
 
+#if !defined(_MSC_VER) && !defined(__MINGW32__)
+
 template <class T> struct Node {
   T data;
   std::unique_ptr<Node<T>> left;
@@ -70,3 +72,9 @@ int main() {
   assert(right_subtree_1.left == nullptr);
   assert(right_subtree_1.right == nullptr);
 }
+
+#else
+
+int main() {}
+
+#endif

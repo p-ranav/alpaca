@@ -4,6 +4,8 @@ using namespace alpaca;
 
 using doctest::test_suite;
 
+#if !defined(_MSC_VER) && !defined(__MINGW32__)
+
 template <class T> struct Node {
   T data;
   std::unique_ptr<Node<T>> left;
@@ -49,3 +51,5 @@ TEST_CASE("Serialize unique_ptr<struct>" * test_suite("unique_ptr")) {
   REQUIRE(bytes[13] == static_cast<uint8_t>(0)); // 4.has_left = false
   REQUIRE(bytes[14] == static_cast<uint8_t>(0)); // 4.has_right = false
 }
+
+#endif

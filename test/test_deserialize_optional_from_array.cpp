@@ -9,6 +9,7 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
     std::optional<int> value;
   };
 
+#if !defined(_MSC_VER) && !defined(__MINGW32__)
   {
     std::array<uint8_t, 10> bytes;
     {
@@ -25,6 +26,7 @@ TEST_CASE("Deserialize optional<int>" * test_suite("optional")) {
       REQUIRE(result.value.has_value() == false);
     }
   }
+#endif
 
   {
     std::array<uint8_t, 10> bytes;

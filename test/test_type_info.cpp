@@ -292,6 +292,8 @@ TEST_CASE("Type info for tuple" * test_suite("version")) {
   REQUIRE(typeids[7] == static_cast<uint8_t>(detail::field_type::char_));
 }
 
+#if !defined(_MSC_VER) && !defined(__MINGW32__)
+
 TEST_CASE("Type info for unique_ptr" * test_suite("version")) {
 
   struct my_struct {
@@ -328,6 +330,8 @@ TEST_CASE("Type info for unique_ptr (recursive)" * test_suite("version")) {
   auto it = struct_visitor_map.begin();
   REQUIRE(it->second == 0x01);
 }
+
+#endif
 
 TEST_CASE("Type info for variant" * test_suite("version")) {
 
