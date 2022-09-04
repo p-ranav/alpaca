@@ -27,37 +27,37 @@ jobs:
             os: macos-latest
             c_compiler: clang
             cxx_compiler: clang++
-	    cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
+            cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
 
           - toolchain: macos-12-clang
             os: macos-latest
             c_compiler: clang
             cxx_compiler: clang++
-	    cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
+            cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
 
           - toolchain: ubuntu-latest-clang
             os: ubuntu-latest
             c_compiler: clang
             cxx_compiler: clang++
-	    cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
+            cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
 
           - toolchain: ubuntu-latest-gcc
             os: ubuntu-latest
             c_compiler: cc
             cxx_compiler: g++
-	    cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
+            cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
 
           - toolchain: windows-2019-msvc
             os: windows-2019
             c_compiler: msvc
             cxx_compiler: msvc
-	    cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
+            cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
 
           - toolchain: windows-latest-msvc
             os: windows-latest
             c_compiler: msvc
             cxx_compiler: msvc
-	    cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
+            cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
 
           - toolchain: windows-latest-clang
             os: windows-latest
