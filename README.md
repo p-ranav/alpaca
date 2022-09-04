@@ -84,6 +84,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
+*    [Supported Toolchains](#supported-toolchains)
 *    [Contributing](#contributing)
 *    [License](#license)
 
@@ -1112,6 +1113,17 @@ make
 # Install 
 make install
 ```
+
+## Supported Toolchains
+
+alpaca has been tested on the following toolchains (see [actions](https://github.com/p-ranav/alpaca/actions)).
+
+| Compiler                      | Standard Library | Test Environment       |
+| :---------------------------- | :--------------- | :--------------------- |
+| AppleClang >= 13.0.0.13000029 | libc++           | Xcode 13.2.1           |
+| Clang >= 11.0.0               | libstdc++        | Ubuntu 20.04           |
+| GCC >= 9.4.0                  | libstdc++        | Ubuntu 20.04           |
+| MSVC >= 19.33.31629.0         | Microsoft STL    | Visual Studio 17 2022  |
 
 ## Contributing
 
