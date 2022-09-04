@@ -36,8 +36,7 @@ TEST_CASE("Serialize uint16_t" * test_suite("unsigned_integer")) {
       REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
       REQUIRE(bytes[1] == static_cast<uint8_t>(0x00));
     } else {
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x05));
+      REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
     }
   }
 
