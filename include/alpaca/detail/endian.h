@@ -120,14 +120,12 @@ void update_value_based_on_alpaca_endian_rules(T &value) {
   // if system is big endian
   // but big endian was not requested in options
   // default to little endian
-  if constexpr (__BYTE_ORDER == __ALPACA_BIG_ENDIAN &&
-                detail::little_endian<O>()) {
+  if constexpr (is_system_big_endian() && detail::little_endian<O>()) {
     value = byte_swap<T, byte_order::big_endian>(value);
   }
   // if system is little endian
   // but big_endian is requested
-  else if constexpr (__BYTE_ORDER == __ALPACA_LITTLE_ENDIAN &&
-                     detail::big_endian<O>()) {
+  else if constexpr (is_system_little_endian() && detail::big_endian<O>()) {
     value = byte_swap<T, byte_order::big_endian>(value);
   }
 }
