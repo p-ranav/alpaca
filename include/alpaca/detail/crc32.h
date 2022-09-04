@@ -55,7 +55,6 @@
 // no prefetching
 #define ALPACA_PREFETCH(location) ;
 #endif
-#endif
 
 #else
 // defines __BYTE_ORDER as __ALPACA_LITTLE_ENDIAN or __ALPACA_BIG_ENDIAN
