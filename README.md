@@ -84,6 +84,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
+*    [Contributing](#contributing)
 *    [License](#license)
 
 ## Usage and API
@@ -1111,6 +1112,10 @@ make
 # Install 
 make install
 ```
+
+## Contributing
+
+Feel free to contribute to this project. Issues and PRs welcome.
 
 ## License
 
