@@ -22,9 +22,9 @@ type_info(std::vector<uint8_t> &typeids,
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 
-template <options O, typename Container>
+template <options O, typename Container, typename CharType>
 void to_bytes(Container &bytes, std::size_t &byte_index,
-              const std::string &input) {
+              const std::basic_string<CharType> &input) {
   // save string length
   to_bytes_router<O>(input.size(), bytes, byte_index);
 
@@ -33,10 +33,11 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   }
 }
 
-template <options O, typename Container>
+template <options O, typename Container, typename CharType>
 typename std::enable_if<!std::is_same_v<Container, std::ifstream>, bool>::type
-from_bytes(std::string &value, Container &bytes, std::size_t &current_index,
-           std::size_t &end_index, std::error_code &error_code) {
+from_bytes(std::basic_string<CharType> &value, Container &bytes,
+           std::size_t &current_index, std::size_t &end_index,
+           std::error_code &error_code) {
 
   if (current_index >= end_index) {
     // end of input
@@ -58,21 +59,22 @@ from_bytes(std::string &value, Container &bytes, std::size_t &current_index,
   }
 
   // read `size` bytes and save to value
-  value.reserve(size);
-  const uint8_t *ptr = bytes.data() + current_index;
+  value.reserve(size * sizeof(CharType));
   for (std::size_t i = 0; i < size; ++i) {
-    value += ptr[i];
+    CharType character;
+    from_bytes<O>(character, bytes, current_index, end_index, error_code);
+    value += character;
   }
-  current_index += size;
 
   return true;
 }
 
 // ifstream version
-template <options O, typename Container>
+template <options O, typename Container, typename CharType>
 typename std::enable_if<std::is_same_v<Container, std::ifstream>, bool>::type
-from_bytes(std::string &value, Container &bytes, std::size_t &current_index,
-           std::size_t &end_index, std::error_code &error_code) {
+from_bytes(std::basic_string<CharType> &value, Container &bytes,
+           std::size_t &current_index, std::size_t &end_index,
+           std::error_code &error_code) {
 
   if (current_index >= end_index) {
     // end of input
@@ -94,11 +96,12 @@ from_bytes(std::string &value, Container &bytes, std::size_t &current_index,
   }
 
   // read `size` bytes and save to value
-  char *buffer = new char[size];
-  bytes.read(buffer, size);
-  value = std::string(buffer, size);
-  current_index += size;
-  delete[] buffer;
+  value.reserve(size * sizeof(CharType));
+  for (std::size_t i = 0; i < size; ++i) {
+    CharType character;
+    from_bytes<O>(character, bytes, current_index, end_index, error_code);
+    value += character;
+  }
 
   return true;
 }

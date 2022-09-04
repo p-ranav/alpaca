@@ -49,8 +49,10 @@ typename std::enable_if<
     !std::is_same_v<Container, std::ifstream> &&
         (std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
          std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
-         std::is_same_v<T, char> || std::is_same_v<T, bool> ||
-         std::is_same_v<T, float> || std::is_same_v<T, double>),
+         std::is_same_v<T, char> || std::is_same_v<T, wchar_t> ||
+         std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> ||
+         std::is_same_v<T, bool> || std::is_same_v<T, float> ||
+         std::is_same_v<T, double>),
     bool>::type
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &error_code) {
@@ -99,8 +101,10 @@ typename std::enable_if<
     std::is_same_v<Container, std::ifstream> &&
         (std::is_same_v<T, int8_t> || std::is_same_v<T, int16_t> ||
          std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t> ||
-         std::is_same_v<T, char> || std::is_same_v<T, bool> ||
-         std::is_same_v<T, float> || std::is_same_v<T, double>),
+         std::is_same_v<T, char> || std::is_same_v<T, wchar_t> ||
+         std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t> ||
+         std::is_same_v<T, bool> || std::is_same_v<T, float> ||
+         std::is_same_v<T, double>),
     bool>::type
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &error_code) {

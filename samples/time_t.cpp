@@ -7,13 +7,12 @@ int main() {
     std::time_t timestamp;
   };
 
-  auto timestamp = std::chrono::system_clock::to_time_t(
-                        std::chrono::system_clock::now());
+  auto timestamp =
+      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
   MyStruct s{timestamp};
 
-  constexpr auto OPTIONS = options::big_endian | 
-                           options::fixed_length_encoding;
+  constexpr auto OPTIONS = options::big_endian | options::fixed_length_encoding;
 
   // Serialize
   std::vector<uint8_t> bytes;

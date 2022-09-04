@@ -30,9 +30,11 @@ void to_bytes_crc32(Container &bytes, std::size_t &byte_index,
 template <options O, typename T, typename U>
 typename std::enable_if<
     std::is_same_v<U, bool> || std::is_same_v<U, char> ||
-        std::is_same_v<U, uint8_t> || std::is_same_v<U, uint16_t> ||
-        std::is_same_v<U, int8_t> || std::is_same_v<U, int16_t> ||
-        std::is_same_v<U, float> || std::is_same_v<U, double>,
+        std::is_same_v<U, wchar_t> || std::is_same_v<U, char16_t> ||
+        std::is_same_v<U, char32_t> || std::is_same_v<U, uint8_t> ||
+        std::is_same_v<U, uint16_t> || std::is_same_v<U, int8_t> ||
+        std::is_same_v<U, int16_t> || std::is_same_v<U, float> ||
+        std::is_same_v<U, double>,
     void>::type
 to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
 

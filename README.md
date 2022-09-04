@@ -68,6 +68,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
 *    [Examples](#examples)
      *    [Fundamental types](#fundamental-types)
      *    [Arrays, Vectors, and Strings](#arrays-vectors-and-strings)
+     *    [Multi-byte Character Strings](#multi-byte-character-strings)
      *    [Maps and Sets](#maps-and-sets)
      *    [Nested Structures](#nested-structures)
      *    [Optional Values](#optional-values)
@@ -318,6 +319,36 @@ The byte array simply includes the encoding for value_type `T` for each value in
 +----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 | A1 | A2 | ... |  | B1 | B2 | ... |  | C1 | C2 | C3 | ... |  |...
 +----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
+```
+
+### Multi-byte Character Strings
+
+alpaca supports the standard `wstring` `u16string`, and `u32string` variants of `std::basic_string` type:
+
+```cpp
+struct my_struct {
+  std::wstring name;
+  std::u16string example;
+  std::u32string greeting;
+};
+
+std::vector<uint8_t> bytes;
+
+// serialize
+{
+  my_struct s{L"緋村 剣心", u"This is a string", U"Hello, 世界"};
+  serialize(s, bytes);
+}
+
+// deserialize
+{
+  std::error_code ec;
+  auto object = deserialize<my_struct>(bytes, ec);
+  assert((bool)ec == false);
+  assert(object.name == L"緋村 剣心");    
+  assert(object.example == u"This is a string");
+  assert(object.greeting == U"Hello, 世界");
+}
 ```
 
 ### Maps and Sets
