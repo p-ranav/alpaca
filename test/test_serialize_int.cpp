@@ -71,8 +71,13 @@ TEST_CASE("Serialize int16_t" * test_suite("signed_integer")) {
     std::vector<uint8_t> bytes;
     serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes.size() == 2);
-    REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
-    REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));
+    if constexpr (detail::is_system_little_endian()) {
+      REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
+      REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));
+    } else {
+      REQUIRE(bytes[0] == static_cast<uint8_t>(0x39));
+      REQUIRE(bytes[1] == static_cast<uint8_t>(0x30));
+    }
   }
 }
 
