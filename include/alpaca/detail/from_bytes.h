@@ -153,7 +153,8 @@ template <options O, typename T, typename Container>
 typename std::enable_if<
     !std::is_same_v<Container, std::ifstream> &&
         (std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
-         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>),
+         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
+         std::is_same_v<T, std::size_t>),
     bool>::type
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
@@ -202,7 +203,8 @@ template <options O, typename T, typename Container>
 typename std::enable_if<
     std::is_same_v<Container, std::ifstream> &&
         (std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
-         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t>),
+         std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
+         std::is_same_v<T, std::size_t>),
     bool>::type
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
