@@ -7,11 +7,15 @@ namespace alpaca {
 namespace detail {
 
 constexpr bool is_system_little_endian() {
-  return __ALPACA_BYTE_ORDER == __ALPACA_LITTLE_ENDIAN;
+  int32_t x = 0xaabbccdd;
+  uint8_t y = static_cast<uint8_t>(x);
+  return (y == 0xdd);
 }
 
 constexpr bool is_system_big_endian() {
-  return __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN;
+  int32_t x = 0xaabbccdd;
+  uint8_t y = static_cast<uint8_t>(x);
+  return (y == 0xaa);
 }
 
 // Endian switching code taken from
@@ -82,16 +86,15 @@ enum class byte_order { little_endian, big_endian };
 template <typename T, byte_order O> constexpr auto byte_swap(const T &value) {
   T result = value;
 
-  if constexpr (O == byte_order::little_endian &&
-                __ALPACA_BYTE_ORDER == __ALPACA_LITTLE_ENDIAN) {
+  if constexpr (O == byte_order::little_endian && is_system_little_endian()) {
     // do nothing
   } else if constexpr (O == byte_order::big_endian &&
-                       __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN) {
+                       is_system_big_endian()) {
     // do nothing
   } else if constexpr ((O == byte_order::little_endian &&
-                        __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN) ||
+                        is_system_big_endian()) ||
                        (O == byte_order::big_endian &&
-                        __ALPACA_BYTE_ORDER == __ALPACA_LITTLE_ENDIAN)) {
+                        is_system_little_endian())) {
     // byte swap to match requested order
     if constexpr (std::is_same_v<T, uint16_t>) {
       BLI_endian_switch_uint16(&result);
@@ -106,9 +109,9 @@ template <typename T, byte_order O> constexpr auto byte_swap(const T &value) {
     } else if constexpr (std::is_same_v<T, int64_t>) {
       BLI_endian_switch_int64(&result);
     } else if constexpr (std::is_same_v<T, float>) {
-      BLI_endian_switch_int32(&result);
+      BLI_endian_switch_float(&result);
     } else if constexpr (std::is_same_v<T, double>) {
-      BLI_endian_switch_int64(&result);
+      BLI_endian_switch_double(&result);
     }
   }
 
