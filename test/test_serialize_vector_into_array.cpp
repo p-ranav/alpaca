@@ -94,6 +94,7 @@ TEST_CASE("Serialize vector<float> into array" * test_suite("vector")) {
   }
 }
 
+#ifndef __APPLE__
 TEST_CASE("Serialize vector<bool> into array" * test_suite("vector")) {
   struct my_struct {
     std::vector<bool> value;
@@ -115,6 +116,7 @@ TEST_CASE("Serialize vector<bool> into array" * test_suite("vector")) {
     }
   }
 }
+#endif
 
 TEST_CASE("Serialize vector<std::string> into array" * test_suite("vector")) {
   struct my_struct {

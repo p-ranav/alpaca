@@ -34,6 +34,7 @@ TEST_CASE("Forwards Compatibility (new field added in struct)" *
     REQUIRE(s.new_field_1.empty()); // default initialized
   }
 
+#ifndef __APPLE__
   {
     // server side is updated to use a new structure
     struct my_struct {
@@ -69,4 +70,5 @@ TEST_CASE("Forwards Compatibility (new field added in struct)" *
     REQUIRE(s.new_field_2.size() == 0); // default initialized
     REQUIRE(s.new_field_3 == 0);        // default initialized
   }
+#endif
 }
