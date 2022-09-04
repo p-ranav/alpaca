@@ -27,3 +27,6 @@ target_link_libraries(write_file PRIVATE alpaca::alpaca)
 
 add_executable(chrono_duration chrono_duration.cpp)
 target_link_libraries(chrono_duration PRIVATE alpaca::alpaca)
+
+add_executable(time_t time_t.cpp)
+target_link_libraries(time_t PRIVATE alpaca::alpaca)
