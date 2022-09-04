@@ -31,7 +31,7 @@
 // define endianess and some integer data types
 #if defined(_MSC_VER) || defined(__MINGW32__)
 // Windows always little endian
-#define __BYTE_ORDER __ALPACA_LITTLE_ENDIAN
+#define __ALPACA_BYTE_ORDER __ALPACA_LITTLE_ENDIAN
 
 // intrinsics / prefetching
 #if defined(__MINGW32__) || defined(__clang__)
@@ -44,9 +44,9 @@
 #define ALPACA_PREFETCH(location) ;
 #endif
 #endif
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__MACH__)
 // Apple MacOS uses big endian
-#define __BYTE_ORDER __ALPACA_BIG_ENDIAN
+#define __ALPACA_BYTE_ORDER __ALPACA_BIG_ENDIAN
 
 // intrinsics / prefetching
 #ifdef __GNUC__
@@ -56,9 +56,10 @@
 #define ALPACA_PREFETCH(location) ;
 #endif
 
-#else
-// defines __BYTE_ORDER as __ALPACA_LITTLE_ENDIAN or __ALPACA_BIG_ENDIAN
+#elif defined(__linux__) || defined(__linux) || defined(linux__) || defined(__gnu_linux__)
+// defines BYTE_ORDER as __ALPACA_LITTLE_ENDIAN or __ALPACA_BIG_ENDIAN
 #include <sys/param.h>
+#define __ALPACA_BYTE_ORDER __BYTE_ORDER
 
 // intrinsics / prefetching
 #ifdef __GNUC__
@@ -67,18 +68,20 @@
 // no prefetching
 #define ALPACA_PREFETCH(location) ;
 #endif
+#else
+#error unsupported system
 #endif
 
 // abort if byte order is undefined
-#if !defined(__BYTE_ORDER)
-#error undefined byte order, compile with -D__BYTE_ORDER=1234 (if little endian) or -D__BYTE_ORDER=4321 (big endian)
+#if !defined(__ALPACA_BYTE_ORDER)
+#error undefined byte order, compile with -D__ALPACA_BYTE_ORDER=1234 (if little endian) or -D__ALPACA_BYTE_ORDER=4321 (big endian)
 #endif
 
 namespace {
 /// zlib's CRC32 polynomial
 const uint32_t Polynomial = 0xEDB88320;
 
-#if __BYTE_ORDER == __ALPACA_BIG_ENDIAN
+#if __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN
 /// swap endianess
 static inline uint32_t swap(uint32_t x) {
 #if defined(__GNUC__) || defined(__clang__)
@@ -1021,7 +1024,7 @@ static inline uint32_t crc32_4bytes(const void *data, size_t length,
 
   // process four bytes at once (Slicing-by-4)
   while (length >= 4) {
-#if __BYTE_ORDER == __ALPACA_BIG_ENDIAN
+#if __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN
     uint32_t one = *current++ ^ swap(crc);
     crc = Crc32Lookup[0][one & 0xFF] ^ Crc32Lookup[1][(one >> 8) & 0xFF] ^
           Crc32Lookup[2][(one >> 16) & 0xFF] ^
@@ -1054,7 +1057,7 @@ static inline uint32_t crc32_8bytes(const void *data, size_t length,
 
   // process eight bytes at once (Slicing-by-8)
   while (length >= 8) {
-#if __BYTE_ORDER == __ALPACA_BIG_ENDIAN
+#if __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN
     uint32_t one = *current++ ^ swap(crc);
     uint32_t two = *current++;
     crc = Crc32Lookup[0][two & 0xFF] ^ Crc32Lookup[1][(two >> 8) & 0xFF] ^
@@ -1099,7 +1102,7 @@ static inline uint32_t crc32_4x8bytes(const void *data, size_t length,
   // process 4x eight bytes at once (Slicing-by-8)
   while (length >= BytesAtOnce) {
     for (size_t unrolling = 0; unrolling < Unroll; unrolling++) {
-#if __BYTE_ORDER == __ALPACA_BIG_ENDIAN
+#if __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN
       uint32_t one = *current++ ^ swap(crc);
       uint32_t two = *current++;
       crc = Crc32Lookup[0][two & 0xFF] ^ Crc32Lookup[1][(two >> 8) & 0xFF] ^
@@ -1146,7 +1149,7 @@ static inline uint32_t crc32_16bytes(const void *data, size_t length,
 
   while (length >= BytesAtOnce) {
     for (size_t unrolling = 0; unrolling < Unroll; unrolling++) {
-#if __BYTE_ORDER == __ALPACA_BIG_ENDIAN
+#if __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN
       uint32_t one = *current++ ^ swap(crc);
       uint32_t two = *current++;
       uint32_t three = *current++;
@@ -1212,7 +1215,7 @@ static inline uint32_t crc32_16bytes_prefetch(const void *data, size_t length,
     ALPACA_PREFETCH(((const char *)current) + prefetchAhead);
 
     for (size_t unrolling = 0; unrolling < Unroll; unrolling++) {
-#if __BYTE_ORDER == __ALPACA_BIG_ENDIAN
+#if __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN
       uint32_t one = *current++ ^ swap(crc);
       uint32_t two = *current++;
       uint32_t three = *current++;

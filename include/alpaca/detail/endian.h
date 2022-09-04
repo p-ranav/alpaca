@@ -7,11 +7,11 @@ namespace alpaca {
 namespace detail {
 
 constexpr bool is_system_little_endian() {
-  return __BYTE_ORDER == __ALPACA_LITTLE_ENDIAN;
+  return __ALPACA_BYTE_ORDER == __ALPACA_LITTLE_ENDIAN;
 }
 
 constexpr bool is_system_big_endian() {
-  return __BYTE_ORDER == __ALPACA_BIG_ENDIAN;
+  return __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN;
 }
 
 // Endian switching code taken from
@@ -83,15 +83,15 @@ template <typename T, byte_order O> constexpr auto byte_swap(const T &value) {
   T result = value;
 
   if constexpr (O == byte_order::little_endian &&
-                __BYTE_ORDER == __ALPACA_LITTLE_ENDIAN) {
+                __ALPACA_BYTE_ORDER == __ALPACA_LITTLE_ENDIAN) {
     // do nothing
   } else if constexpr (O == byte_order::big_endian &&
-                       __BYTE_ORDER == __ALPACA_BIG_ENDIAN) {
+                       __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN) {
     // do nothing
   } else if constexpr ((O == byte_order::little_endian &&
-                        __BYTE_ORDER == __ALPACA_BIG_ENDIAN) ||
+                        __ALPACA_BYTE_ORDER == __ALPACA_BIG_ENDIAN) ||
                        (O == byte_order::big_endian &&
-                        __BYTE_ORDER == __ALPACA_LITTLE_ENDIAN)) {
+                        __ALPACA_BYTE_ORDER == __ALPACA_LITTLE_ENDIAN)) {
     // byte swap to match requested order
     if constexpr (std::is_same_v<T, uint16_t>) {
       BLI_endian_switch_uint16(&result);
