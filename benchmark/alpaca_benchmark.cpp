@@ -160,8 +160,8 @@ static void BM_deserialize_minecraft_players_50(benchmark::State &state) {
 
 BENCHMARK(BM_serialize_log_10k);
 BENCHMARK(BM_deserialize_log_10k);
-BENCHMARK(BM_deserialize_mesh_125k);
 BENCHMARK(BM_serialize_mesh_125k);
+BENCHMARK(BM_deserialize_mesh_125k);
 BENCHMARK(BM_serialize_minecraft_players_50);
 BENCHMARK(BM_deserialize_minecraft_players_50);
 
