@@ -56,7 +56,8 @@
 #define ALPACA_PREFETCH(location) ;
 #endif
 
-#elif defined(__linux__) || defined(__linux) || defined(linux__) || defined(__gnu_linux__)
+#elif defined(__linux__) || defined(__linux) || defined(linux__) ||            \
+    defined(__gnu_linux__)
 // defines BYTE_ORDER as __ALPACA_LITTLE_ENDIAN or __ALPACA_BIG_ENDIAN
 #include <sys/param.h>
 #define __ALPACA_BYTE_ORDER __BYTE_ORDER

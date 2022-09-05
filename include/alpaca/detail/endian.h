@@ -88,8 +88,7 @@ template <typename T, byte_order O> constexpr auto byte_swap(const T &value) {
 
   if constexpr (O == byte_order::little_endian && is_system_little_endian()) {
     // do nothing
-  } else if constexpr (O == byte_order::big_endian &&
-                       is_system_big_endian()) {
+  } else if constexpr (O == byte_order::big_endian && is_system_big_endian()) {
     // do nothing
   } else if constexpr ((O == byte_order::little_endian &&
                         is_system_big_endian()) ||
