@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="80" src="https://user-images.githubusercontent.com/8450091/188219413-46702afa-3789-42da-a38a-c11f6bec1a82.png"/>
+  <img height="80" src="https://user-images.githubusercontent.com/8450091/188341036-ac47f2cc-1216-4af6-a2ed-7e103c005971.png"/>
 </p>
 
 <p align="center">
@@ -643,8 +643,6 @@ auto bytes_written = alpaca::serialize(*root, bytes); // 15 bytes
 //   0x00 // 4.has_right = false
 // }
 ```
-
-***NOTE*** This example, unfortunately, does not compile on Windows when using MSVC compiler. The Microsoft compiler is unable to correctly detect the number of fields in the struct and alpaca does not provide the means to specify the number of fields in nested structs.
 
 For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
 
