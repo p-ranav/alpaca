@@ -27,7 +27,7 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
               const std::array<T, N> &input) {
   // value of each element in list
   for (const auto &v : input) {
-    to_bytes_router<O, T, Container>(v, bytes, byte_index);
+    to_bytes_router<O>(v, bytes, byte_index);
   }
 }
 

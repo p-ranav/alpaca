@@ -31,8 +31,7 @@ void to_bytes_from_vector_type(const T &input, Container &bytes,
   // value of each element in list
   for (const auto &v : input) {
     // check if the value_type is a nested list type
-    using decayed_value_type = typename std::decay<decltype(v)>::type;
-    to_bytes_router<O, decayed_value_type>(v, bytes, byte_index);
+    to_bytes_router<O>(v, bytes, byte_index);
   }
 }
 

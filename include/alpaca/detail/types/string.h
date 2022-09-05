@@ -28,7 +28,7 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   // save string length
   to_bytes_router<O>(input.size(), bytes, byte_index);
 
-  for (auto &c : input) {
+  for (const auto &c : input) {
     to_bytes<O>(bytes, byte_index, c);
   }
 }

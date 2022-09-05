@@ -135,11 +135,9 @@ void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (I < N) {
     const auto &ref = s;
     decltype(auto) field = detail::get<I, decltype(ref), N>(ref);
-    using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // serialize field
-    detail::to_bytes_router<O, decayed_field_type, Container>(field, bytes,
-                                                              byte_index);
+    detail::to_bytes_router<O>(field, bytes, byte_index);
 
     // go to next field
     serialize_helper<O, T, N, Container, I + 1>(s, bytes, byte_index);
@@ -278,11 +276,10 @@ void deserialize_helper(T &s, Container &bytes, std::size_t &byte_index,
                         std::size_t &end_index, std::error_code &error_code) {
   if constexpr (I < N) {
     decltype(auto) field = detail::get<I, T, N>(s);
-    using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // load current field
-    detail::from_bytes_router<O, decayed_field_type, Container>(
-        field, bytes, byte_index, end_index, error_code);
+    detail::from_bytes_router<O>(field, bytes, byte_index, end_index,
+                                 error_code);
 
     if (error_code) {
       // stop here

@@ -55,12 +55,8 @@ void to_bytes_from_map_type(const T &input, Container &bytes,
 
   // save key,value pairs in map
   for (const auto &[key, value] : input) {
-
-    using decayed_key_type = typename std::decay<decltype(key)>::type;
-    to_bytes_router<O, decayed_key_type, Container>(key, bytes, byte_index);
-
-    using decayed_value_type = typename std::decay<decltype(value)>::type;
-    to_bytes_router<O, decayed_value_type, Container>(value, bytes, byte_index);
+    to_bytes_router<O>(key, bytes, byte_index);
+    to_bytes_router<O>(value, bytes, byte_index);
   }
 }
 

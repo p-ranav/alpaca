@@ -54,8 +54,7 @@ void to_bytes_from_set_type(const T &input, Container &bytes,
 
   // save values in set
   for (const auto &value : input) {
-    using decayed_key_type = typename std::decay<typename T::value_type>::type;
-    to_bytes_router<O, decayed_key_type, Container>(value, bytes, byte_index);
+    to_bytes_router<O>(value, bytes, byte_index);
   }
 }
 
