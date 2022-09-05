@@ -644,8 +644,6 @@ auto bytes_written = alpaca::serialize(*root, bytes); // 15 bytes
 // }
 ```
 
-***NOTE*** This example, unfortunately, does not compile on Windows when using MSVC compiler. The Microsoft compiler is unable to correctly detect the number of fields in the struct and alpaca does not provide the means to specify the number of fields in nested structs.
-
 For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
 
 ```
