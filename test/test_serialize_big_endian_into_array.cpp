@@ -33,17 +33,10 @@ TEST_CASE("Serialize uint16_t big endian" * test_suite("signed_integer")) {
     my_struct s{5};
     std::array<uint8_t, 100> bytes;
     auto bytes_written = serialize<options::big_endian>(s, bytes);
-    if constexpr (detail::is_system_little_endian()) {
-      // fixed width encoding
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x05));
-    }
-    else {
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x00));
-    }
+    // fixed width encoding
+    REQUIRE(bytes_written == 2);
+    REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
+    REQUIRE(bytes[1] == static_cast<uint8_t>(0x05));
   }
 
   // serialize
@@ -52,16 +45,9 @@ TEST_CASE("Serialize uint16_t big endian" * test_suite("signed_integer")) {
     std::array<uint8_t, 100> bytes;
     auto bytes_written = serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes_written == 2);
-    if constexpr (detail::is_system_little_endian()) {
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));
-    }
-    else {
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x39));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x30));
-    }
+    REQUIRE(bytes_written == 2);
+    REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
+    REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));
   }
 }
 
@@ -96,17 +82,10 @@ TEST_CASE("Serialize positive int16_t big endian" *
     my_struct s{5};
     std::array<uint8_t, 100> bytes;
     auto bytes_written = serialize<options::big_endian>(s, bytes);
-    if constexpr (detail::is_system_little_endian()) {
-      // fixed width encoding
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x05));
-    }
-    else {
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x05));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x00));
-    }
+    // fixed width encoding
+    REQUIRE(bytes_written == 2);
+    REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
+    REQUIRE(bytes[1] == static_cast<uint8_t>(0x05));
   }
 
   // serialize
@@ -115,17 +94,10 @@ TEST_CASE("Serialize positive int16_t big endian" *
     std::array<uint8_t, 100> bytes;
     auto bytes_written = serialize<options::big_endian>(s, bytes);
     REQUIRE(bytes_written == 2);
-    if constexpr (detail::is_system_little_endian()) {
-      // fixed width encoding
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));
-    }
-    else {
-      REQUIRE(bytes_written == 2);
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x39));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x30));
-    }
+    // fixed width encoding
+    REQUIRE(bytes_written == 2);
+    REQUIRE(bytes[0] == static_cast<uint8_t>(0x30));
+    REQUIRE(bytes[1] == static_cast<uint8_t>(0x39));
   }
 }
 
@@ -144,17 +116,9 @@ TEST_CASE("Serialize uint32_t big endian" * test_suite("signed_integer")) {
         serialize<options::big_endian | options::fixed_length_encoding>(s,
                                                                         bytes);
     REQUIRE(bytes_written == 4);
-    if constexpr (detail::is_system_little_endian()) {
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0x09));
-      REQUIRE(bytes[2] == static_cast<uint8_t>(0xFB));
-      REQUIRE(bytes[3] == static_cast<uint8_t>(0xF1));
-    }
-    else {
-      REQUIRE(bytes[0] == static_cast<uint8_t>(0xF1));
-      REQUIRE(bytes[1] == static_cast<uint8_t>(0xFB));
-      REQUIRE(bytes[2] == static_cast<uint8_t>(0x09));
-      REQUIRE(bytes[3] == static_cast<uint8_t>(0x00));
-    }
+    REQUIRE(bytes[0] == static_cast<uint8_t>(0x00));
+    REQUIRE(bytes[1] == static_cast<uint8_t>(0x09));
+    REQUIRE(bytes[2] == static_cast<uint8_t>(0xFB));
+    REQUIRE(bytes[3] == static_cast<uint8_t>(0xF1));
   }
 }
