@@ -64,17 +64,19 @@ static void BM_serialize_minecraft_players_50(benchmark::State &state) {
       m.players.push_back(alpaca::benchmark::generate_player(eng));
     }
 
-    std::array<uint8_t, 120000> bytes;
+    std::array<uint8_t, 150000> bytes;
     std::size_t data_size = 0;
+
+    constexpr auto OPTIONS = alpaca::options::fixed_length_encoding;
 
     for (auto _ : state) {
       // This code gets timed
       // serialize
-      data_size = alpaca::serialize(m, bytes);
+      data_size = alpaca::serialize<OPTIONS>(m, bytes);
     }
 
     std::error_code ec;
-    auto m_recovered = alpaca::deserialize<MinecraftSave>(bytes, ec);
+    auto m_recovered = alpaca::deserialize<OPTIONS, MinecraftSave>(bytes, ec);
     state.counters["Success"] = ((bool)ec == false);
     state.counters["BytesOutput"] = data_size;
     state.counters["Players"] = m_recovered.players.size();
@@ -93,8 +95,10 @@ static void BM_deserialize_minecraft_players_50(benchmark::State &state) {
       m.players.push_back(alpaca::benchmark::generate_player(eng));
     }
 
-    std::array<uint8_t, 120000> bytes;
-    std::size_t data_size = alpaca::serialize(m, bytes);
+    constexpr auto OPTIONS = alpaca::options::fixed_length_encoding;
+
+    std::array<uint8_t, 150000> bytes;
+    std::size_t data_size = alpaca::serialize<OPTIONS>(m, bytes);
 
     std::error_code ec;
     MinecraftSave m_recovered;
@@ -102,7 +106,7 @@ static void BM_deserialize_minecraft_players_50(benchmark::State &state) {
     for (auto _ : state) {
       // This code gets timed
       // serialize
-      m_recovered = alpaca::deserialize<MinecraftSave>(bytes, ec);
+      m_recovered = alpaca::deserialize<OPTIONS, MinecraftSave>(bytes, ec);
     }
 
     state.counters["Success"] = ((bool)ec == false);
