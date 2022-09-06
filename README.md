@@ -1093,6 +1093,8 @@ int main() {
 ```
 
 ## Performance Benchmarks
+	
+Last updated: 2022-09-05
 
 All tests benchmark the following properties (time or size):
 
