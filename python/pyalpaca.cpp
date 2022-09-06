@@ -35,7 +35,7 @@ namespace python {
 // unordered_set E
 // tuple t
 
-py::list serialize(const std::string& format, py::list &args) {
+std::vector<uint8_t> serialize(const std::string& format, const py::list &args) {
     std::vector<uint8_t> result;
     std::size_t byte_index = 0;
 
@@ -115,8 +115,8 @@ py::list serialize(const std::string& format, py::list &args) {
             auto list = py::cast<py::list>(*it);
             auto serialized = serialize(vector_value_format, list);
 
-            for(auto l = serialized.begin(); l != serialized.end(); ++l) {
-                result.push_back(py::cast<uint8_t>(*l));
+            for(auto& b: serialized) {
+                result.push_back(std::move(b));
             }
         }
         else if (format[index] == 'a') {
@@ -145,8 +145,8 @@ py::list serialize(const std::string& format, py::list &args) {
             // Serialize user data
             auto serialized = serialize(array_value_format, list);
 
-            for(auto l = serialized.begin(); l != serialized.end(); ++l) {
-                result.push_back(py::cast<uint8_t>(*l));
+            for(auto& b: serialized) {
+                result.push_back(std::move(b));
             }
         }
 
@@ -154,9 +154,16 @@ py::list serialize(const std::string& format, py::list &args) {
         args_index += 1;
     }
 
-    // cast as py::list
-    py::list pyresult = py::cast(result);
-    return pyresult;
+    return result;
+}
+
+py::bytes do_serialize(const std::string& format, const py::list& args) {
+    auto bytes = serialize(format, args);
+    std::string bytestring{""};
+    for (const auto& b: bytes) {
+        bytestring += static_cast<char>(b);
+    }
+    return py::bytes(bytestring);
 }
 
 }
@@ -165,5 +172,5 @@ py::list serialize(const std::string& format, py::list &args) {
 
 PYBIND11_MODULE(pyalpaca, m)
 {
-  m.def("serialize", &alpaca::python::serialize);
+  m.def("serialize", &alpaca::python::do_serialize);
 }
