@@ -8,8 +8,29 @@ namespace alpaca {
 
 namespace python {
 
-void serialize(const std::string& format, py::list &bytes) {
-    std::cout << format << "\n";
+// char c
+// uint8_t b
+// bool ?
+// int16_t h
+// uint16_t H
+// int32_t i
+// uint32_t I
+// int64_t q
+// uint64_t Q
+// size_t N
+// float f
+// double d
+// string s
+// vector v
+// array a
+// map m
+// unordered_map M
+// set e
+// unordered_set E
+// tuple t
+
+py::list serialize(const std::string& format, py::list &args) {
+    
 }
 
 }
