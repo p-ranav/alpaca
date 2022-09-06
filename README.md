@@ -1106,11 +1106,11 @@ The tests cover three example scenarios:
 * **Mesh**: This data set is a single mesh. The mesh contains an array of triangles, each of which has three vertices and a normal vector.
 * **Minecraft Save Data**: This data set is composed of Minecraft player saves that contain highly structured data.
 
-| Test Name      | Serialize | Deserialize |       Size |
-|----------------|----------:|------------:|-----------:|
-| Log            |   1.23 ms |     3.50 ms |  850.52 KB |
-| Mesh           |   1.91 ms |     3.93 ms |    6.00 MB |
-| Minecraft Save |    214 us |      464 us |  149.05 KB |
+| Test Name      |             Count | Serialize | Deserialize |       Size |
+|----------------|------------------:|----------:|------------:|-----------:|
+| Log            | 10,000 logs       |   1.23 ms |     3.50 ms |  850.52 KB |
+| Triangle Mesh  | 125,000 triangles |   1.91 ms |     3.93 ms |    6.00 MB |
+| Minecraft Save | 50 players        |    214 us |      464 us |  149.05 KB |
 
 ## Building, Installing, and Testing
 
