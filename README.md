@@ -13,7 +13,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
 
 * `alpaca` is header-only serialization library for modern C++, written in C++17
 * *No macros or boilerplate, no source code generation, no external dependencies*
-* Simple, fast, and easy to use
+* Simple, fast (see [benchmarks](#performance-benchmarks)), and easy to use
 * Supports basic data types, STL containers, unique pointers, recursive data structures, optionals, variants and more
 * Serialize to C-style arrays, `std::array`, `std::vector`, or even directly to files
 * Highly configurable at compile time
@@ -83,6 +83,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
      *    [Data Structure Versioning](#data-structure-versioning)
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
+*    [Performance Benchmarks](#performance-benchmarks)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [Supported Toolchains](#supported-toolchains)
 *    [Contributing](#contributing)
@@ -1090,6 +1091,26 @@ int main() {
   auto bytes_written = serialize<options::fixed_length_encoding>(s, bytes);
 }
 ```
+
+## Performance Benchmarks
+
+All tests benchmark the following properties (time or size):
+
+* **Serialize**: serialize data into a buffer
+* **Deserialize**: deserializes a buffer into a C++ struct object
+* **Size**: the size of the buffer when serialized
+
+The tests cover three example scenarios:
+
+* **Log**: This data set is composed of HTTP request logs that are small and contain many strings.
+* **Mesh**: This data set is a single mesh. The mesh contains an array of triangles, each of which has three vertices and a normal vector.
+* **Minecraft Save Data**: This data set is composed of Minecraft player saves that contain highly structured data.
+
+| Test Name      |             Count | Serialize | Deserialize |       Size |
+|----------------|------------------:|----------:|------------:|-----------:|
+| Log            | 10,000 logs       |   1.23 ms |     3.50 ms |  850.52 KB |
+| Triangle Mesh  | 125,000 triangles |   1.91 ms |     3.93 ms |    6.00 MB |
+| Minecraft Save | 50 players        |    214 us |      464 us |  149.05 KB |
 
 ## Building, Installing, and Testing
 
