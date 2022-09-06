@@ -1,3 +1,4 @@
+#include <cctype>
 #include <string>
 #include <iostream>
 #include <pybind11/pybind11.h>
@@ -113,6 +114,36 @@ py::list serialize(const std::string& format, py::list &args) {
             std::string vector_value_format(size, format[index]);
             auto list = py::cast<py::list>(*it);
             auto serialized = serialize(vector_value_format, list);
+
+            for(auto l = serialized.begin(); l != serialized.end(); ++l) {
+                result.push_back(py::cast<uint8_t>(*l));
+            }
+        }
+        else if (format[index] == 'a') {
+            // field is a std::array
+            // read subtype
+            index += 1;
+            auto value_type = format[index];
+            index += 1;
+
+            std::string size_string;
+            while (std::isdigit(format[index])) {
+                size_string += format[index];
+                index += 1;
+            }
+            std::size_t size = std::stoll(size_string);
+
+            // recurse - save all values
+            std::string array_value_format(size, value_type);
+            auto list = py::cast<py::list>(*it);
+            auto input_length = py::len(list);
+
+            if (input_length != size) {
+                throw std::runtime_error("Array size expected: " + std::to_string(size) + "; instead got: " + std::to_string(input_length) + " elements");
+            }
+
+            // Serialize user data
+            auto serialized = serialize(array_value_format, list);
 
             for(auto l = serialized.begin(); l != serialized.end(); ++l) {
                 result.push_back(py::cast<uint8_t>(*l));
