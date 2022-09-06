@@ -25,3 +25,4 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 add_subdirectory(pybind11)
 pybind11_add_module(pyalpaca pyalpaca.cpp)
+target_link_libraries(pyalpaca PRIVATE alpaca::alpaca)

@@ -1,6 +1,8 @@
 #include <string>
 #include <iostream>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <alpaca/alpaca.h>
 
 namespace py = pybind11;
 
@@ -30,7 +32,25 @@ namespace python {
 // tuple t
 
 py::list serialize(const std::string& format, py::list &args) {
-    
+    std::vector<uint8_t> result;
+    std::size_t byte_index = 0;
+
+    constexpr auto OPTIONS = alpaca::options::fixed_length_encoding;
+
+    std::size_t index = 0;
+
+    for(auto it = args.begin(); it != args.end(); ++it) {
+        if (format[index] == 'c') {
+            // field is a character
+            detail::to_bytes_router<OPTIONS>(it->cast<char>(), result, byte_index);
+        }
+
+        index += 1;
+    }
+
+    // cast as py::list
+    py::list pyresult = py::cast(result);
+    return pyresult;
 }
 
 }
