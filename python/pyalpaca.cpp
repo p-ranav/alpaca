@@ -25,6 +25,7 @@ namespace python {
 // double d
 
 // string s
+
 // vector v
 // array a
 // map m
@@ -33,12 +34,6 @@ namespace python {
 // unordered_set E
 // tuple t
 
-decltype(auto) value_type(char CODE) {
-    if (CODE == 'c') {
-        return char{};
-    }
-}
-
 py::list serialize(const std::string& format, py::list &args) {
     std::vector<uint8_t> result;
     std::size_t byte_index = 0;
@@ -46,6 +41,7 @@ py::list serialize(const std::string& format, py::list &args) {
     constexpr auto OPTIONS = alpaca::options::none;
 
     std::size_t index = 0;
+    std::size_t args_index = 0;
 
     for(auto it = args.begin(); it != args.end(); ++it) {
         if (format[index] == '?') {
@@ -108,12 +104,23 @@ py::list serialize(const std::string& format, py::list &args) {
             // field is a std::vector
             // read subtype
             index += 1;
-            auto value_type = format[index];
-            // TODO: figure out how to get type of value_type and pass to serializer
-            // detail::to_bytes_router<OPTIONS>(it->cast<std::vector<>>(), result, byte_index);
+
+            // serialize size
+            const auto size = py::len(py::cast<py::list>(*it));
+            detail::to_bytes_router<OPTIONS>(size, result, byte_index);
+
+            // recurse - save all values
+            std::string vector_value_format(size, format[index]);
+            auto list = py::cast<py::list>(*it);
+            auto serialized = serialize(vector_value_format, list);
+
+            for(auto l = serialized.begin(); l != serialized.end(); ++l) {
+                result.push_back(py::cast<uint8_t>(*l));
+            }
         }
 
         index += 1;
+        args_index += 1;
     }
 
     // cast as py::list
