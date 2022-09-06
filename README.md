@@ -1102,9 +1102,9 @@ All tests benchmark the following properties (time or size):
 
 The tests cover three example scenarios:
 
-* **Log**: This data set is composed of HTTP request logs that are small and contain many strings.
-* **Mesh**: This data set is a single mesh. The mesh contains an array of triangles, each of which has three vertices and a normal vector.
-* **Minecraft Save Data**: This data set is composed of Minecraft player saves that contain highly structured data.
+* **[Log](https://github.com/p-ranav/alpaca/blob/master/benchmark/log.h)**: This data set is composed of HTTP request logs that are small and contain many strings.
+* **[Triangle Mesh](https://github.com/p-ranav/alpaca/blob/master/benchmark/mesh.h)**: This data set is a single mesh. The mesh contains an array of triangles, each of which has three vertices and a normal vector.
+* **[Minecraft Save](https://github.com/p-ranav/alpaca/blob/master/benchmark/minecraft_save.h)**: This data set is composed of Minecraft player saves that contain highly structured data.
 
 | Test Name      |             Count | Serialize | Deserialize |       Size |
 |----------------|------------------:|----------:|------------:|-----------:|
