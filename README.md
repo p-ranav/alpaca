@@ -1102,6 +1102,16 @@ All tests benchmark the following properties (time or size):
 * **Deserialize**: deserializes a buffer into a C++ struct object
 * **Size**: the size of the buffer when serialized
 
+### System Details
+
+| Type            | Value                                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| Processor       | 11th Gen Intel(R) Core(TM) i9-11900KF @ 3.50GHz   3.50 GHz                                                |
+| Installed RAM   | 32.0 GB (31.9 GB usable)                                                                                  |
+| SSD             | [ADATA SX8200PNP](https://www.adata.com/upload/downloadfile/Datasheet_XPG%20SX8200%20Pro_EN_20181017.pdf) |
+| OS              | Ubuntu 20.04 LTS running on VMWare Player                                                                 |
+| C++ Compiler    | g++ (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0                                                                 |
+
 The tests cover three example scenarios:
 
 * **[Log](https://github.com/p-ranav/alpaca/blob/master/benchmark/log.h)**: This data set is composed of HTTP request logs that are small and contain many strings.
@@ -1110,9 +1120,9 @@ The tests cover three example scenarios:
 
 | Test Name      |             Count | Serialize | Deserialize |       Size |
 |----------------|------------------:|----------:|------------:|-----------:|
-| Log            | 10,000 logs       |   1.23 ms |     3.50 ms |  850.52 KB |
-| Triangle Mesh  | 125,000 triangles |   1.91 ms |     3.93 ms |    6.00 MB |
-| Minecraft Save | 50 players        |    214 us |      464 us |  149.05 KB |
+| Log            | 10,000 logs       | 429.87 us |   221.96 us |  850.52 KB |
+| Triangle Mesh  | 125,000 triangles | 802.05 us |     2.56 ms |    6.00 MB |
+| Minecraft Save | 50 players        |  71.60 us |   309.74 us |  149.05 KB |
 
 ## Building, Installing, and Testing
 
