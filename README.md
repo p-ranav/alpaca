@@ -1133,7 +1133,7 @@ def serialize(format_string, list_of_values) -> bytes
 def deserialize(format_string, bytes) -> list_of_values
 ```
 
-### Example
+### Example 1: Serialize and deserialize in Python
 
 Once the wrapper is built, simply add it to `PYTHONPTAH` and `import pyalpaca`.
 
@@ -1216,6 +1216,92 @@ Deserialized:
     {1, 2, 3, 4, 5, 6},
     ('a', 45, 2.7179999351501465),
     ('Hello', (39.456, 21)),
+]
+```
+
+### Example 2: Serialize in C++ and deserialize in Python
+
+Serialize a `GameState` to file in C++
+
+```cpp
+#include <alpaca/alpaca.h>
+#include <filesystem>
+using namespace alpaca;
+
+struct GameState {
+  int a;
+  bool b;
+  char c;
+  std::string d;
+  std::vector<uint64_t> e;
+  std::map<std::string, std::array<uint8_t, 3>> f;
+};
+
+int main() {
+
+  GameState s{5,
+              true,
+              'a',
+              "Hello World",
+              {6, 5, 4, 3, 2, 1},
+              {{"abc", {1, 2, 3}}, {"def", {4, 5, 6}}}};
+
+  const auto filename = "savefile.bin";
+
+  {
+    // Serialize to file
+    std::ofstream os;
+    os.open(filename, std::ios::out | std::ios::binary);
+    auto bytes_written = serialize(s, os);
+    os.close();
+
+    assert(bytes_written == 37);
+    assert(std::filesystem::file_size(filename) == 37);
+  }
+}
+```
+
+```console
+pranav@ubuntu:~/dev/alpaca/build/python$ hexdump -C savefile.bin 
+00000000  05 01 61 0b 48 65 6c 6c  6f 20 57 6f 72 6c 64 06  |..a.Hello World.|
+00000010  06 05 04 03 02 01 02 03  61 62 63 01 02 03 03 64  |........abc....d|
+00000020  65 66 04 05 06                                    |ef...|
+00000025
+```
+
+Now one can deserialize this file in Python by simply adding the format string to match the C++ struct:
+
+```python
+import pyalpaca
+
+# Read file
+with open("savefile.bin", "rb") as file:
+    bytes = file.read()
+
+    # Format string
+    format = "i?cs[Q]{s:[3B]}"
+
+    # Deserialize
+    recovered = pyalpaca.deserialize(format, bytes)
+
+    # Print it
+    print("\nDeserialized:\n[ ")
+    for i in recovered:
+        print("    " + str(i) + ",")
+    print("]")
+```
+
+```console
+pranav@ubuntu:~/dev/alpaca/build/python$ python3 test.py 
+
+Deserialized:
+[ 
+    5,
+    True,
+    a,
+    Hello World,
+    [6, 5, 4, 3, 2, 1],
+    {'abc': [1, 2, 3], 'def': [4, 5, 6]},
 ]
 ```
 
