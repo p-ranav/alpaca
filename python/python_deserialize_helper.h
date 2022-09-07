@@ -41,6 +41,49 @@ void load_array(const std::string &format, std::size_t &index,
   result.append(deserialize(value_format_list, bytes, byte_index));
 }
 
+template <options OPTIONS>
+void load_vector(const std::string &format, std::size_t &index,
+                 const std::vector<uint8_t> &bytes,
+                 std::size_t& byte_index,
+                 std::size_t& end_index,
+                 py::list& result) {
+  // field is a std::vector
+
+  // load size
+  std::error_code error_code;
+  std::size_t size = 0;
+  detail::from_bytes<OPTIONS, std::size_t>(size, bytes, byte_index, end_index,
+                                           error_code);
+
+  if (size > end_index - byte_index) {
+    // size is greater than the number of bytes remaining
+    error_code = std::make_error_code(std::errc::value_too_large);
+
+    throw std::runtime_error("Invalid vector size");
+  }
+
+  auto value_type = get_value_type_vector(format, index);
+
+  std::string value_format_list{""};
+  for (std::size_t i = 0; i < size; ++i) {
+    value_format_list += value_type;
+  }
+
+  // recurse - load all values
+  result.append(deserialize(value_format_list, bytes, byte_index));
+}
+
+template <options OPTIONS>
+void load_tuple(const std::string &format, std::size_t &index,
+                 const std::vector<uint8_t> &bytes,
+                 std::size_t& byte_index,
+                 py::list& result) {
+
+  auto value_type = get_value_type_tuple(format, index);
+
+  result.append(py::cast<py::tuple>(deserialize(value_type, bytes, byte_index)));
+}
+
 py::list deserialize(const std::string &format, const std::vector<uint8_t> &bytes, std::size_t& byte_index) {
   py::list result;
 
@@ -51,7 +94,7 @@ py::list deserialize(const std::string &format, const std::vector<uint8_t> &byte
 
   std::size_t index = 0;
 
-  while (byte_index < end_index) {
+  while (byte_index < end_index && index < format.size()) {
     if (format[index] == '?') {
       // field is a bool
       load_simple_type<OPTIONS, bool>(bytes, byte_index, end_index, error_code, result, "bool");
@@ -102,7 +145,7 @@ py::list deserialize(const std::string &format, const std::vector<uint8_t> &byte
       if (std::isdigit(format[index + 1])) {
         load_array(format, index, bytes, byte_index, result);
       } else {
-        // load_vector<OPTIONS>(format, it, index, result, byte_index);
+        load_vector<OPTIONS>(format, index, bytes, byte_index, end_index, result);
       }
     } else if (format[index] == '{') {
     //   // either a dictionary or a set
@@ -130,10 +173,8 @@ py::list deserialize(const std::string &format, const std::vector<uint8_t> &byte
     //     load_unordered_set<OPTIONS>(value_type, it, result, byte_index);
     //   }
     } else if (format[index] == '(') {
-    //   // tuple
-    //   auto value_type = get_value_type_tuple(format, index);
-
-    //   load_tuple<OPTIONS>(value_type, it, result);
+      // tuple
+      load_tuple<OPTIONS>(format, index, bytes, byte_index, result);
     }
 
     index += 1;
