@@ -85,6 +85,8 @@ The source for the above example can be found [here](https://github.com/p-ranav/
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
 *    [Python Interoperability](#python-interoperability)
+     *    [Usage](#usage)
+     *    [Format String Specification](#format-string-specification)
      *    [Example 1: Serialize and Deserialize in Python](#example-1-serialize-and-deserialize-in-python)
      *    [Example 2: Serialize in C++ and Deserialize in Python](#example-2-serialize-in-c-and-deserialize-in-python)
 *    [Performance Benchmarks](#performance-benchmarks)
@@ -1103,6 +1105,18 @@ alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)
 
 Instead of providing a `struct` type, the user will provide a string specification of the fields. This is inspired by the standard Python [struct](https://docs.python.org/3/library/struct.html) module.
 
+### Usage
+
+```python
+# Serialize
+def serialize(format_string, list_of_values) -> bytes
+
+# Deserialize
+def deserialize(format_string, bytes) -> list_of_values
+```
+
+### Format String Specification
+
 | Code          | Type                       |
 |--------------:|---------------------------:|
 |           `?` |                     `bool` |
@@ -1124,16 +1138,6 @@ Instead of providing a `struct` type, the user will provide a string specificati
 |       `{K:V}` | `std::unordered_map<K, V>` |
 |         `{T}` |    `std::unordered_set<T>` |
 | `(T, U, ...)` |    `std::tuple<T, U, ...>` |
-
-### Usage
-
-```python
-# Serialize
-def serialize(format_string, list_of_values) -> bytes
-
-# Deserialize
-def deserialize(format_string, bytes) -> list_of_values
-```
 
 ### Example 1: Serialize and Deserialize in Python
 
