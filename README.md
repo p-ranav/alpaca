@@ -85,6 +85,8 @@ The source for the above example can be found [here](https://github.com/p-ranav/
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
 *    [Python Interoperability](#python-interoperability)
+     *    [Example 1: Serialize and Deserialize in Python](#example-1-serialize-and-deserialize-in-python)
+     *    [Example 2: Serialize in C++ and Deserialize in Python](#example-2-serialize-in-c-and-deserialize-in-python)
 *    [Performance Benchmarks](#performance-benchmarks)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [CMake Integration](#cmake-integration)
@@ -1133,7 +1135,7 @@ def serialize(format_string, list_of_values) -> bytes
 def deserialize(format_string, bytes) -> list_of_values
 ```
 
-### Example 1: Serialize and deserialize in Python
+### Example 1: Serialize and Deserialize in Python
 
 Once the wrapper is built, simply add it to `PYTHONPTAH` and `import pyalpaca`.
 
@@ -1219,7 +1221,7 @@ Deserialized:
 ]
 ```
 
-### Example 2: Serialize in C++ and deserialize in Python
+### Example 2: Serialize in C++ and Deserialize in Python
 
 Serialize a `GameState` to file in C++
 
