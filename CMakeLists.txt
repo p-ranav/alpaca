@@ -31,6 +31,10 @@ if(ALPACA_BUILD_SAMPLES)
   add_subdirectory(samples)
 endif()
 
+if(ALPACA_BUILD_PYTHON_LIB)
+  add_subdirectory(python)
+endif()
+
 include(cmake/project-is-top-level.cmake)
 
 # ---- Benchmarks ----

@@ -61,7 +61,7 @@ from_bytes(std::basic_string<CharType> &value, Container &bytes,
   // read `size` bytes and save to value
   value.reserve(size * sizeof(CharType));
   for (std::size_t i = 0; i < size; ++i) {
-    CharType character;
+    CharType character{};
     from_bytes<O>(character, bytes, current_index, end_index, error_code);
     value += character;
   }

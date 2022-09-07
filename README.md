@@ -22,6 +22,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
   - Optional type hashing and data structure versioning - recursively generates a type hash that is checked during deserialization
   - Optional integrity checking - detects data corruption during deserialization using checksums
 * Samples [here](https://github.com/p-ranav/alpaca/tree/master/samples)
+* Experimental Python support with [pybind11](https://github.com/pybind/pybind11)-based wrapper module [pyalpaca](#python-interoperability)
 * MIT license
 
 ```cpp
@@ -83,6 +84,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
      *    [Data Structure Versioning](#data-structure-versioning)
      *    [Integrity Checking with Checksums](#integrity-checking-with-checksums)
      *    [Macros to Exclude STL Data Structures](#macros-to-exclude-stl-data-structures)
+*    [Python Interoperability](#python-interoperability)
 *    [Performance Benchmarks](#performance-benchmarks)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
 *    [Supported Toolchains](#supported-toolchains)
@@ -1090,6 +1092,131 @@ int main() {
   std::vector<std::uint8_t> bytes;
   auto bytes_written = serialize<options::fixed_length_encoding>(s, bytes);
 }
+```
+
+## Python Interoperability
+
+alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)-based Python wrapper called `pyalpaca`. To build this wrapper, include the option `-DALPACA_BUILD_PYTHON_LIB=on` with `cmake`. 
+
+Instead of providing a `struct` type, the user will provide a string specification of the fields. This is inspired by the standard Python [struct](https://docs.python.org/3/library/struct.html) module.
+
+| Code   | Type            |
+|-------:|----------------:|
+| `?`      |            `bool` |
+| `c`      |            `char` |
+| `b`      |          `int8_t` |
+| `B`      |        `uint8_t` |
+| `h`      |         `int16_t` |
+| `H`      |        `uint16_t` |
+| `i`      |         `int32_t` |
+| `I`      |        `uint32_t` |
+| `q`      |         `int64_t` |
+| `Q`      |        `uint64_t` |
+| `f`      |           `float` |
+| `d`      |          `double` |
+| `N`      |     `std::size_t` |
+| `s`      |     `std::string` |
+| `[T]`    |     `std::vector<T>` |
+| `[N;T]`  | `std::array<N,T>` |
+| `{K:V}`  | `std::unordered_map<K, V>` |
+| `{T}`    | `std::unordered_set<T>` |
+| `(T, U, ...)` | `std::tuple<T, U, ...>` |
+
+### Usage
+
+```python
+# Serialize
+def serialize(format_string, list_of_values) -> bytes
+
+# Deserialize
+def deserialize(format_string, bytes) -> list_of_values
+```
+
+### Example
+
+Once the wrapper is built, simply add it to `PYTHONPTAH` and `import pyalpaca`.
+
+```python
+import pyalpaca
+
+# Create format string
+format = '?cifs[i][[d]][3c]{c:i}{I}(cif)(s(dI))'
+
+# Construct object
+object = [
+    False, 
+    'a', 
+    5, 
+    3.14, 
+    "Hello World!",
+    [0, 1, 2, 3], 
+    [[1.1, 2.2], [3.3, 4.4], [5.5, 6.6]],
+    ['a', 'b', 'c'],
+    {'a': 5, 'b': 19},
+    {1, 1, 1, 2, 3, 4, 5, 5, 5, 5, 6},
+    ('a', 45, 2.718),
+    ("Hello", (39.456, 21))
+]
+
+# Serialize
+bytes = pyalpaca.serialize(format, object)
+
+# Print it
+print("Bytes:")
+hex_values = ["0x{:02x}".format(b) for b in bytes]
+for i, h in enumerate(hex_values):
+    if i > 0 and i % 8 == 0:
+        print("\n  ", end="")
+    elif i == 0 and i % 8 == 0:
+        print("  ", end="")
+    print(h, end=" ")
+print()
+
+# Deserialize
+recovered = pyalpaca.deserialize(format, bytes)
+
+# Print it
+print("\nDeserialized:\n[ ")
+for i in recovered:
+    print("    " + str(i) + ",")
+print("]")
+```
+
+```console
+pranav@ubuntu:~/dev/alpaca/build/python$ python3 test.py
+
+  Bytes:
+    0x00 0x61 0x05 0xc3 0xf5 0x48 0x40 0x0c 
+    0x48 0x65 0x6c 0x6c 0x6f 0x20 0x57 0x6f 
+    0x72 0x6c 0x64 0x21 0x04 0x00 0x01 0x02 
+    0x03 0x03 0x02 0x9a 0x99 0x99 0x99 0x99 
+    0x99 0xf1 0x3f 0x9a 0x99 0x99 0x99 0x99 
+    0x99 0x01 0x40 0x02 0x66 0x66 0x66 0x66 
+    0x66 0x66 0x0a 0x40 0x9a 0x99 0x99 0x99 
+    0x99 0x99 0x11 0x40 0x02 0x00 0x00 0x00 
+    0x00 0x00 0x00 0x16 0x40 0x66 0x66 0x66 
+    0x66 0x66 0x66 0x1a 0x40 0x61 0x62 0x63 
+    0x02 0x61 0x05 0x62 0x13 0x06 0x01 0x02 
+    0x03 0x04 0x05 0x06 0x61 0x2d 0xb6 0xf3 
+    0x2d 0x40 0x05 0x48 0x65 0x6c 0x6c 0x6f 
+    0xee 0x7c 0x3f 0x35 0x5e 0xba 0x43 0x40 
+    0x15 
+
+  Deserialized:
+  [ 
+      False,
+      a,
+      5,
+      3.140000104904175,
+      Hello World!,
+      [0, 1, 2, 3],
+      [[1.1, 2.2], [3.3, 4.4], [5.5, 6.6]],
+      ['a', 'b', 'c'],
+      {'a': 5, 'b': 19},
+      {1, 2, 3, 4, 5, 6},
+      ('a', 45, 2.7179999351501465),
+      ('Hello', (39.456, 21)),
+  ]
 ```
 
 ## Performance Benchmarks
