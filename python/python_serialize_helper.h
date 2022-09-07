@@ -325,39 +325,14 @@ auto get_value_type_tuple(const std::string &format, std::size_t &index) {
 
 template <options OPTIONS, class It>
 void parse_tuple(const std::string &value_type, It it,
-                 std::vector<uint8_t> &result, std::size_t &byte_index) {
-  // value_type is a comma-separated list of types
-
-  // serialize size
-  const auto size = py::len(py::cast<py::tuple>(*it));
-  detail::to_bytes_router<OPTIONS>(size, result, byte_index);
-
-  csv2::Reader<csv2::delimiter<','>, csv2::quote_character<'"'>,
-               csv2::first_row_is_header<false>,
-               csv2::trim_policy::trim_whitespace>
-      csv;
-
+                 std::vector<uint8_t> &result) {
   const auto tuple = py::cast<py::tuple>(*it);
-  if (csv.parse(value_type)) {
-    for (const auto row : csv) {
-      std::size_t i = 0;
-      for (const auto cell : row) {
-        // cell content is type of value at tuple_index
-        std::string value;
-        cell.read_value(value);
 
-        py::list args;
-        args.append(tuple[i]);
+  auto list = py::cast<py::list>(tuple);
+  auto serialized = serialize(value_type, list);
 
-        auto serialized = serialize(value, args);
-        for (auto &b : serialized) {
-          result.push_back(std::move(b));
-        }
-
-        i += 1;
-      }
-      break;
-    }
+  for (auto &b : serialized) {
+    result.push_back(std::move(b));
   }
 }
 
@@ -456,7 +431,7 @@ std::vector<uint8_t> serialize(const std::string &format,
       // tuple
       auto value_type = get_value_type_tuple(format, index);
 
-      parse_tuple<OPTIONS>(value_type, it, result, byte_index);
+      parse_tuple<OPTIONS>(value_type, it, result);
     }
 
     index += 1;
