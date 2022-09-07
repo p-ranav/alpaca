@@ -35,6 +35,156 @@ namespace python {
 // unordered_set E
 // tuple t
 
+std::vector<uint8_t> serialize(const std::string& format, const py::list &args);
+
+std::size_t get_size(const std::string& format, std::size_t& index) {
+    std::string chars{""};
+
+    // current is an digit
+    auto current = [&]() { return format[index]; };
+    auto move_one = [&]() { index++; };
+
+    while (index > format.size() || std::isdigit(current())) {
+        chars += current();
+        move_one();
+    }
+    
+    return std::stoll(chars);
+}
+
+auto get_value_type_array(const std::string& format, std::size_t& index) {
+    std::string result{};
+
+    auto current = [&]() { return format[index]; };
+    auto move_one = [&]() { index++; };
+
+    // current should not be ']'
+    if (current() == ']') {
+        throw std::runtime_error("Expected type, instead got '>'");
+    }
+
+    std::size_t level = 1;
+    while (index < format.size()) {
+        // base case
+        if (current() == ']') {
+            if (level > 0) {
+                level -= 1;
+            }
+            if (level == 0) {
+                break;
+            }
+            else {
+                result += current();
+                move_one();
+            }
+        }
+        else {
+            if (current() == '[') {
+                level += 1;
+            }
+            result += current();
+            move_one();
+        }
+    }
+
+    return result;
+}
+
+auto get_value_type_vector(const std::string& format, std::size_t& index) {
+    std::string result{};
+
+    auto current = [&]() { return format[index]; };
+    auto move_one = [&]() { index++; };
+
+    // get past '['
+    move_one();
+
+    // current should not be ']'
+    if (current() == ']') {
+        throw std::runtime_error("Expected type, instead got '>'");
+    }
+
+    std::size_t level = 1;
+    while (index < format.size()) {
+        // base case
+        if (current() == ']') {
+            if (level > 0) {
+                level -= 1;
+            }
+            if (level == 0) {
+                break;
+            }
+            else {
+                result += current();
+                move_one();
+            }
+        }
+        else {
+            if (current() == '[') {
+                level += 1;
+            }
+            result += current();
+            move_one();
+        }
+    }
+
+    return result;
+}
+
+template <options OPTIONS, class It>
+void parse_array(const std::string& format, It it, std::size_t& index, std::vector<uint8_t>& result) {
+    // get past '['
+    index++;
+
+    const std::size_t input_size = py::len(py::cast<py::list>(*it));
+    auto size = get_size(format, index);
+
+    if (input_size != size) {
+        throw std::runtime_error("Expected " + std::to_string(size) + " values, instead found " + std::to_string(input_size));
+    }
+
+    // No need to serialize the size
+
+    auto value_type = get_value_type_array(format, index);
+
+    std::string value_format_list{""};
+    for (std::size_t i = 0; i < size; ++i) {
+        value_format_list += value_type;
+    }
+
+    // recurse - save all values
+    auto list = py::cast<py::list>(*it);
+    auto serialized = serialize(value_format_list, list);
+
+    for(auto& b: serialized) {
+        result.push_back(std::move(b));
+    }
+}
+
+template <options OPTIONS, class It>
+void parse_vector(const std::string& format, It it, std::size_t& index, std::vector<uint8_t>& result, std::size_t& byte_index) {
+    // field is a std::vector
+
+    // serialize size
+    const auto size = py::len(py::cast<py::list>(*it));
+    detail::to_bytes_router<OPTIONS>(size, result, byte_index);
+
+    auto value_type = get_value_type_vector(format, index);
+
+    std::string value_format_list{""};
+    for (std::size_t i = 0; i < size; ++i) {
+        value_format_list += value_type;
+    }
+
+    // recurse - save all values
+    auto list = py::cast<py::list>(*it);
+    auto serialized = serialize(value_format_list, list);
+
+    for(auto& b: serialized) {
+        result.push_back(std::move(b));
+    }
+}
+
 std::vector<uint8_t> serialize(const std::string& format, const py::list &args) {
     std::vector<uint8_t> result;
     std::size_t byte_index = 0;
@@ -42,7 +192,6 @@ std::vector<uint8_t> serialize(const std::string& format, const py::list &args) 
     constexpr auto OPTIONS = alpaca::options::none;
 
     std::size_t index = 0;
-    std::size_t args_index = 0;
 
     for(auto it = args.begin(); it != args.end(); ++it) {
         if (format[index] == '?') {
@@ -101,60 +250,28 @@ std::vector<uint8_t> serialize(const std::string& format, const py::list &args) 
             // field is a std::string
             detail::to_bytes_router<OPTIONS>(it->cast<std::string>(), result, byte_index);
         }
-        else if (format[index] == 'v') {
-            // field is a std::vector
-            // read subtype
-            index += 1;
+        else if (format[index] == '[') {
 
-            // serialize size
-            const auto size = py::len(py::cast<py::list>(*it));
-            detail::to_bytes_router<OPTIONS>(size, result, byte_index);
-
-            // recurse - save all values
-            std::string vector_value_format(size, format[index]);
-            auto list = py::cast<py::list>(*it);
-            auto serialized = serialize(vector_value_format, list);
-
-            for(auto& b: serialized) {
-                result.push_back(std::move(b));
+            // either a vector or an array
+            // if array, next character is a digit - size of the array
+            if (std::isdigit(format[index + 1])) {
+                parse_array<OPTIONS>(format, it, index, result);
             }
-        }
-        else if (format[index] == 'a') {
-            // field is a std::array
-            // read subtype
-            index += 1;
-            auto value_type = format[index];
-            index += 1;
-
-            std::string size_string;
-            while (std::isdigit(format[index])) {
-                size_string += format[index];
-                index += 1;
-            }
-            std::size_t size = std::stoll(size_string);
-
-            // recurse - save all values
-            std::string array_value_format(size, value_type);
-            auto list = py::cast<py::list>(*it);
-            auto input_length = py::len(list);
-
-            if (input_length != size) {
-                throw std::runtime_error("Array size expected: " + std::to_string(size) + "; instead got: " + std::to_string(input_length) + " elements");
-            }
-
-            // Serialize user data
-            auto serialized = serialize(array_value_format, list);
-
-            for(auto& b: serialized) {
-                result.push_back(std::move(b));
+            else {
+                parse_vector<OPTIONS>(format, it, index, result, byte_index);
             }
         }
 
         index += 1;
-        args_index += 1;
     }
 
     return result;
+}
+
+py::list do_serialize_list(const std::string& format, const py::list& args) {
+    auto bytes = serialize(format, args);
+    py::list pyresult = py::cast(bytes);
+    return pyresult;
 }
 
 py::bytes do_serialize(const std::string& format, const py::list& args) {
@@ -173,4 +290,5 @@ py::bytes do_serialize(const std::string& format, const py::list& args) {
 PYBIND11_MODULE(pyalpaca, m)
 {
   m.def("serialize", &alpaca::python::do_serialize);
+  m.def("serialize_to_list", &alpaca::python::do_serialize_list);
 }
