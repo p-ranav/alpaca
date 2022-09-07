@@ -3,5 +3,4 @@
 PYBIND11_MODULE(pyalpaca, m)
 {
   m.def("serialize", &alpaca::python::do_serialize);
-  m.def("serialize_to_list", &alpaca::python::do_serialize_list);
 }
