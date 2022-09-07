@@ -87,6 +87,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
 *    [Python Interoperability](#python-interoperability)
 *    [Performance Benchmarks](#performance-benchmarks)
 *    [Building, Installing, and Testing](#building-installing-and-testing)
+*    [CMake Integration](#cmake-integration)
 *    [Supported Toolchains](#supported-toolchains)
 *    [Contributing](#contributing)
 *    [License](#license)
@@ -1271,6 +1272,27 @@ make
 
 # Install 
 make install
+```
+
+## CMake Integration
+
+Use the latest alpaca in your CMake project without copying any content.
+
+```
+cmake_minimum_required(VERSION 3.11)
+
+PROJECT(myproject)
+
+# fetch latest argparse
+include(FetchContent)
+FetchContent_Declare(
+    alpaca
+    GIT_REPOSITORY https://github.com/p-ranav/alpaca.git
+)
+FetchContent_MakeAvailable(alpaca)
+
+add_executable(myproject main.cpp)
+target_link_libraries(myproject alpaca)
 ```
 
 ## Supported Toolchains
