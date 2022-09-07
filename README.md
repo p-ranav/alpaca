@@ -22,6 +22,7 @@ Pack C++ structs into a compact byte-array without any macros or boilerplate cod
   - Optional type hashing and data structure versioning - recursively generates a type hash that is checked during deserialization
   - Optional integrity checking - detects data corruption during deserialization using checksums
 * Samples [here](https://github.com/p-ranav/alpaca/tree/master/samples)
+* Experimental Python support with [pybind11](https://github.com/pybind/pybind11)-based wrapper module [pyalpaca](#python-interoperability)
 * MIT license
 
 ```cpp
