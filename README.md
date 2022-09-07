@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <img src="https://github.com/p-ranav/alpaca/workflows/build/badge.svg" alt="build"/>
   <a href="https://github.com/p-ranav/alpaca/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="license"/>
   </a>
