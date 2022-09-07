@@ -1161,13 +1161,13 @@ object = [
 bytes = pyalpaca.serialize(format, object)
 
 # Print it
-print("\n  Bytes:")
+print("Bytes:")
 hex_values = ["0x{:02x}".format(b) for b in bytes]
 for i, h in enumerate(hex_values):
     if i > 0 and i % 8 == 0:
-        print("\n    ", end="")
+        print("\n  ", end="")
     elif i == 0 and i % 8 == 0:
-        print("    ", end="")
+        print("  ", end="")
     print(h, end=" ")
 print()
 
@@ -1175,10 +1175,10 @@ print()
 recovered = pyalpaca.deserialize(format, bytes)
 
 # Print it
-print("\n  Deserialized:\n  [ ")
+print("\nDeserialized:\n[ ")
 for i in recovered:
-    print("      " + str(i) + ",")
-print("  ]")
+    print("    " + str(i) + ",")
+print("]")
 ```
 
 ```console
