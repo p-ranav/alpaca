@@ -6,7 +6,7 @@
   <a href="https://github.com/p-ranav/alpaca/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="license"/>
   </a>
-  <img src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" alt="version"/>
+  <img src="https://img.shields.io/badge/version-0.2.0-blue.svg?cacheSeconds=2592000" alt="version"/>
 </p>
 
 Pack C++ structs into a compact byte-array without any macros or boilerplate code.
