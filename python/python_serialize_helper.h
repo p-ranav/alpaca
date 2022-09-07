@@ -1,5 +1,4 @@
 #pragma once
-#include "csv2.hpp"
 #include <alpaca/alpaca.h>
 #include <cctype>
 #include <iostream>
@@ -12,30 +11,6 @@ namespace py = pybind11;
 namespace alpaca {
 
 namespace python {
-
-// char c
-// int8_t b
-// uint8_t B
-// bool ?
-// int16_t h
-// uint16_t H
-// int32_t i
-// uint32_t I
-// int64_t q
-// uint64_t Q
-// size_t N
-// float f
-// double d
-
-// string s
-
-// vector v
-// array a
-// map m
-// unordered_map M
-// set e
-// unordered_set E
-// tuple t
 
 std::vector<uint8_t> serialize(const std::string &format, const py::list &args);
 
