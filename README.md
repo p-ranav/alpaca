@@ -1095,9 +1095,9 @@ int main() {
 
 ## Python Interoperability
 
-alpaca comes with a pybind11-based Python wrapper called `pyalpaca`. To build this wrapper, include the option `-DALPACA_BUILD_PYTHON_LIB=on` with `cmake`. 
+alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)-based Python wrapper called `pyalpaca`. To build this wrapper, include the option `-DALPACA_BUILD_PYTHON_LIB=on` with `cmake`. 
 
-Instead of providing a `struct` type, the user will a string specification of the fields. This is inspired by the standard Python [struct](https://docs.python.org/3/library/struct.html) module.
+Instead of providing a `struct` type, the user will provide a string specification of the fields. This is inspired by the standard Python [struct](https://docs.python.org/3/library/struct.html) module.
 
 | Code   | Type            |
 |-------:|----------------:|
