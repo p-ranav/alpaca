@@ -1255,7 +1255,7 @@ The tests cover three example scenarios:
 
 ```bash
 # Clone
-git clone https://github.com/p-ranav/alpaca
+git clone --recurse-submodules https://github.com/p-ranav/alpaca
 cd alpaca
 
 # Build
