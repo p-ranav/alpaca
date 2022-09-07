@@ -1103,27 +1103,27 @@ alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)
 
 Instead of providing a `struct` type, the user will provide a string specification of the fields. This is inspired by the standard Python [struct](https://docs.python.org/3/library/struct.html) module.
 
-| Code   | Type            |
-|-------:|----------------:|
-| `?`      |            `bool` |
-| `c`      |            `char` |
-| `b`      |          `int8_t` |
-| `B`      |        `uint8_t` |
-| `h`      |         `int16_t` |
-| `H`      |        `uint16_t` |
-| `i`      |         `int32_t` |
-| `I`      |        `uint32_t` |
-| `q`      |         `int64_t` |
-| `Q`      |        `uint64_t` |
-| `f`      |           `float` |
-| `d`      |          `double` |
-| `N`      |     `std::size_t` |
-| `s`      |     `std::string` |
-| `[T]`    |     `std::vector<T>` |
-| `[N;T]`  | `std::array<N,T>` |
-| `{K:V}`  | `std::unordered_map<K, V>` |
-| `{T}`    | `std::unordered_set<T>` |
-| `(T, U, ...)` | `std::tuple<T, U, ...>` |
+| Code          | Type                       |
+|--------------:|---------------------------:|
+|           `?` |                     `bool` |
+|           `c` |                     `char` |
+|           `b` |                   `int8_t` |
+|           `B` |                  `uint8_t` |
+|           `h` |                  `int16_t` |
+|           `H` |                 `uint16_t` |
+|           `i` |                  `int32_t` |
+|           `I` |                 `uint32_t` |
+|           `q` |                  `int64_t` |
+|           `Q` |                 `uint64_t` |
+|           `f` |                    `float` |
+|           `d` |                   `double` |
+|           `N` |              `std::size_t` |
+|           `s` |              `std::string` |
+|         `[T]` |           `std::vector<T>` |
+|        `[NT]` |          `std::array<N,T>` |
+|       `{K:V}` | `std::unordered_map<K, V>` |
+|         `{T}` |    `std::unordered_set<T>` |
+| `(T, U, ...)` |    `std::tuple<T, U, ...>` |
 
 ### Usage
 
