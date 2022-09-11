@@ -110,11 +110,11 @@ There are two variants to `serialize`, one of which takes an `alpaca::options` f
 
 ```cpp
 // Serialize a struct T (with N fields) into Container
-tmeplate <class T, size_t N, class Container>
+template <class T, size_t N, class Container>
 auto serialize(const T&, Container&) -> size_t /* bytes_written */;
 
 // Serialize a struct T (with N fields) into Container using options O
-tmeplate <options O, class T, size_t N, class Container>
+template <options O, class T, size_t N, class Container>
 auto serialize(const T&, Container&) -> size_t /* bytes_written */;
 ```
 
