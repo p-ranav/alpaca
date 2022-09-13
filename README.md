@@ -1343,7 +1343,7 @@ The tests cover three example scenarios:
 
 | Test Name      |             Count | Serialize | Deserialize |       Size |
 |----------------|------------------:|----------:|------------:|-----------:|
-| Log            | 10,000 logs       | 432.95 us |   227.22 us |  850.52 KB |
+| Log            | 10,000 logs       | 432.95 us |     2.27 ms |  850.52 KB |
 | Triangle Mesh  | 125,000 triangles | 777.96 us |     2.37 ms |    6.00 MB |
 | Minecraft Save | 50 players        |  71.54 us |   321.10 us |  149.05 KB |
 
