@@ -1,0 +1,99 @@
+pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/benchmark_log_10k_serialize
+2022-09-13T14:24:52-07:00
+Running ./benchmark/benchmark_log_10k_serialize
+Run on (8 X 3504 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 16384 KiB (x8)
+Load Average: 0.57, 0.52, 0.35
+-------------------------------------------------------------------------------
+Benchmark                     Time             CPU   Iterations UserCounters...
+-------------------------------------------------------------------------------
+BM_serialize_log_10k     432951 ns       432947 ns         1612 BytesOutput=850.347k DataRate=1.21842M/s Logs=10k Success=1
+
+
+
+pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/benchmark_log_10k_deserialize
+2022-09-13T14:25:46-07:00
+Running ./benchmark/benchmark_log_10k_deserialize
+Run on (8 X 3504 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 16384 KiB (x8)
+Load Average: 0.41, 0.48, 0.34
+---------------------------------------------------------------------------------
+Benchmark                       Time             CPU   Iterations UserCounters...
+---------------------------------------------------------------------------------
+BM_deserialize_log_10k    2272299 ns      2272266 ns          307 BytesOutput=850.459k DataRate=1.21915M/s Logs=10k Success=1
+
+
+
+pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/benchmark_mesh_125k_serialize
+2022-09-13T14:21:37-07:00
+Running ./benchmark/benchmark_mesh_125k_serialize
+Run on (8 X 3504 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 16384 KiB (x8)
+Load Average: 0.25, 0.55, 0.31
+---------------------------------------------------------------------------------
+Benchmark                       Time             CPU   Iterations UserCounters...
+---------------------------------------------------------------------------------
+BM_serialize_mesh_125k     777968 ns       777964 ns          828 BytesOutput=6M DataRate=9.31454M/s Success=1 Triangles=125k
+
+
+
+pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/benchmark_mesh_125k_deserialize
+2022-09-13T14:22:58-07:00
+Running ./benchmark/benchmark_mesh_125k_deserialize
+Run on (8 X 3504 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 16384 KiB (x8)
+Load Average: 0.46, 0.54, 0.33
+-----------------------------------------------------------------------------------
+Benchmark                         Time             CPU   Iterations UserCounters...
+-----------------------------------------------------------------------------------
+BM_deserialize_mesh_125k    2374399 ns      2374111 ns          290 BytesOutput=6M DataRate=8.7147M/s Success=1 Triangles=125k
+
+
+
+pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/benchmark_minecraft_players_50_serialize
+2022-09-13T14:27:41-07:00
+Running ./benchmark/benchmark_minecraft_players_50_serialize
+Run on (8 X 3504 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 16384 KiB (x8)
+Load Average: 0.52, 0.47, 0.36
+--------------------------------------------------------------------------------------------
+Benchmark                                  Time             CPU   Iterations UserCounters...
+--------------------------------------------------------------------------------------------
+BM_serialize_minecraft_players_50      71551 ns        71548 ns         9397 BytesOutput=149.058k DataRate=221.701k/s Players=50 Success=1
+
+
+
+pranav@ubuntu:~/dev/alpaca/build$ ./benchmark/benchmark_minecraft_players_50_deserialize
+2022-09-13T14:28:19-07:00
+Running ./benchmark/benchmark_minecraft_players_50_deserialize
+Run on (8 X 3504 MHz CPU s)
+CPU Caches:
+  L1 Data 48 KiB (x8)
+  L1 Instruction 32 KiB (x8)
+  L2 Unified 512 KiB (x8)
+  L3 Unified 16384 KiB (x8)
+Load Average: 0.39, 0.44, 0.35
+----------------------------------------------------------------------------------------------
+Benchmark                                    Time             CPU   Iterations UserCounters...
+----------------------------------------------------------------------------------------------
+BM_deserialize_minecraft_players_50     321145 ns       321108 ns         2173 BytesOutput=149.058k DataRate=213.621k/s Players=50 Success=1

@@ -1317,7 +1317,7 @@ Deserialized:
 
 ## Performance Benchmarks
 	
-Last updated: 2022-09-05
+Last updated: 2022-09-13
 
 All tests benchmark the following properties (time or size):
 
@@ -1343,9 +1343,9 @@ The tests cover three example scenarios:
 
 | Test Name      |             Count | Serialize | Deserialize |       Size |
 |----------------|------------------:|----------:|------------:|-----------:|
-| Log            | 10,000 logs       | 429.87 us |   221.96 us |  850.52 KB |
-| Triangle Mesh  | 125,000 triangles | 802.05 us |     2.56 ms |    6.00 MB |
-| Minecraft Save | 50 players        |  71.60 us |   309.74 us |  149.05 KB |
+| Log            | 10,000 logs       | 432.95 us |   227.22 us |  850.52 KB |
+| Triangle Mesh  | 125,000 triangles | 777.96 us |     2.37 ms |    6.00 MB |
+| Minecraft Save | 50 players        |  71.54 us |   321.10 us |  149.05 KB |
 
 ## Building, Installing, and Testing
 
