@@ -1,5 +1,6 @@
 #pragma once
 #include <alpaca/detail/aggregate_arity.h>
+#include <alpaca/detail/byte_view.h>
 #include <alpaca/detail/crc32.h>
 #include <alpaca/detail/endian.h>
 #include <alpaca/detail/from_bytes.h>

@@ -1,4 +1,5 @@
 #pragma once
+#include <alpaca/detail/byte_view.h>
 #include <alpaca/detail/endian.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <iterator>
@@ -44,6 +45,26 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
   copy_bytes_in_range(value, bytes, byte_index);
 }
 
+// write as is
+// specialization for byte_view
+template <options O, typename U>
+typename std::enable_if<
+    std::is_same_v<U, bool> || std::is_same_v<U, char> ||
+        std::is_same_v<U, wchar_t> || std::is_same_v<U, char16_t> ||
+        std::is_same_v<U, char32_t> || std::is_same_v<U, uint8_t> ||
+        std::is_same_v<U, uint16_t> || std::is_same_v<U, int8_t> ||
+        std::is_same_v<U, int16_t> || std::is_same_v<U, float> ||
+        std::is_same_v<U, double>,
+    void>::type
+to_bytes(byte_view &bytes, std::size_t &byte_index, const U &value) {
+  // No byte-swapping, everything is lazy
+  // Just store pointer and size
+  auto start = static_cast<const uint8_t *>(static_cast<const void *>(&value));
+  auto end = start + sizeof value;
+  bytes.push_back(detail::blob{start, end});
+  byte_index += sizeof value;
+}
+
 // encode as variable-length
 template <options O, typename T, typename U>
 typename std::enable_if<
@@ -71,6 +92,23 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
   } else {
     encode_varint<U, T>(value, bytes, byte_index);
   }
+}
+
+// encode as variable-length
+// specialization for byte_view
+template <options O, typename U>
+typename std::enable_if<
+    std::is_same_v<U, uint32_t> || std::is_same_v<U, uint64_t> ||
+        std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t> ||
+        std::is_same_v<U, std::size_t>,
+    void>::type
+to_bytes(byte_view &bytes, std::size_t &byte_index, const U &value) {
+  // No byte-swapping, everything is lazy
+  // Just store pointer and size
+  auto start = static_cast<const uint8_t *>(static_cast<const void *>(&value));
+  auto end = start + sizeof value;
+  bytes.push_back(detail::blob{start, end});
+  byte_index += sizeof value;
 }
 
 // enum class

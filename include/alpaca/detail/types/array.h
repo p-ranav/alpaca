@@ -1,5 +1,6 @@
 #pragma once
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
+#include <alpaca/detail/byte_view.h>
 #include <alpaca/detail/type_info.h>
 #include <array>
 #include <system_error>
@@ -29,6 +30,13 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
   for (const auto &v : input) {
     to_bytes_router<O>(v, bytes, byte_index);
   }
+}
+
+template <options O, typename T, std::size_t N>
+void to_bytes(byte_view &bytes, std::size_t &byte_index,
+              const std::array<T, N> &input) {
+  // no copy, just store pointer and size
+  bytes.push_back(detail::blob{static_cast<const uint8_t*>(input.data()), N});
 }
 
 template <options O, typename T, typename Container>
