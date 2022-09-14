@@ -36,7 +36,7 @@ template <options O, typename T, std::size_t N>
 void to_bytes(byte_view &bytes, std::size_t &byte_index,
               const std::array<T, N> &input) {
   // no copy, just store pointer and size
-  bytes.push_back(detail::blob{static_cast<const uint8_t*>(input.data()), N});
+  bytes.push_back(detail::blob{static_cast<const uint8_t *>(input.data()), N});
 }
 
 template <options O, typename T, typename Container>

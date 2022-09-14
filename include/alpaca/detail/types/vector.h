@@ -49,6 +49,16 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
                                                              byte_index);
 }
 
+// specialization for byte_view
+template <options O, typename T>
+void to_bytes(byte_view &bytes, std::size_t &byte_index,
+              const std::vector<T> &input) {
+  // no copy, just store pointer and size
+  bytes.push_back(detail::blob{static_cast<const void *>(input.data()),
+                               input.size() * sizeof(T)});
+  byte_index += input.size() * sizeof(T);
+}
+
 template <options O, typename T, typename Container>
 void from_bytes_router(T &output, Container &bytes, std::size_t &byte_index,
                        std::size_t &end_index, std::error_code &error_code);

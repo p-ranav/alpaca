@@ -61,7 +61,7 @@ to_bytes(byte_view &bytes, std::size_t &byte_index, const U &value) {
   // Just store pointer and size
   auto start = static_cast<const uint8_t *>(static_cast<const void *>(&value));
   auto end = start + sizeof value;
-  bytes.push_back(detail::blob{start, end});
+  bytes.push_back(detail::blob{start, end - start});
   byte_index += sizeof value;
 }
 
@@ -107,7 +107,7 @@ to_bytes(byte_view &bytes, std::size_t &byte_index, const U &value) {
   // Just store pointer and size
   auto start = static_cast<const uint8_t *>(static_cast<const void *>(&value));
   auto end = start + sizeof value;
-  bytes.push_back(detail::blob{start, end});
+  bytes.push_back(detail::blob{start, end - start});
   byte_index += sizeof value;
 }
 

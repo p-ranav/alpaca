@@ -12,5 +12,6 @@ TEST_CASE("Serialize uint32_t as byte_view" * test_suite("byte_view")) {
   my_struct s{6553562};
   byte_view bytes;
   serialize(s, bytes);
-  REQUIRE(bytes.size() == sizeof(uint32_t)); // byte_view keeps raw size of each type
+  REQUIRE(bytes.size() ==
+          sizeof(uint32_t)); // byte_view keeps raw size of each type
 }

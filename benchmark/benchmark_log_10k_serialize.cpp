@@ -11,7 +11,8 @@ static void BM_serialize_log_10k(benchmark::State &state) {
   {
     auto logs = alpaca::benchmark::generate_logs(eng);
 
-    std::array<uint8_t, 1000000> bytes;
+    alpaca::byte_view bytes;
+    // std::array<uint8_t, 1000000> bytes;
     std::size_t data_size = 0;
 
     for (auto _ : state) {
@@ -19,11 +20,11 @@ static void BM_serialize_log_10k(benchmark::State &state) {
       data_size = alpaca::serialize(logs, bytes);
     }
 
-    std::error_code ec;
-    auto logs_recovered = alpaca::deserialize<alpaca::benchmark::Logs>(bytes, ec);
-    state.counters["Success"] = ((bool)ec == false);
+    // std::error_code ec;
+    // auto logs_recovered = alpaca::deserialize<alpaca::benchmark::Logs>(bytes, ec);
+    // state.counters["Success"] = ((bool)ec == false);
     state.counters["BytesOutput"] = data_size;
-    state.counters["Logs"] = logs_recovered.logs.size();
+    // state.counters["Logs"] = logs_recovered.logs.size();
     state.counters["DataRate"] = benchmark::Counter(data_size, benchmark::Counter::kIsRate);
   }
 }
