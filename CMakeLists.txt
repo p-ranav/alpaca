@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12.4)
 
 project(alpaca
-        VERSION 0.2.0
+        VERSION 0.2.1
         DESCRIPTION "Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code."
         HOMEPAGE_URL "https://github.com/p-ranav/alpaca"
         LANGUAGES CXX
