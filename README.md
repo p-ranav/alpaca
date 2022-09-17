@@ -317,6 +317,8 @@ For `std::vector<T>`, the general structure is as follows:
 * The first N bytes is a VLQ encoding of the size of the container
 * Then, each value in the vector is encoding accordingly to the rules for value_type `T`
 
+***NOTE*** alpaca also supports `std::list` and `std::deque` with the same structure.
+
 ```
    vector size          value1                value2          value3
 +----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
@@ -1059,6 +1061,9 @@ alpaca includes headers for a number of STL containers and classes. As this can 
 
 ```cpp
 #define ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
+#define ALPACA_EXCLUDE_SUPPORT_STD_CHRONO
+#define ALPACA_EXCLUDE_SUPPORT_STD_DEQUE
+#define ALPACA_EXCLUDE_SUPPORT_STD_LIST
 #define ALPACA_EXCLUDE_SUPPORT_STD_MAP
 #define ALPACA_EXCLUDE_SUPPORT_STD_OPTIONAL
 #define ALPACA_EXCLUDE_SUPPORT_STD_SET
