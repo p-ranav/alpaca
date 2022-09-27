@@ -9,15 +9,15 @@ namespace alpaca {
 namespace detail {
 
 template <typename T> bool CHECK_BIT(T &value, uint8_t pos) {
-  return ((value) & (1 << (pos)));
+  return ((value) & (T{1} << (pos)));
 }
 
 template <typename T> void SET_BIT(T &value, uint8_t pos) {
-  value = value | 1 << pos;
+  value = value | T{1} << pos;
 }
 
 template <typename T> void RESET_BIT(T &value, uint8_t pos) {
-  value = value & ~(1 << pos);
+  value = value & ~(T{1} << pos);
 }
 
 template <typename int_t, typename Container>
