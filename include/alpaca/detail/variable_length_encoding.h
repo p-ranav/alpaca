@@ -106,7 +106,7 @@ template <typename int_t, typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ifstream>, int_t>::type
 decode_varint_6(Container &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  for (std::size_t i = 0; i < (sizeof(int_t) * 8 + 5) / 6; ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 63)) << (6 * i);
     // If the next-byte flag is set
     if (!(input[current_index + i] & 64)) {
@@ -122,7 +122,7 @@ template <typename int_t, typename Container>
 typename std::enable_if<std::is_same_v<Container, std::ifstream>, int_t>::type
 decode_varint_6(Container &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  for (std::size_t i = 0; i < (sizeof(int_t) * 8 + 5) / 6; ++i) {
 
     // read byte from file stream
     char current_byte;
@@ -159,7 +159,7 @@ template <typename int_t, typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ifstream>, int_t>::type
 decode_varint_7(Container &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  for (std::size_t i = 0; i < (sizeof(int_t) * 8 + 6) / 7; ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 127)) << (7 * i);
     // If the next-byte flag is set
     if (!(input[current_index + i] & 128)) {
@@ -174,7 +174,7 @@ decode_varint_7(Container &input, std::size_t &current_index) {
 template <typename int_t, typename Container>
 int_t decode_varint_7(std::ifstream &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  for (std::size_t i = 0; i < (sizeof(int_t) * 8 + 6) / 7; ++i) {
 
     // read byte from file stream
     char current_byte;
@@ -235,6 +235,10 @@ decode_varint(Container &input, std::size_t &current_index) {
 
   if (is_negative) {
     ret *= -1;
+    if (!ret) {
+      // negative and 0 means no other bits set which is INT_MIN.
+      ret = std::numeric_limits<int_t>::min();
+    }
   }
 
   return ret;
