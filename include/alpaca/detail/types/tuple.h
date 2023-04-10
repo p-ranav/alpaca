@@ -24,11 +24,36 @@ void type_info_tuple_helper(
   }
 }
 
+template <typename T, std::size_t N, std::size_t I>
+constexpr void
+type_info_tuple_helper(std::vector<uint8_t> &typeids,
+                       std::vector<ct_struct_map_entry> &struct_visitor_map) {
+  if constexpr (I < N) {
+
+    // save current type
+    type_info<typename std::tuple_element<I, T>::type>(typeids,
+                                                       struct_visitor_map);
+
+    // go to next type
+    type_info_tuple_helper<T, N, I + 1>(typeids, struct_visitor_map);
+  }
+}
+
 template <typename T>
 typename std::enable_if<is_specialization<T, std::tuple>::value, void>::type
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::tuple>());
+  constexpr auto tuple_size = std::tuple_size_v<T>;
+  type_info_tuple_helper<T, tuple_size, 0>(typeids, struct_visitor_map);
+}
+
+template <typename T>
+constexpr
+    typename std::enable_if<is_specialization<T, std::tuple>::value, void>::type
+    type_info(std::vector<uint8_t> &typeids,
+              std::vector<ct_struct_map_entry> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::tuple>());
   constexpr auto tuple_size = std::tuple_size_v<T>;
   type_info_tuple_helper<T, tuple_size, 0>(typeids, struct_visitor_map);

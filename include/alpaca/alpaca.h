@@ -26,6 +26,10 @@
 #include <cassert>
 #include <system_error>
 
+#if __cpp_lib_source_location
+#include <source_location>
+#endif
+
 namespace alpaca {
 
 #if defined(_MSC_VER)
@@ -61,7 +65,7 @@ type_info(
     // struct was previously visited
 
     // store index in struct_visitor_map
-    typeids.push_back(it->second);
+    typeids.push_back(static_cast<uint8_t>(it->second));
   } else {
     // struct visited for first time
 
@@ -87,7 +91,7 @@ void type_info_helper(
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   if constexpr (I < N) {
     T ref{};
-    decltype(auto) field = detail::get<I, T, N>(ref);
+    decltype(auto) field = detail::get<I, T, N>(std::move(ref));
     using decayed_field_type = typename std::decay<decltype(field)>::type;
 
     // save type of field in struct
@@ -97,6 +101,64 @@ void type_info_helper(
     type_info_helper<T, N, I + 1>(typeids, struct_visitor_map);
   }
 }
+
+
+
+#if __cpp_consteval && __cpp_constexpr_dynamic_alloc &&                        \
+    __cpp_lib_source_location
+template <typename T, std::size_t N, std::size_t I>
+constexpr void type_info_helper(
+    std::vector<uint8_t> &typeids,
+                      std::vector<ct_struct_map_entry> &struct_visitor_map) {
+  if constexpr (I < N) {
+    using decayed_field_type = typename std::decay<decltype(detail::get<I, T, N>(std::declval<T>()))>::type;
+
+    // save type of field in struct
+    type_info<decayed_field_type>(typeids, struct_visitor_map);
+
+    // go to next field
+    type_info_helper<T, N, I + 1>(typeids, struct_visitor_map);
+  }
+}
+
+template <typename T, std::size_t N>
+constexpr typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
+                        void>::type
+type_info(std::vector<uint8_t> &typeids,
+          std::vector<ct_struct_map_entry> &struct_visitor_map) {
+
+  // store num fields in struct
+  // store size of struct
+  // if already visited before, store index in struct_visitor_map
+  // else, visit the struct and store its field types
+  std::string_view name = std::source_location::current().function_name();
+  auto it = std::find_if(struct_visitor_map.begin(), struct_visitor_map.end(),
+                         [name](const auto &e) { return e.name == name; });
+  if (it != struct_visitor_map.end()) {
+    // struct was previously visited
+
+    // store index in struct_visitor_map
+    typeids.push_back(static_cast<uint8_t>(it->val));
+  } else {
+    // struct visited for first time
+
+    std::size_t current_index =
+        typeids.size(); /// TODO: This is ugly but necessary for it to compile.
+                        /// FIX needed.
+    // save number of fields
+    uint16_t num_fields = N;
+    to_bytes_consteval<options::none>(typeids, current_index, num_fields);
+
+    // save size of struct
+    uint16_t size = sizeof(T);
+    to_bytes_consteval<options::none>(typeids, current_index, size);
+
+    struct_visitor_map.emplace_back(
+        ct_struct_map_entry{std::string(name), struct_visitor_map.size() + 1});
+    type_info_helper<T, N, 0>(typeids, struct_visitor_map);
+  }
+}
+#endif
 
 } // namespace detail
 
@@ -148,6 +210,41 @@ void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
 
 } // namespace detail
 
+namespace detail {
+#if __cpp_consteval && __cpp_constexpr_dynamic_alloc &&                        \
+    __cpp_lib_source_location && !defined(ALPACA_NO_CONSTEVAL_VERSION)
+// This computes versions as compile-time constants
+consteval unsigned int ct_crc32(const uint8_t *bytes, std::size_t n) {
+  uint32_t crc = 0xFFFFFFFF;
+  for(std::size_t i = 0; i < n; i++) {
+    crc ^= bytes[i];
+    for (int j = 0; j < 8; j++) {
+      crc = (crc >> 1) ^ (0xEDB88320 & ~((crc & 1) - 1));
+    }
+  }
+  return ~crc;
+}
+
+template <typename T, std::size_t N>
+consteval uint32_t version_helper() {
+  std::vector<uint8_t> typeids;
+  std::vector<ct_struct_map_entry> struct_visitor_map;
+  detail::type_info<T, N>(typeids, struct_visitor_map);
+  return ct_crc32(typeids.data(), typeids.size());
+}
+#else
+template <typename T, std::size_t N>
+uint32_t version_helper()
+{
+  std::vector<uint8_t> typeids;
+  std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
+  detail::type_info<T, N>(typeids, struct_visitor_map);
+  return crc32_fast(typeids.data(), typeids.size());
+}
+#endif
+
+} // namespace detail
+
 template <typename T,
           std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container = std::vector<uint8_t>>
@@ -170,10 +267,7 @@ typename std::enable_if<!std::is_same_v<Container, std::ofstream> &&
 serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (N > 0 && detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
-    std::vector<uint8_t> typeids;
-    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
-    uint32_t version = crc32_fast(typeids.data(), typeids.size());
+    uint32_t version = detail::version_helper<T, N>();
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
   }
 
@@ -214,10 +308,7 @@ typename std::enable_if<!std::is_same_v<Container, std::ofstream> &&
 serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (N > 0 && detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
-    std::vector<uint8_t> typeids;
-    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
-    uint32_t version = crc32_fast(typeids.data(), typeids.size());
+    uint32_t version = detail::version_helper<T, N>();
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
   }
 
@@ -277,7 +368,7 @@ template <options O, typename T, std::size_t N, typename Container,
 void deserialize_helper(T &s, Container &bytes, std::size_t &byte_index,
                         std::size_t &end_index, std::error_code &error_code) {
   if constexpr (I < N) {
-    decltype(auto) field = detail::get<I, T, N>(s);
+    decltype(auto) field = detail::get<I, T, N>(std::move(s));
 
     // load current field
     detail::from_bytes_router<O>(field, bytes, byte_index, end_index,
@@ -357,10 +448,7 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
   if constexpr (N > 0 && detail::with_version<O>()) {
 
     // calculate typeid hash and save it to the bytearray
-    std::vector<uint8_t> typeids;
-    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
-    uint32_t computed_version = crc32_fast(typeids.data(), typeids.size());
+    uint32_t computed_version = detail::version_helper<T, N>();
 
     // check computed version with version in input
     // there should be at least 4 bytes in input
@@ -447,10 +535,7 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
   if constexpr (N > 0 && detail::with_version<O>()) {
 
     // calculate typeid hash and save it to the bytearray
-    std::vector<uint8_t> typeids;
-    std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
-    uint32_t computed_version = crc32_fast(typeids.data(), typeids.size());
+    uint32_t computed_version = detail::version_helper<T, N>();
 
     // check computed version with version in input
     // there should be at least 4 bytes in input

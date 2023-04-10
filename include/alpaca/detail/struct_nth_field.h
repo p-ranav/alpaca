@@ -8,7 +8,7 @@ namespace detail {
 
 template <std::size_t index, typename type,
           std::size_t arity = aggregate_arity<std::remove_cv_t<type>>::size()>
-constexpr decltype(auto) get(type &value) noexcept {
+constexpr decltype(auto) get(type &&value) noexcept {
 
   if constexpr (arity == 1) {
     auto &[p1] = value;

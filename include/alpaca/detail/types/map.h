@@ -27,6 +27,18 @@ type_info(
   using mapped_type = typename T::mapped_type;
   type_info<mapped_type>(typeids, struct_visitor_map);
 }
+
+template <typename T>
+constexpr
+    typename std::enable_if<is_specialization<T, std::map>::value, void>::type
+    type_info(std::vector<uint8_t> &typeids,
+              std::vector<ct_struct_map_entry> &struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::map>());
+  using key_type = typename T::key_type;
+  type_info<key_type>(typeids, struct_visitor_map);
+  using mapped_type = typename T::mapped_type;
+  type_info<mapped_type>(typeids, struct_visitor_map);
+}
 #endif
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_MAP
@@ -36,6 +48,19 @@ typename std::enable_if<is_specialization<T, std::unordered_map>::value,
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::unordered_map>());
+  using key_type = typename T::key_type;
+  type_info<key_type>(typeids, struct_visitor_map);
+  using mapped_type = typename T::mapped_type;
+  type_info<mapped_type>(typeids, struct_visitor_map);
+}
+
+template <typename T>
+constexpr
+    typename std::enable_if<is_specialization<T, std::unordered_map>::value,
+                            void>::type
+    type_info(std::vector<uint8_t> &typeids,
+              std::vector<ct_struct_map_entry> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::unordered_map>());
   using key_type = typename T::key_type;
   type_info<key_type>(typeids, struct_visitor_map);

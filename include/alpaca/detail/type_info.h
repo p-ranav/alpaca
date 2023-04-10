@@ -268,6 +268,100 @@ type_info(
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 #endif
 
+
+struct ct_struct_map_entry {
+  std::string name;
+  std::size_t val;
+};
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, bool>, void>::
+    type type_info(std::vector<uint8_t> &typeids,
+                             std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::bool_>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, char>, void>::type
+ type_info(std::vector<uint8_t> &typeids,
+                   std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::char_>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, uint8_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::uint8>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, uint16_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::uint16>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, uint32_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::uint32>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, uint64_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::uint64>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, int8_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::int8>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, int16_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::int16>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, int32_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::int32>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, int64_t>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::int64>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, float>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::float32>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_same_v<T, double>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::float64>());
+}
+
+template <typename T>
+constexpr typename std::enable_if<std::is_enum_v<T>, void>::type
+type_info(std::vector<uint8_t> &typeids, std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::enum_class>());
+}
+
+template <typename T,
+          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size()>
+constexpr
+    typename std::enable_if<std::is_aggregate_v<T> && !is_array_type<T>::value,
+                            void>::type
+    type_info(std::vector<uint8_t> &typeids,
+              std::vector<ct_struct_map_entry> &struct_visitor_map);
+
 } // namespace detail
 
 } // namespace alpaca

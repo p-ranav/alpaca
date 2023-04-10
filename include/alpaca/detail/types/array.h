@@ -19,6 +19,16 @@ typename std::enable_if<is_array_type<T>::value, void>::type type_info(
   type_info<value_type>(typeids, struct_visitor_map);
 }
 
+template <typename T>
+constexpr typename std::enable_if<is_array_type<T>::value, void>::type
+type_info(std::vector<uint8_t> &typeids,
+          std::vector<ct_struct_map_entry> &struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::array>());
+  typeids.push_back(std::tuple_size_v<T>);
+  using value_type = typename T::value_type;
+  type_info<value_type>(typeids, struct_visitor_map);
+}
+
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 

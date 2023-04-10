@@ -28,6 +28,16 @@ type_info(
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);
 }
+
+template <typename T>
+constexpr
+    typename std::enable_if<is_specialization<T, std::set>::value, void>::type
+    type_info(std::vector<uint8_t> &typeids,
+              std::vector<ct_struct_map_entry> &struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::set>());
+  using value_type = typename T::value_type;
+  type_info<value_type>(typeids, struct_visitor_map);
+}
 #endif
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_UNORDERED_SET
@@ -37,6 +47,17 @@ typename std::enable_if<is_specialization<T, std::unordered_set>::value,
 type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
+  typeids.push_back(to_byte<field_type::unordered_set>());
+  using value_type = typename T::value_type;
+  type_info<value_type>(typeids, struct_visitor_map);
+}
+
+template <typename T>
+constexpr
+    typename std::enable_if<is_specialization<T, std::unordered_set>::value,
+                            void>::type
+    type_info(std::vector<uint8_t> &typeids,
+              std::vector<ct_struct_map_entry> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::unordered_set>());
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);

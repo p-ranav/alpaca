@@ -19,6 +19,15 @@ type_info(std::vector<uint8_t> &typeids,
   typeids.push_back(to_byte<field_type::string>());
 }
 
+template <typename T>
+constexpr
+    typename std::enable_if<is_specialization<T, std::basic_string>::value,
+                            void>::type
+    type_info(std::vector<uint8_t> &typeids,
+              std::vector<ct_struct_map_entry> &) {
+  typeids.push_back(to_byte<field_type::string>());
+}
+
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes, std::size_t &byte_index);
 

@@ -44,6 +44,23 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
   copy_bytes_in_range(value, bytes, byte_index);
 }
 
+#if __cpp_constexpr_dynamic_alloc
+template <options O, typename U>
+constexpr void to_bytes_consteval(std::vector<uint8_t> &bytes, std::size_t &byte_index,
+                        const U &original_value) {
+  U value = original_value;
+  if (detail::little_endian<O>()) {
+    for (std::size_t i = 0; i < sizeof(U); i++, byte_index++, value >>= 8) {
+      bytes.push_back(static_cast<uint8_t>(value));
+    }
+  } else {
+    for (std::size_t i = 0; i < sizeof(U); i++, byte_index++, value <<= 8) {
+      bytes.push_back(static_cast<uint8_t>(value >> (8 * (sizeof(U) - 1))));
+    }
+  }
+}
+#endif
+
 // encode as variable-length
 template <options O, typename T, typename U>
 typename std::enable_if<
