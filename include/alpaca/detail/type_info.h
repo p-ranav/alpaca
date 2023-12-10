@@ -6,6 +6,10 @@
 #include <array>
 #endif
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_FILESYSTEM_PATH
+#include <filesystem>
+#endif
+
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_MAP
 #include <map>
 #endif
@@ -165,6 +169,15 @@ type_info(
 // array types
 template <typename T>
 typename std::enable_if<is_array_type<T>::value, void>::type type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_FILESYSTEM_PATH
+// filesystem::path
+template <typename T>
+typename std::enable_if<std::is_same<T, std::filesystem::path>::value, void>::type
+type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 #endif
