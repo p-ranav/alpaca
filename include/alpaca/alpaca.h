@@ -118,11 +118,6 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &input) {
                    T, 0>(input, bytes, byte_index);
 }
 
-template <options O, typename T, typename U>
-typename std::enable_if<!std::is_aggregate_v<U> && std::is_class_v<U>,
-                        void>::type
-to_bytes(T &bytes, std::size_t &byte_index, const U &input);
-
 template <options O, typename T, typename Container>
 void to_bytes_router(const T &input, Container &bytes,
                      std::size_t &byte_index) {
