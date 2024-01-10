@@ -35,7 +35,8 @@ enum class field_type : uint8_t {
   chrono_duration,
   list,
   deque,
-  filesystem_path
+  filesystem_path,
+  bitset
 };
 
 template <field_type value> constexpr uint8_t to_byte() {
