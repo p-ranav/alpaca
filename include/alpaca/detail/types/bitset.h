@@ -28,16 +28,16 @@ void to_bytes_from_bitset_type(const std::bitset<N> &input, Container &bytes,
   // save bitset size
   to_bytes_router<O, std::size_t>(input.size(), bytes, byte_index);
 
-  // serialize the bitset itself into (bits / 8) bytes
-  int num_bytes = input.size() / 8;
+  // serialize the bitset itself into (bits/8 + 1) bytes
+  int num_bytes = input.size() / 8 + 1;
   for (int i=0; i < num_bytes; ++i) {
     uint8_t byte = 0;
     for (int bit = 0; bit < 8; ++bit) {
-      int bit_index = byte * 8 + bit;
-      if (bit_index >= input.size()) break;
+      int bit_index = i * 8 + bit;
+      if (bit_index > input.size()) break;
       if (input[bit_index]) byte |= (1 << bit);
     }
-    bytes[byte_index++] = byte;
+    to_bytes<O>(bytes, byte_index, byte);
   }
 }
 
@@ -76,8 +76,8 @@ bool from_bytes_to_bitset(std::bitset<N> &value, Container &bytes,
   }
 
   // we encode the number of bits as the size, but when we actually serialize
-  // them we pack them, so we need to only deserialize size/8 bytes.
-  std::size_t num_serialized_bytes = size / 8;
+  // them we pack them, so we need to only deserialize (size/8 + 1) bytes.
+  std::size_t num_serialized_bytes = size / 8 + 1;
 
   if (num_serialized_bytes > end_index - current_index) {
     // size is greater than the number of bytes remaining
@@ -90,15 +90,19 @@ bool from_bytes_to_bitset(std::bitset<N> &value, Container &bytes,
   // reset the value to 0
   value.reset();
 
-  // read `size` bits and save to value
-  for (std::size_t byte_index = 0; byte_index < num_serialized_bytes; ++byte_index) {
-    // get the byte at byte index
-    uint8_t byte = bytes[byte_index];
+  for (std::size_t i = 0; i < num_serialized_bytes; ++i) {
+    uint8_t byte{};
+    from_bytes_router<O>(byte, bytes, current_index, end_index, error_code);
+    if (error_code) {
+      // something went wrong
+      return false;
+    }
     // loop over the bits
-    for (int i=0; i<8; ++i) {
-      int bit_index = byte_index * 8 + i;
+    for (int j=0; j<8; ++j) {
+      int bit_index = i * 8 + j;
       if (bit_index > size) break;
-      value[bit_index] = static_cast<bool>(byte & (1 << i));
+      bool bit = static_cast<bool>(byte & (1 << j));
+      value[bit_index] = bit;
     }
   }
 
