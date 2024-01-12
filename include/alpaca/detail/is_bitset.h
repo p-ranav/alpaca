@@ -1,4 +1,5 @@
 #pragma once
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_BITSET
 #include <bitset>
 #include <type_traits>
 
@@ -16,3 +17,5 @@ struct is_bitset<std::bitset<N>> : std::true_type {};
 } // namespace detail
 
 } // namespace alpaca
+
+#endif // ALPACA_EXCLUDE_SUPPORT_STD_BITSET

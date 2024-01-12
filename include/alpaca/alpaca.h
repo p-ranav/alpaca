@@ -143,6 +143,7 @@ void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
   }
 }
 
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_BITSET
 // version for bitset
 template <options O, typename T, typename U>
 typename std::enable_if<is_bitset<U>::value, void>::type
@@ -155,6 +156,7 @@ void to_bytes_router(const std::bitset<N> &input, Container &bytes,
                      std::size_t &byte_index) {
   to_bytes<O>(bytes, byte_index, input);
 }
+#endif
 
 } // namespace detail
 
