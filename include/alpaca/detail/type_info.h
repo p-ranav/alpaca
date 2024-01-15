@@ -1,9 +1,14 @@
 #pragma once
 #include <alpaca/detail/field_type.h>
+#include <alpaca/detail/is_bitset.h>
 #include <alpaca/detail/is_specialization.h>
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
 #include <array>
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_BITSET
+#include <bitset>
 #endif
 
 #ifndef ALPACA_EXCLUDE_SUPPORT_STD_FILESYSTEM_PATH
@@ -169,6 +174,15 @@ type_info(
 // array types
 template <typename T>
 typename std::enable_if<is_array_type<T>::value, void>::type type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
+#endif
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_BITSET
+// std::bitset type
+template <typename T>
+typename std::enable_if<is_bitset<T>::value, void>::type
+type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map);
 #endif

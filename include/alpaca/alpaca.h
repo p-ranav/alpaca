@@ -10,6 +10,7 @@
 #include <alpaca/detail/to_bytes.h>
 #include <alpaca/detail/type_info.h>
 #include <alpaca/detail/types/array.h>
+#include <alpaca/detail/types/bitset.h>
 #include <alpaca/detail/types/deque.h>
 #include <alpaca/detail/types/duration.h>
 #include <alpaca/detail/types/filesystem_path.h>
@@ -141,6 +142,21 @@ void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
     serialize_helper<O, T, N, Container, I + 1>(s, bytes, byte_index);
   }
 }
+
+#ifndef ALPACA_EXCLUDE_SUPPORT_STD_BITSET
+// version for bitset
+template <options O, typename T, typename U>
+typename std::enable_if<is_bitset<U>::value, void>::type
+to_bytes(T &bytes, std::size_t &byte_index, const U &input) {
+  detail::to_bytes_router(input, bytes, byte_index);
+}
+
+template <options O, std::size_t N, typename Container>
+void to_bytes_router(const std::bitset<N> &input, Container &bytes,
+                     std::size_t &byte_index) {
+  to_bytes<O>(bytes, byte_index, input);
+}
+#endif
 
 } // namespace detail
 
