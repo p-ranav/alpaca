@@ -41,7 +41,7 @@ struct Config {
 };
 
 // Construct the object
-Config c{"/dev/video0", {640, 480}, 
+Config c{"/dev/video0", {640, 480},
 	 {223.28249888247538, 0.0, 152.30570853111396,
 	  0.0, 223.8756535707556, 124.5606000035353,
 	  0.0, 0.0, 1.0},
@@ -104,7 +104,7 @@ The source for the above example can be found [here](https://github.com/p-ranav/
 
 ### Serialization
 
-The `alpaca::serialize(...)` function accepts 2 arguments: an input aggregate class type (typically a `struct`), and an output container, e.g.,  `std::vector<uint8_t>`, `std::array<uint8_T, N>` etc. Serialization will attempt to pack the aggregate input into the container. 
+The `alpaca::serialize(...)` function accepts 2 arguments: an input aggregate class type (typically a `struct`), and an output container, e.g.,  `std::vector<uint8_t>`, `std::array<uint8_T, N>` etc. Serialization will attempt to pack the aggregate input into the container.
 
 There are two variants to `serialize`, one of which takes an `alpaca::options` for additional configuration:
 
@@ -123,8 +123,8 @@ auto serialize(const T&, Container&) -> size_t /* bytes_written */;
 Examples of valid serialize calls include:
 
 ```cpp
-struct MyStruct { 
-  int value; 
+struct MyStruct {
+  int value;
 };
 
 // Construct object
@@ -159,8 +159,8 @@ auto bytes_written = serialize(object, os);
 ```cpp
 // Serialize with options
 std::vector<uint8_t> bytes;
-constexpr auto OPTIONS = options::fixed_length_encoding | 
-                         options::with_version | 
+constexpr auto OPTIONS = options::fixed_length_encoding |
+                         options::with_version |
 			 options::with_checksum;
 auto bytes_written = serialize<OPTIONS>(object, bytes);
 ```
@@ -171,7 +171,7 @@ The `alpaca::deserialize(...)` function, likewise, accepts a container like `std
 
 Deserialization from C-style arrays is supported as well, though in this case, the number of bytes to read from the buffer needs to be provided.
 
-Like `serialize()`, deserialization has two variants, one of which accepts an `alpaca::options` template parameter.  
+Like `serialize()`, deserialization has two variants, one of which accepts an `alpaca::options` template parameter.
 
 ```cpp
 // Deserialize a Container into struct T (with N fields)
@@ -220,7 +220,7 @@ if (!ec) {
 // Deserialize from std::array or std::vector
 // Custom options
 std::error_code ec;
-constexpr auto OPTIONS = options::fixed_length_encoding | 
+constexpr auto OPTIONS = options::fixed_length_encoding |
                          options::with_version |
 			 options::with_checksum;
 auto object = deserialize<OPTIONS, MyStruct>(bytes, ec);
@@ -264,7 +264,7 @@ auto bytes_written = alpaca::serialize(s, bytes); // 9 bytes
 // }
 ```
 
-In the above example, `c` is a `uint64_t` but its value is only `5`. Here, alpaca will pack the value in a single byte instead of taking up 8 bytes. This is the default behavior for larger integer types. 
+In the above example, `c` is a `uint64_t` but its value is only `5`. Here, alpaca will pack the value in a single byte instead of taking up 8 bytes. This is the default behavior for larger integer types.
 
 ### Arrays, Vectors, and Strings
 
@@ -326,9 +326,9 @@ For `std::vector<T>`, the general structure is as follows:
 +----+----+-----+  +----+----+-----+  +----+----+----+-----+  +---
 ```
 
-For `std::array<T, N>`, since the (1) number of elements and (2) type of element in the array is known (both at serialization and deserialization time), this information is not stored in the byte array. Note that, for this reason, deserialization cannot unpack the bytes into an array of a different size. ***Important***: Make sure to use the same array size on both the serialization and deserialization side. 
+For `std::array<T, N>`, since the (1) number of elements and (2) type of element in the array is known (both at serialization and deserialization time), this information is not stored in the byte array. Note that, for this reason, deserialization cannot unpack the bytes into an array of a different size. ***Important***: Make sure to use the same array size on both the serialization and deserialization side.
 
-The byte array simply includes the encoding for value_type `T` for each value in the array. 
+The byte array simply includes the encoding for value_type `T` for each value in the array.
 
 ```
      value1             value2                value3          value4
@@ -361,7 +361,7 @@ std::vector<uint8_t> bytes;
   std::error_code ec;
   auto object = deserialize<my_struct>(bytes, ec);
   assert((bool)ec == false);
-  assert(object.name == L"緋村 剣心");    
+  assert(object.name == L"緋村 剣心");
   assert(object.example == u"This is a string");
   assert(object.greeting == U"Hello, 世界");
 }
@@ -485,9 +485,9 @@ auto bytes_written = alpaca::serialize(s, bytes); // 45 bytes
 
 ### Optional Values
 
-alpaca has some difficulty with `std::optional`. Due to the implementation of [aggregate_arity](https://github.com/p-ranav/alpaca/blob/master/include/alpaca/detail/aggregate_arity.h), alpaca is unable to correctly determine the number of fields in the struct with optional fields. 
+alpaca has some difficulty with `std::optional`. Due to the implementation of [aggregate_arity](https://github.com/p-ranav/alpaca/blob/master/include/alpaca/detail/aggregate_arity.h), alpaca is unable to correctly determine the number of fields in the struct with optional fields.
 
-So, to help out, specify the number of fields manually using `serialize<MyStruct, N>(...)`. 
+So, to help out, specify the number of fields manually using `serialize<MyStruct, N>(...)`.
 
 [Source](https://github.com/p-ranav/alpaca/blob/master/samples/optional_values.cpp)
 
@@ -504,9 +504,9 @@ MyStruct s{5, 3.14f, std::nullopt, std::vector<bool>{true, false, true, false}};
 // Serialize
 std::vector<uint8_t> bytes;
 auto bytes_written = alpaca::serialize<MyStruct, 4>(s, bytes); // 14 bytes
-	                            // ^^^^^^^^^^^^^ 
+	                            // ^^^^^^^^^^^^^
 	                            //  specify the number of fields (4) in struct manually
-	                            //  alpaca fails at correctly detecting 
+	                            //  alpaca fails at correctly detecting
 				    //  this due to the nature of std::optional
 
 // bytes:
@@ -527,7 +527,7 @@ auto bytes_written = alpaca::serialize<MyStruct, 4>(s, bytes); // 14 bytes
 For `std::optional<T>`, a leading byte is used to represent if the optional has value
 
 ```
-has_value?    value (if previous byte is 0x01)         
+has_value?    value (if previous byte is 0x01)
 +----------+  +----+----+----+-----+
 |    A1    |  | B1 | B2 | B3 | ... |
 +----------+  +----+----+----+-----+
@@ -541,9 +541,9 @@ alpaca also support `std::variant`. Although this is an uncommon data structure 
 
 ```cpp
 struct MyStruct {
-  std::map<std::string, 
-           std::variant<uint16_t, 
-                        std::string, 
+  std::map<std::string,
+           std::variant<uint16_t,
+                        std::string,
                         bool,
                         std::vector<std::string>>
           > value;
@@ -553,7 +553,7 @@ Config s{{{"keepalive", true},
           {"port", uint16_t{8080}},
           {"ip_address", std::string{"192.168.8.1"}},
           {"subscriptions", std::vector<std::string>{"motor_state", "battery_state"}}}};
-  
+
 // serialize
 std::vector<uint8_t> bytes;
 auto bytes_written = alpaca::serialize(s, bytes); // 87 bytes
@@ -588,7 +588,7 @@ auto bytes_written = alpaca::serialize(s, bytes); // 87 bytes
 For `std::variant<T, U, ...>`, the leading bytes represent the index of the variant that is used by the value
 
 ```
-variant index       value       
+variant index       value
 +-----------+  +----+----+-----+
 |    A1     |  | B1 | B2 | ... |
 +-----------+  +----+----+-----+
@@ -601,7 +601,7 @@ alpaca supports `std::unique_ptr<T>`. Alpaca does not support raw pointers or sh
 [Source](https://github.com/p-ranav/alpaca/blob/master/samples/unique_ptr.cpp)
 
 ```cpp
-template <class T> 
+template <class T>
 struct Node {
   T data;
   std::unique_ptr<Node<T>> left;
@@ -625,14 +625,14 @@ auto make_node(T const &value, std::unique_ptr<Node<T>> lhs = nullptr,
 */
 
 auto const root = make_node(
-    5, 
+    5,
     make_node(
-        3, 
-        make_node(1), 
+        3,
+        make_node(1),
         make_node(2)
-    ), 
+    ),
     make_node(4)
-);  
+);
 
 // serialize
 std::vector<uint8_t> bytes;
@@ -661,7 +661,7 @@ auto bytes_written = alpaca::serialize(*root, bytes); // 15 bytes
 For `std::unique_ptr<T>`, a leading byte is used to represent if the pointer is nullptr
 
 ```
-ptr != null?  value (if previous byte is 0x01)          
+ptr != null?  value (if previous byte is 0x01)
 +----------+  +----+----+----+-----+
 |    A1    |  | B1 | B2 | B3 | ... |
 +----------+  +----+----+----+-----+
@@ -711,7 +711,7 @@ int main() {
 
   MyStruct s{timestamp};
 
-  constexpr auto OPTIONS = options::big_endian | 
+  constexpr auto OPTIONS = options::big_endian |
                            options::fixed_length_encoding;
 
   // Serialize
@@ -793,7 +793,7 @@ int main() {
 ```
 
 ```console
-pranav@ubuntu:~/dev/alpaca/build$ hexdump -C savefile.bin 
+pranav@ubuntu:~/dev/alpaca/build$ hexdump -C savefile.bin
 00000000  05 01 61 0b 48 65 6c 6c  6f 20 57 6f 72 6c 64 06  |..a.Hello World.|
 00000010  06 05 04 03 02 01 02 03  61 62 63 01 02 03 03 64  |........abc....d|
 00000020  65 66 04 05 06                                    |ef...|
@@ -812,7 +812,7 @@ pranav@ubuntu:~/dev/alpaca/build$ hexdump -C savefile.bin
 * Add new fields for newer implementations and deprecate older fields in a timely way.
 * Adding fields is always a safe option as long as you manage them and don't end up with too many of them.
 
-Consider an RPC interaction pattern where a client sends a message to a server. 
+Consider an RPC interaction pattern where a client sends a message to a server.
 
 Here's the first version of the message struct:
 
@@ -857,7 +857,7 @@ std::vector<uint8_t> bytes;
 
 ### Case 2: Server-side is updated to use a newer version of the message struct
 
-In this scenario, the server-side is updated to use a newer version of the struct, accepting 3 additional fields: a string, a vector<bool>, and an integer. The client-side is still compiled with the older version of the struct. When the message is deserialized on the server side, the server will construct the newer version of the struct, fill out the fields that are available in the input, and default initialize the rest of the fields. 
+In this scenario, the server-side is updated to use a newer version of the struct, accepting 3 additional fields: a string, a vector<bool>, and an integer. The client-side is still compiled with the older version of the struct. When the message is deserialized on the server side, the server will construct the newer version of the struct, fill out the fields that are available in the input, and default initialize the rest of the fields.
 
 ```cpp
 std::vector<uint8_t> bytes;
@@ -871,7 +871,7 @@ std::vector<uint8_t> bytes;
     my_struct s{5, 3.14f};
     auto bytes_written = alpaca::serialize(s, bytes);
 }
-    
+
 {
     // server side is updated to use a new structure
     struct my_struct {
@@ -893,9 +893,9 @@ std::vector<uint8_t> bytes;
 ```
 
 ## Configuration Options
-	
+
 ### Endianness
-	
+
 By default, alpaca uses little endian. This option can be switched using `options::big_endian`
 
 ```cpp
@@ -908,7 +908,7 @@ int main() {
   };
 
   my_struct s { 12345 };
-  
+
   // little endian
   {
     std::vector<uint8_t> bytes;
@@ -920,13 +920,13 @@ int main() {
     std::vector<uint8_t> bytes;
     constexpr auto OPTIONS = options::big_endian;
     auto bytes_written = serialize<OPTIONS>(s, bytes); // {0x30, 0x39}
-  }  
+  }
 }
 ```
 
 ### Fixed or Variable-length Encoding
 
-By default, large integer types (32 and 64-bit values), e.g., `int32_t`, `uint64_t` are encoded as variable-length quantities (VLQ). 
+By default, large integer types (32 and 64-bit values), e.g., `int32_t`, `uint64_t` are encoded as variable-length quantities (VLQ).
 
 This can be changed with `alpaca::options::fixed_length_encoding`. In fixed-length encoding, an `uint32_t` will take up 4 bytes.
 
@@ -966,7 +966,7 @@ int main() {
 
 #### VLQ for Unsigned integers
 
-* `uint8_t` and `uint16_t` are stored as-is without any encoding. 
+* `uint8_t` and `uint16_t` are stored as-is without any encoding.
 * `uint32_t` and `uint64_t` are represented as variable-length quantities (VLQ) with 7-bits for data and 1-bit to represent continuation
 
 <table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td colspan="7">B₀</td><td>A</td><td colspan="7">Bₙ (n &gt; 0)</td></tr></tbody></table>
@@ -975,7 +975,7 @@ int main() {
 
 #### VLQ for Signed integers
 
-* `int8_t` and `int16_t` are stored as-is without any encoding. 
+* `int8_t` and `int16_t` are stored as-is without any encoding.
 * `int32_t` and `int64_t` are represented as VLQ, similar to the unsigned version. The only difference is that the first VLQ has the sixth bit reserved to indicate whether the encoded integer is positive or negative. Any consecutive VLQ octet follows the general structure.
 
 <table><thead><tr><th colspan="8">First Octet</th><th colspan="8">Second Octet</th></tr></thead><tbody><tr><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td><td>2⁷</td><td>2⁶</td><td>2⁵</td><td>2⁴</td><td>2³</td><td>2²</td><td>2¹</td><td>2⁰</td></tr><tr><td>A</td><td>B</td><td colspan="6">C₀</td><td>B</td><td colspan="7">Cₙ (n &gt; 0)</td></tr></tbody></table>
@@ -985,9 +985,9 @@ int main() {
 
 ### Data Structure Versioning
 
-alpaca provides a type-hashing mechanism to encode the version the aggregate class type as a `uint32_t`. This hash can be added to the output using `alpaca::options::with_version`.  The type hash includes the number of fields in the struct, the `sizeof(T)` for the struct, an ordered list of the type of each field. This information is encoded into a bytearray and then a checksum is generated for those bytes. 
+alpaca provides a type-hashing mechanism to encode the version the aggregate class type as a `uint32_t`. This hash can be added to the output using `alpaca::options::with_version`.  The type hash includes the number of fields in the struct, the `sizeof(T)` for the struct, an ordered list of the type of each field. This information is encoded into a bytearray and then a checksum is generated for those bytes.
 
-During deserialization, the same type hash is calculated and compared against the input. In case of a mismatch, the error code is set. 
+During deserialization, the same type hash is calculated and compared against the input. In case of a mismatch, the error code is set.
 
 ```cpp
 std::vector<uint8_t> bytes;
@@ -1018,8 +1018,8 @@ std::vector<uint8_t> bytes;
 ```
 
 ### Integrity Checking with Checksums
-	
-In addition to type hashing, checksums can be added to the end of the output using `options::with_checksum`. This will generate a `CRC32` checksum for all the bytes in the serialized output and then append the four additional bytes to the end of the output. 
+
+In addition to type hashing, checksums can be added to the end of the output using `options::with_checksum`. This will generate a `CRC32` checksum for all the bytes in the serialized output and then append the four additional bytes to the end of the output.
 
 ```cpp
 struct MyStruct {
@@ -1029,7 +1029,7 @@ struct MyStruct {
 };
 
 MyStruct s{'m', 54321, -987.654};
-	
+
 std::vector<uint8_t> bytes;
 
 // Serialize and append CRC32 hash
@@ -1055,9 +1055,39 @@ if (!ec) {
 // source: https://crccalc.com/
 ```
 
+### Reversing the Serialized Order of Aggregate Fields
+
+The order of serialized fields can be reversed with the option `options::reverse_aggregate_fields`. It is used, for example, when serializing structs to be casted to SystemVerilog structs.
+
+Note that backwards compatibility is inverted and new fields should be added to the beginning of aggregates to maintain compatibility
+
+```cpp
+struct MyStruct {
+  char a;
+  uint16_t b;
+  float c;
+};
+
+MyStruct s{'m', 54321, -987.654};
+
+std::vector<uint8_t> bytes;
+
+// Serialize with reverse field order
+constexpr auto OPTIONS = options::reverse_aggregate_fields;
+auto bytes_written = serialize<OPTIONS>(s, bytes); // 11 bytes
+
+// bytes:
+// {
+//   0xdb 0xe9 0x76 0xc4    // float -987.654
+//   0x31 0xd4              // uint 54321
+//   0x6d                   // char 'm'
+// }
+//
+```
+
 ### Macros to Exclude STL Data Structures
 
-alpaca includes headers for a number of STL containers and classes. As this can affect the compile time of applications, define any of the following macros to remove support for particular data structures. 
+alpaca includes headers for a number of STL containers and classes. As this can affect the compile time of applications, define any of the following macros to remove support for particular data structures.
 
 ```cpp
 #define ALPACA_EXCLUDE_SUPPORT_STD_ARRAY
@@ -1102,7 +1132,7 @@ int main() {
   my_struct s {12345,
 	       {'a', 'b', 'c'},
 	       {{"x", -20}, {"y", 45}}};
-  
+
   std::vector<std::uint8_t> bytes;
   auto bytes_written = serialize<options::fixed_length_encoding>(s, bytes);
 }
@@ -1110,7 +1140,7 @@ int main() {
 
 ## Python Interoperability
 
-alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)-based Python wrapper called `pyalpaca`. To build this wrapper, include the option `-DALPACA_BUILD_PYTHON_LIB=on` with `cmake`. 
+alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)-based Python wrapper called `pyalpaca`. To build this wrapper, include the option `-DALPACA_BUILD_PYTHON_LIB=on` with `cmake`.
 
 Instead of providing a `struct` type, the user will provide a string specification of the fields. This is inspired by the standard Python [struct](https://docs.python.org/3/library/struct.html) module.
 
@@ -1160,12 +1190,12 @@ format = '?cifs[i][[d]][3c]{c:i}{I}(cif)(s(dI))'
 
 # Construct object
 object = [
-    False, 
-    'a', 
-    5, 
-    3.14, 
+    False,
+    'a',
+    5,
+    3.14,
     "Hello World!",
-    [0, 1, 2, 3], 
+    [0, 1, 2, 3],
     [[1.1, 2.2], [3.3, 4.4], [5.5, 6.6]],
     ['a', 'b', 'c'],
     {'a': 5, 'b': 19},
@@ -1201,24 +1231,24 @@ print("]")
 ```console
 pranav@ubuntu:~/dev/alpaca/build/python$ python3 test.py
 Bytes:
-  0x00 0x61 0x05 0xc3 0xf5 0x48 0x40 0x0c 
-  0x48 0x65 0x6c 0x6c 0x6f 0x20 0x57 0x6f 
-  0x72 0x6c 0x64 0x21 0x04 0x00 0x01 0x02 
-  0x03 0x03 0x02 0x9a 0x99 0x99 0x99 0x99 
-  0x99 0xf1 0x3f 0x9a 0x99 0x99 0x99 0x99 
-  0x99 0x01 0x40 0x02 0x66 0x66 0x66 0x66 
-  0x66 0x66 0x0a 0x40 0x9a 0x99 0x99 0x99 
-  0x99 0x99 0x11 0x40 0x02 0x00 0x00 0x00 
-  0x00 0x00 0x00 0x16 0x40 0x66 0x66 0x66 
-  0x66 0x66 0x66 0x1a 0x40 0x61 0x62 0x63 
-  0x02 0x61 0x05 0x62 0x13 0x06 0x01 0x02 
-  0x03 0x04 0x05 0x06 0x61 0x2d 0xb6 0xf3 
-  0x2d 0x40 0x05 0x48 0x65 0x6c 0x6c 0x6f 
-  0xee 0x7c 0x3f 0x35 0x5e 0xba 0x43 0x40 
-  0x15 
+  0x00 0x61 0x05 0xc3 0xf5 0x48 0x40 0x0c
+  0x48 0x65 0x6c 0x6c 0x6f 0x20 0x57 0x6f
+  0x72 0x6c 0x64 0x21 0x04 0x00 0x01 0x02
+  0x03 0x03 0x02 0x9a 0x99 0x99 0x99 0x99
+  0x99 0xf1 0x3f 0x9a 0x99 0x99 0x99 0x99
+  0x99 0x01 0x40 0x02 0x66 0x66 0x66 0x66
+  0x66 0x66 0x0a 0x40 0x9a 0x99 0x99 0x99
+  0x99 0x99 0x11 0x40 0x02 0x00 0x00 0x00
+  0x00 0x00 0x00 0x16 0x40 0x66 0x66 0x66
+  0x66 0x66 0x66 0x1a 0x40 0x61 0x62 0x63
+  0x02 0x61 0x05 0x62 0x13 0x06 0x01 0x02
+  0x03 0x04 0x05 0x06 0x61 0x2d 0xb6 0xf3
+  0x2d 0x40 0x05 0x48 0x65 0x6c 0x6c 0x6f
+  0xee 0x7c 0x3f 0x35 0x5e 0xba 0x43 0x40
+  0x15
 
 Deserialized:
-[ 
+[
     False,
     a,
     5,
@@ -1277,7 +1307,7 @@ int main() {
 ```
 
 ```console
-pranav@ubuntu:~/dev/alpaca/build/python$ hexdump -C savefile.bin 
+pranav@ubuntu:~/dev/alpaca/build/python$ hexdump -C savefile.bin
 00000000  05 01 61 0b 48 65 6c 6c  6f 20 57 6f 72 6c 64 06  |..a.Hello World.|
 00000010  06 05 04 03 02 01 02 03  61 62 63 01 02 03 03 64  |........abc....d|
 00000020  65 66 04 05 06                                    |ef...|
@@ -1307,10 +1337,10 @@ with open("savefile.bin", "rb") as file:
 ```
 
 ```console
-pranav@ubuntu:~/dev/alpaca/build/python$ python3 test.py 
+pranav@ubuntu:~/dev/alpaca/build/python$ python3 test.py
 
 Deserialized:
-[ 
+[
     5,
     True,
     a,
@@ -1321,7 +1351,7 @@ Deserialized:
 ```
 
 ## Performance Benchmarks
-	
+
 Last updated: 2022-09-13
 
 All tests benchmark the following properties (time or size):
@@ -1371,7 +1401,7 @@ make
 # Test
 ./test/tests
 
-# Install 
+# Install
 make install
 ```
 
