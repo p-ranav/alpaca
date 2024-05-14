@@ -38,7 +38,10 @@ typename std::enable_if<!std::is_same_v<Container, std::ifstream>, bool>::type
 from_bytes(std::basic_string<CharType> &value, Container &bytes,
            std::size_t &current_index, std::size_t &end_index,
            std::error_code &error_code) {
-
+  // clear out the value - this ensures that value will be only what is read
+  // from the stream, and not any previous data that may have been set during
+  // the construction of the containing object T().
+  value.clear();
   if (current_index >= end_index) {
     // end of input
     // return true for forward compatibility
@@ -75,7 +78,10 @@ typename std::enable_if<std::is_same_v<Container, std::ifstream>, bool>::type
 from_bytes(std::basic_string<CharType> &value, Container &bytes,
            std::size_t &current_index, std::size_t &end_index,
            std::error_code &error_code) {
-
+  // clear out the value - this ensures that value will be only what is read
+  // from the stream, and not any previous data that may have been set during
+  // the construction of the containing object T().
+  value.clear();
   if (current_index >= end_index) {
     // end of input
     // return true for forward compatibility
