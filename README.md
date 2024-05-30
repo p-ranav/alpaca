@@ -800,6 +800,60 @@ pranav@ubuntu:~/dev/alpaca/build$ hexdump -C savefile.bin
 00000025
 ```
 
+## Add custom type serialization
+Not all types are supported by this library, but you can easily define serialization for custom types from other libraries. To do this, you need to create header file, in which define: `type_info`, `to_bytes` and `from_bytes` methods, and in the end of this file include `<alpaca/alpaca.h>`. After that, use your header file, instead of alpaca one.
+
+For example, we need to add serialization for type `MyCustomType<typename T, typename U, int L>`
+```cpp
+#pragma once
+
+#include <alpaca/detail/field_type.h>
+#include <alpaca/detail/options.h>
+#include <alpaca/detail/aggregate_arity.h>
+
+#include <system_error>
+#include <unordered_map>
+#include <vector>
+
+namespace alpaca {
+
+namespace detail {
+
+
+template <typename T> struct is_my_custom_type : std::false_type {};
+
+template <typename T, typename U, int L>
+struct is_my_custom_type<MY_CUSTOM_TYPE<T, U, L>> : std::true_type {};
+
+template <typename T>
+typename std::enable_if<is_my_custom_type<T>::value, void>::type
+type_info(
+    std::vector<uint8_t> &typeids,
+    std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
+
+    // Run type_info for inner types
+	type_info<typename T::T>(typeids, struct_visitor_map);
+	type_info<typename T::U>(typeids, struct_visitor_map);
+}
+
+template <options O, typename Container, typename T, typename U, int L>
+void to_bytes(Container &bytes, std::size_t &byte_index, const MY_CUSTOM_TYPE<T, U, L> &input) {
+    // implement to bytes
+}
+
+template <options O, typename T, typename U, int L, typename Container>
+bool from_bytes(MY_CUSTOM_TYPE<T, U, L> &output, Container &bytes, std::size_t &byte_index, std::size_t &end_index,
+                std::error_code &error_code) {
+    // implement from bytes
+    return true;
+}
+}  // namespace detail
+}  // namespace alpaca
+
+#include <alpaca/alpaca.h>
+```
+
+
 ## Backward and Forward Compatibility
 
 * A change made to a system or technology in such a way that the existing users are unaffected is a ***backward compatible change***. The obvious advantage is that the existing users have a non-time sensitive and a graceful way of upgrading their integrations. On the other hand, a non backward-compatible change breaks the existing integrations and forces the existing users to deal with an immediate fix.
