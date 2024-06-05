@@ -48,7 +48,7 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
 template <options O, typename T, typename U>
 typename std::enable_if<
     (std::is_same_v<U, uint32_t> || std::is_same_v<U, uint64_t> ||
-        std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t>) &&
+        std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t> || std::is_same_v<U, long>) &&
         !std::is_same_v<U, size_t>,
     void>::type
 to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {

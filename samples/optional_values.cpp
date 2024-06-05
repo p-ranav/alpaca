@@ -6,11 +6,11 @@ int main() {
     std::optional<int> a;
     std::optional<float> b;
     std::optional<std::string> c;
-    std::optional<std::vector<bool>> d;
+    std::optional<std::vector<char>> d;
   };
 
   MyStruct s{5, 3.14f, std::nullopt,
-             std::vector<bool>{true, false, true, false}};
+             std::vector<char>{true, false, true, false}};
 
   // Serialize
   std::vector<uint8_t> bytes;
@@ -40,5 +40,5 @@ int main() {
   assert(recovered.a.value() == 5);
   assert(recovered.b.value() == 3.14f);
   assert(recovered.c.has_value() == false);
-  assert((recovered.d.value() == std::vector<bool>{true, false, true, false}));
+  assert((recovered.d.value() == std::vector<char>{true, false, true, false}));
 }
