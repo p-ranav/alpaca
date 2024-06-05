@@ -12,6 +12,22 @@ namespace alpaca {
 
 namespace detail {
 
+using size_t_serialized_type = uint64_t;
+
+template<typename T>
+struct map_size_t_to_type {
+  using type = T;
+};
+
+template<>
+struct map_size_t_to_type<size_t> {
+  using type = size_t_serialized_type;
+};
+
+template<typename T>
+using map_size_t_to_type_t = typename map_size_t_to_type<T>::type;
+
+
 template <options O, typename Container>
 typename std::enable_if<!std::is_array_v<Container>, bool>::type
 from_bytes_crc32(uint32_t &value, Container &bytes, std::size_t &current_index,
@@ -211,11 +227,13 @@ typename std::enable_if<
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
 
+  using ActualType = map_size_t_to_type_t<T>;
+
   if (current_index >= end_index) {
     // end of input
 
     // default initialize the value
-    value = T();
+    value = ActualType();
 
     // return true for forward compatibility
     return true;
@@ -232,18 +250,18 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
       (detail::fixed_length_encoding<O>()));
 
   if constexpr (use_fixed_length_encoding) {
-    constexpr auto num_bytes_to_read = sizeof(T);
+    constexpr auto num_bytes_to_read = sizeof(ActualType);
     if (end_index < num_bytes_to_read) {
       /// TODO: report error
       return false;
     }
-    value = *(reinterpret_cast<const T *>(bytes.data() + current_index));
+    value = *(reinterpret_cast<const ActualType *>(bytes.data() + current_index));
     current_index += num_bytes_to_read;
   } else {
-    value = decode_varint<T>(bytes, current_index);
+    value = decode_varint<ActualType>(bytes, current_index);
   }
 
-  update_value_based_on_alpaca_endian_rules<O, T>(value);
+  update_value_based_on_alpaca_endian_rules<O, ActualType>((ActualType &) value);
   return true;
 }
 
@@ -260,11 +278,13 @@ typename std::enable_if<
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
 
+  using ActualType = map_size_t_to_type_t<T>;
+
   if (current_index >= end_index) {
     // end of input
 
     // default initialize the value
-    value = T();
+    value = ActualType();
 
     // return true for forward compatibility
     return true;
@@ -281,18 +301,18 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
       (detail::fixed_length_encoding<O>()));
 
   if constexpr (use_fixed_length_encoding) {
-    constexpr auto num_bytes_to_read = sizeof(T);
+    constexpr auto num_bytes_to_read = sizeof(ActualType);
     if (end_index < num_bytes_to_read) {
       /// TODO: report error
       return false;
     }
-    value = *(reinterpret_cast<const T *>(bytes + current_index));
+    value = *(reinterpret_cast<const ActualType *>(bytes + current_index));
     current_index += num_bytes_to_read;
   } else {
-    value = decode_varint<T>(bytes, current_index);
+    value = decode_varint<ActualType>(bytes, current_index);
   }
 
-  update_value_based_on_alpaca_endian_rules<O, T>(value);
+  update_value_based_on_alpaca_endian_rules<O, ActualType>(value);
   return true;
 }
 
@@ -309,11 +329,13 @@ typename std::enable_if<
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
 
+  using ActualType = map_size_t_to_type_t<T>;
+
   if (current_index >= end_index) {
     // end of input
 
     // default initialize the value
-    value = T();
+    value = ActualType();
 
     // return true for forward compatibility
     return true;
@@ -330,7 +352,7 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
       (detail::fixed_length_encoding<O>()));
 
   if constexpr (use_fixed_length_encoding) {
-    constexpr auto num_bytes_to_read = sizeof(T);
+    constexpr auto num_bytes_to_read = sizeof(ActualType);
     if (end_index < num_bytes_to_read) {
       /// TODO: report error
       return false;
@@ -338,12 +360,12 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
     char value_bytes[num_bytes_to_read];
     bytes.read(&value_bytes[0], num_bytes_to_read);
     current_index += num_bytes_to_read;
-    value = *(reinterpret_cast<const T *>(value_bytes));
+    value = *(reinterpret_cast<const ActualType *>(value_bytes));
   } else {
-    value = decode_varint<T>(bytes, current_index);
+    value = decode_varint<ActualType>(bytes, current_index);
   }
 
-  update_value_based_on_alpaca_endian_rules<O, T>(value);
+  update_value_based_on_alpaca_endian_rules<O, ActualType>((ActualType &)value);
   return true;
 }
 

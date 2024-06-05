@@ -47,9 +47,9 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
 // encode as variable-length
 template <options O, typename T, typename U>
 typename std::enable_if<
-    std::is_same_v<U, uint32_t> || std::is_same_v<U, uint64_t> ||
-        std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t> ||
-        std::is_same_v<U, std::size_t>,
+    (std::is_same_v<U, uint32_t> || std::is_same_v<U, uint64_t> ||
+        std::is_same_v<U, int32_t> || std::is_same_v<U, int64_t>) &&
+        !std::is_same_v<U, size_t>,
     void>::type
 to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
 
@@ -72,6 +72,55 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
     encode_varint<U, T>(value, bytes, byte_index);
   }
 }
+
+
+
+// encode size_t as fixed 4-bytes integer
+template <options O, typename T, typename U>
+typename std::enable_if<
+        std::is_same_v<U, std::size_t>,
+        void>::type
+to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
+
+    alpaca::detail::size_t_serialized_type value = original_value;
+    update_value_based_on_alpaca_endian_rules<O,
+                                              alpaca::detail::size_t_serialized_type>(value);
+
+    constexpr auto use_fixed_length_encoding = (
+            // Do not perform VLQ if:
+            // 1. if the system is little-endian and the requested byte order is
+            // big-endian
+            // 2. if the system is big-endian and the requested byte order is
+            // little-endian
+            // 3. If fixed length encoding is requested
+            (is_system_little_endian() && detail::big_endian<O>()) ||
+            (detail::fixed_length_encoding<O>()));
+
+    if constexpr (use_fixed_length_encoding) {
+        copy_bytes_in_range(value, bytes, byte_index);
+    } else {
+        encode_varint<U, T>(value, bytes, byte_index);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // enum class
 template <options O, typename T, typename U>
