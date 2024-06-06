@@ -103,25 +103,6 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // enum class
 template <options O, typename T, typename U>
 typename std::enable_if<std::is_enum<U>::value, void>::type

@@ -273,7 +273,7 @@ typename std::enable_if<
     std::is_array_v<Container> &&
         (std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
          std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
-         std::is_same_v<T, std::size_t>),
+         std::is_same_v<T, size_t>),
     bool>::type
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
@@ -306,13 +306,14 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
       /// TODO: report error
       return false;
     }
+
     value = *(reinterpret_cast<const ActualType *>(bytes + current_index));
     current_index += num_bytes_to_read;
   } else {
     value = decode_varint<ActualType>(bytes, current_index);
   }
 
-  update_value_based_on_alpaca_endian_rules<O, ActualType>(value);
+  update_value_based_on_alpaca_endian_rules<O, ActualType>((ActualType&) value);
   return true;
 }
 
@@ -324,8 +325,9 @@ typename std::enable_if<
     std::is_same_v<Container, std::ifstream> &&
         (std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
          std::is_same_v<T, uint32_t> || std::is_same_v<T, uint64_t> ||
-         std::is_same_v<T, std::size_t>),
+         std::is_same_v<T, size_t>),
     bool>::type
+
 from_bytes(T &value, Container &bytes, std::size_t &current_index,
            std::size_t &end_index, std::error_code &) {
 
