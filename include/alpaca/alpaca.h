@@ -134,7 +134,10 @@ template <options O, typename T, std::size_t N, typename Container,
 void serialize_helper(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (I < N) {
     const auto &ref = s;
-    decltype(auto) field = detail::get<I, decltype(ref), N>(ref);
+    decltype(auto) field = detail::get < detail::reverse_aggregate_fields<O>()
+                               ? (N - 1 - I)
+                               : I,
+                   decltype(ref), N > (ref);
 
     // serialize field
     detail::to_bytes_router<O>(field, bytes, byte_index);
@@ -290,7 +293,10 @@ template <options O, typename T, std::size_t N, typename Container,
 void deserialize_helper(T &s, Container &bytes, std::size_t &byte_index,
                         std::size_t &end_index, std::error_code &error_code) {
   if constexpr (I < N) {
-    decltype(auto) field = detail::get<I, T, N>(s);
+    decltype(auto) field = detail::get < detail::reverse_aggregate_fields<O>()
+                               ? (N - 1 - I)
+                               : I,
+                   T, N > (s);
 
     // load current field
     detail::from_bytes_router<O>(field, bytes, byte_index, end_index,
