@@ -25,7 +25,7 @@ operator|(E lhs, E rhs) {
 
 namespace detail {
 
-using size_t_serialized_type = uint64_t;
+using size_t_serialized_type = uint32_t;
 
 
 template <typename T, T value, T flag> constexpr bool enum_has_flag() {

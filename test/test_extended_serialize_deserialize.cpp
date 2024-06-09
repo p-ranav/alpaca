@@ -17,7 +17,7 @@ TEST_SUITE("extended test") {
     Simple data{0x12345678};
 
     std::vector<uint8_t> bytes;
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed = alpaca::deserialize<OPTIONS, Simple>(bytes, err);
@@ -42,7 +42,7 @@ TEST_SUITE("extended test") {
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed = alpaca::deserialize<OPTIONS, Outer>(bytes, err);
@@ -67,7 +67,7 @@ TEST_SUITE("extended test") {
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed = alpaca::deserialize<OPTIONS, Container>(bytes, err);
@@ -90,7 +90,7 @@ TEST_SUITE("extended test") {
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed =
@@ -123,7 +123,7 @@ TEST_SUITE("extended test") {
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed = alpaca::deserialize<OPTIONS, Outer>(bytes, err);
@@ -151,7 +151,7 @@ TEST_SUITE("extended test") {
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed = alpaca::deserialize<OPTIONS, Simple>(bytes, err);
@@ -172,7 +172,7 @@ TEST_SUITE("extended test") {
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed =
@@ -191,7 +191,7 @@ TEST_SUITE("extended test") {
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed =
@@ -203,15 +203,15 @@ TEST_SUITE("extended test") {
 
   TEST_CASE("32-bit extremes") {
     struct WithExtremeInt32 {
-      int32_t min_int{-(2 ^ 31)};
-      int32_t max_int{(2 ^ 31) - 1};
+      int32_t min_int{std::numeric_limits<int32_t>::min()};
+      int32_t max_int{std::numeric_limits<int32_t>::max()};
     };
 
     WithExtremeInt32 data;
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed =
@@ -224,15 +224,15 @@ TEST_SUITE("extended test") {
 
   TEST_CASE("64-bit extreme") {
     struct WithExtremeInt64 {
-      int64_t min_int{-(2 ^ 63)};
-      int64_t max_int{(2 ^ 63) - 1};
+      int64_t min_int{std::numeric_limits<int64_t>::min()};
+      int64_t max_int{std::numeric_limits<int64_t>::max()};
     };
 
     WithExtremeInt64 data;
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed =
@@ -245,21 +245,23 @@ TEST_SUITE("extended test") {
 
   TEST_CASE("Nested Structs with Extreme Values") {
     struct Inner {
-      int32_t min_int{-(2 ^ 31)};
-      int32_t max_int{(2 ^ 31) - 1};
+      int32_t min_int{std::numeric_limits<int32_t>::min()};
+      int32_t max_int{std::numeric_limits<int32_t>::max()};
       std::string long_string;
     };
 
     struct Outer {
       Inner inner;
-      int64_t extreme_value{(2 ^ 63) - 1};
+      int64_t extreme_value{std::numeric_limits<int64_t>::max()};
     };
 
-    Outer data{{-(2 ^ 31), (2 ^ 31) - 1, std::string(1000, 'A')}, (2 ^ 63) - 1};
+    Outer data{{std::numeric_limits<int32_t>::max(),
+                std::numeric_limits<int32_t>::min(), std::string(1000, 'A')},
+               std::numeric_limits<int64_t>::max()};
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed = alpaca::deserialize<OPTIONS, Outer>(bytes, err);
@@ -273,8 +275,8 @@ TEST_SUITE("extended test") {
 
   TEST_CASE("Complex Nested Structs and Vectors with Extremes") {
     struct Inner {
-      int32_t min_int{-(2 ^ 31)};
-      int32_t max_int{(2 ^ 31) - 1};
+      int32_t min_int{std::numeric_limits<int32_t>::min()};
+      int32_t max_int{std::numeric_limits<int32_t>::max()};
       std::string long_string;
     };
 
@@ -287,15 +289,17 @@ TEST_SUITE("extended test") {
       Middle middle;
       std::string description;
     };
+    constexpr auto min = std::numeric_limits<int32_t>::min();
+    constexpr auto max = std::numeric_limits<int32_t>::max();
 
-    Outer data{{{-(2 ^ 31), (2 ^ 31) - 1, std::string(1000, 'A')},
-                {{-(2 ^ 31), (2 ^ 31) - 1, std::string(500, 'B')},
-                 {-(2 ^ 31), (2 ^ 31) - 1, std::string(500, 'C')}}},
+    Outer data{{{min, max, std::string(1000, 'A')},
+                {{min, max, std::string(500, 'B')},
+                 {min, max, std::string(500, 'C')}}},
                "complex structure with extremes"};
 
     std::vector<uint8_t> bytes;
 
-    auto size = alpaca::serialize<OPTIONS>(data, bytes);
+    alpaca::serialize<OPTIONS>(data, bytes);
 
     std::error_code err;
     auto reconstructed = alpaca::deserialize<OPTIONS, Outer>(bytes, err);
@@ -420,7 +424,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
   };
 
   std::vector<uint8_t> bytes;
-  auto size = alpaca::serialize<OPTIONS>(data, bytes);
+  alpaca::serialize<OPTIONS>(data, bytes);
 
   std::error_code err;
   auto reconstructed = alpaca::deserialize<OPTIONS, Complex>(bytes, err);
