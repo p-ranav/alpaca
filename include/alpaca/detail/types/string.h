@@ -26,7 +26,7 @@ template <options O, typename Container, typename CharType>
 void to_bytes(Container &bytes, std::size_t &byte_index,
               const std::basic_string<CharType> &input) {
   // save string length
-  to_bytes_router<O>(input.size(), bytes, byte_index);
+  to_bytes_router<O>((size_t_serialized_type) input.size(), bytes, byte_index);
 
   for (const auto &c : input) {
     to_bytes<O>(bytes, byte_index, c);
@@ -49,8 +49,8 @@ from_bytes(std::basic_string<CharType> &value, Container &bytes,
   }
 
   // current byte is the length of the string
-  std::size_t size = 0;
-  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
+  size_t_serialized_type size = 0;
+  detail::from_bytes<O, size_t_serialized_type>(size, bytes, current_index, end_index,
                                      error_code);
 
   if (size > end_index - current_index) {
@@ -89,8 +89,8 @@ from_bytes(std::basic_string<CharType> &value, Container &bytes,
   }
 
   // current byte is the length of the string
-  std::size_t size = 0;
-  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
+  size_t_serialized_type size = 0;
+  detail::from_bytes<O, size_t_serialized_type>(size, bytes, current_index, end_index,
                                      error_code);
 
   if (size > end_index - current_index) {

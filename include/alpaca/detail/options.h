@@ -25,6 +25,9 @@ operator|(E lhs, E rhs) {
 
 namespace detail {
 
+using size_t_serialized_type = uint64_t;
+
+
 template <typename T, T value, T flag> constexpr bool enum_has_flag() {
   using underlying = typename std::underlying_type<T>::type;
   return (static_cast<underlying>(value) & static_cast<underlying>(flag)) ==

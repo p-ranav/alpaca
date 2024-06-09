@@ -23,9 +23,9 @@ target_include_directories(alpaca INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
 
 
-if(ALPACA_BUILD_TESTS)
+#if(ALPACA_BUILD_TESTS)
   add_subdirectory(test)
-endif()
+#endif()
 
 if(ALPACA_BUILD_SAMPLES)
   add_subdirectory(samples)
