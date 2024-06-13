@@ -4,7 +4,7 @@ using namespace alpaca;
 
 using doctest::test_suite;
 
-constexpr auto OPTIONS = options::fixed_length_encoding;
+constexpr auto OPTIONS = options::fixed_length_encoding | options::force_aligned_access;
 
 TEST_SUITE("extended test") {
 

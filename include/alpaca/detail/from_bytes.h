@@ -19,9 +19,10 @@ void get_aligned(T& value, const uint8_t* bytes, size_t current_index)
   if (force_aligned_access<O>() &&
       reinterpret_cast<uintptr_t>(bytes + current_index) % alignof(T) != 0)
   {
-    // non-aligned access
+    // non-aligned access --> byte-byte copy
     std::memcpy(&value, bytes + current_index, sizeof(T));
   } else {
+    // aligned access, directly assign the value
     value = *(reinterpret_cast<const T *>(bytes + current_index));
   }
 }
