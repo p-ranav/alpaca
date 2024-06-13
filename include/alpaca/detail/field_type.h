@@ -37,7 +37,6 @@ enum class field_type : uint8_t {
   deque,
   filesystem_path,
   bitset,
-  temperature
 };
 
 template <field_type value> constexpr uint8_t to_byte() {
