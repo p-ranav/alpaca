@@ -26,7 +26,7 @@ template <options O, typename T, typename Container>
 void to_bytes_from_vector_type(const T &input, Container &bytes,
                                std::size_t &byte_index) {
   // save vector size
-  to_bytes_router<O, std::size_t>(input.size(), bytes, byte_index);
+  to_bytes_router<O, size_t_serialized_type>((size_t_serialized_type) input.size(), bytes, byte_index);
 
   // value of each element in list
   for (const auto &v : input) {
@@ -65,8 +65,8 @@ bool from_bytes_to_vector(std::vector<T> &value, Container &bytes,
   }
 
   // current byte is the size of the vector
-  std::size_t size = 0;
-  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
+  size_t_serialized_type size = 0;
+  detail::from_bytes<O, size_t_serialized_type>(size, bytes, current_index, end_index,
                                      error_code);
 
   if (size > end_index - current_index) {

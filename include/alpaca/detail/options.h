@@ -8,7 +8,8 @@ enum class options {
   big_endian = 1,
   fixed_length_encoding = 2,
   with_version = 4,
-  with_checksum = 8
+  with_checksum = 8,
+  force_aligned_access = 16,
 };
 
 template <typename E> struct enable_bitmask_operators {
@@ -24,6 +25,9 @@ operator|(E lhs, E rhs) {
 }
 
 namespace detail {
+
+using size_t_serialized_type = uint32_t;
+
 
 template <typename T, T value, T flag> constexpr bool enum_has_flag() {
   using underlying = typename std::underlying_type<T>::type;
@@ -47,6 +51,11 @@ template <options O> constexpr bool with_version() {
 
 template <options O> constexpr bool with_checksum() {
   return enum_has_flag<options, O, options::with_checksum>();
+
+}
+
+template <options O> constexpr bool force_aligned_access() {
+  return enum_has_flag<options, O, options::force_aligned_access>();
 }
 
 } // namespace detail

@@ -47,11 +47,13 @@ to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
 // encode as variable-length
 template <options O, typename T, typename U>
 typename std::enable_if<
-    std::is_same_v<U, uint32_t> || std::is_same_v<U, uint64_t> ||
-        std::is_same_v<U, int32_t> || std::is_same_v<U, long> || std::is_same_v<U, int64_t> ||
-        std::is_same_v<U, std::size_t>,
+     std::is_same_v<U, uint32_t> || std::is_same_v<U, uint64_t> ||
+     std::is_same_v<U, int32_t> || std::is_same_v<U, long> ||
+     std::is_same_v<U, int64_t>,
     void>::type
 to_bytes(T &bytes, std::size_t &byte_index, const U &original_value) {
+
+  static_assert(!std::is_same_v<T, size_t>, "Unable to directly serialize size_t type");
 
   U value = original_value;
   update_value_based_on_alpaca_endian_rules<O, U>(value);

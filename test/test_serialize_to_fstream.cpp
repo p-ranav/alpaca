@@ -57,7 +57,9 @@ TEST_CASE("Serialize complex struct to fstream with options" *
   os.open("tmp4.bin", std::ios::out | std::ios::binary);
   auto bytes_written = serialize<OPTIONS>(s, os);
   os.close();
-  REQUIRE(bytes_written == 117);
-  REQUIRE(std::filesystem::file_size("tmp4.bin") == 117);
+  constexpr auto expected_size =
+      93 + sizeof(alpaca::detail::size_t_serialized_type);
+  REQUIRE(bytes_written == expected_size);
+  REQUIRE(std::filesystem::file_size("tmp4.bin") == expected_size);
   std::filesystem::remove("tmp4.bin");
 }

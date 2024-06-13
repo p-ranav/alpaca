@@ -24,7 +24,7 @@ target_include_directories(alpaca INTERFACE
 
 
 if(ALPACA_BUILD_TESTS)
-  add_subdirectory(test)
+add_subdirectory(test)
 endif()
 
 if(ALPACA_BUILD_SAMPLES)

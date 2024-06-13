@@ -51,7 +51,7 @@ template <options O, typename T, typename Container>
 void to_bytes_from_map_type(const T &input, Container &bytes,
                             std::size_t &byte_index) {
   // save map size
-  to_bytes_router<O, std::size_t, Container>(input.size(), bytes, byte_index);
+  to_bytes_router<O, size_t_serialized_type, Container>((size_t_serialized_type) input.size(), bytes, byte_index);
 
   // save key,value pairs in map
   for (const auto &[key, value] : input) {
@@ -84,8 +84,8 @@ template <options O, typename T, typename Container>
 void from_bytes_to_map(T &map, Container &bytes, std::size_t &current_index,
                        std::size_t &end_index, std::error_code &error_code) {
   // current byte is the size of the map
-  std::size_t size = 0;
-  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
+  size_t_serialized_type size = 0;
+  detail::from_bytes<O, size_t_serialized_type>(size, bytes, current_index, end_index,
                                      error_code);
 
   if (size > end_index - current_index) {
