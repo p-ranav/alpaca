@@ -321,7 +321,6 @@ TEST_CASE("Complex Nested Structs and Vectors with Extremes") {
 }
 
 TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
-  enum class Status { ACTIVE, INACTIVE, PENDING, DELETED };
 
   struct Detail {
     int32_t id{0};
@@ -336,6 +335,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
     char initial{'A'};
     uint64_t big_value{0};
     int16_t short_value{0};
+    enum class Status { ACTIVE, INACTIVE, PENDING, DELETED };
     Status status{Status::ACTIVE};
     std::vector<int> numbers;
     std::string metadata;
@@ -346,7 +346,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
     int64_t field2{0};
     std::string field3;
     double field4{0.0};
-    Status status{Status::ACTIVE};
+    Detail::Status status{Detail::Status::ACTIVE};
     std::vector<Detail> details;
     bool flag{false};
     uint32_t field5{0};
@@ -362,7 +362,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
     0x123456789ABCDEF0,      // field2
     "This is a test string", // field3
     1234.5678,               // field4
-    Status::PENDING,         // status
+    Detail::Status::PENDING,         // status
     {                        // details
       {1,
        100,
@@ -376,7 +376,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
        'B',
        0xFFFFFFFF,
        1000,
-       Status::ACTIVE,
+       Detail::Status::ACTIVE,
        {1, 2, 3},
        "Meta 1"},
       {2,
@@ -391,7 +391,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
        'C',
        0xFFFFFFFE,
        2000,
-       Status::INACTIVE,
+       Detail::Status::INACTIVE,
        {4, 5, 6},
        "Meta 2"},
       {3,
@@ -406,7 +406,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
        'D',
        0xFFFFFFFD,
        3000,
-       Status::DELETED,
+       Detail::Status::DELETED,
        {7, 8, 9},
        "Meta 3"}},
     true,                  // flag
