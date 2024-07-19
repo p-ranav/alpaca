@@ -26,7 +26,7 @@ template <options O, typename T, typename Container>
 void to_bytes_from_deque_type(const T &input, Container &bytes,
                               std::size_t &byte_index) {
   // save deque size
-  to_bytes_router<O, std::size_t>(input.size(), bytes, byte_index);
+  to_bytes_router<O, size_t_serialized_type>(input.size(), bytes, byte_index);
 
   // value of each element in deque
   for (const auto &v : input) {
@@ -57,8 +57,8 @@ bool from_bytes_to_deque(std::deque<T> &value, Container &bytes,
   }
 
   // current byte is the size of the vector
-  std::size_t size = 0;
-  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
+  size_t_serialized_type size = 0;
+  detail::from_bytes<O, size_t_serialized_type>(size, bytes, current_index, end_index,
                                      error_code);
 
   if (size > end_index - current_index) {
@@ -70,7 +70,7 @@ bool from_bytes_to_deque(std::deque<T> &value, Container &bytes,
   }
 
   // read `size` bytes and save to value
-  for (std::size_t i = 0; i < size; ++i) {
+  for (size_t_serialized_type i = 0; i < size; ++i) {
     T v{};
     from_bytes_router<O>(v, bytes, current_index, end_index, error_code);
     if (error_code) {

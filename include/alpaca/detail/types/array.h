@@ -14,7 +14,7 @@ typename std::enable_if<is_array_type<T>::value, void>::type type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::array>());
-  typeids.push_back(std::tuple_size_v<T>);
+  typeids.push_back((size_t_serialized_type) std::tuple_size_v<T>);
   using value_type = typename T::value_type;
   type_info<value_type>(typeids, struct_visitor_map);
 }
@@ -41,7 +41,7 @@ void from_bytes_to_array(T &value, Container &bytes, std::size_t &current_index,
 
   using decayed_value_type = typename std::decay<typename T::value_type>::type;
 
-  constexpr auto size = std::tuple_size<T>::value;
+  constexpr auto size = (size_t_serialized_type) std::tuple_size<T>::value;
 
   if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining
@@ -52,7 +52,7 @@ void from_bytes_to_array(T &value, Container &bytes, std::size_t &current_index,
   }
 
   // read `size` bytes and save to value
-  for (std::size_t i = 0; i < size; ++i) {
+  for (size_t_serialized_type i = 0; i < size; ++i) {
     decayed_value_type v{};
     from_bytes_router<O>(v, bytes, current_index, end_index, error_code);
     value[i] = v;

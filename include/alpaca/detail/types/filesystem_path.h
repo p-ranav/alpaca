@@ -26,7 +26,8 @@ template <options O, typename Container>
 void to_bytes(Container &bytes, std::size_t &byte_index,
               const std::filesystem::path &input) {
   // save string length
-  to_bytes_router<O>(input.native().size(), bytes, byte_index);
+  to_bytes_router<O>((size_t_serialized_type)input.native().size(), bytes,
+                     byte_index);
 
   for (const auto &c : input.native()) {
     to_bytes<O>(bytes, byte_index, c);
@@ -35,8 +36,8 @@ void to_bytes(Container &bytes, std::size_t &byte_index,
 
 template <options O, typename Container>
 bool from_bytes(std::filesystem::path &value, Container &bytes,
-           std::size_t &current_index, std::size_t &end_index,
-           std::error_code &error_code) {
+                std::size_t &current_index, std::size_t &end_index,
+                std::error_code &error_code) {
 
   if (current_index >= end_index) {
     // end of input
@@ -45,9 +46,9 @@ bool from_bytes(std::filesystem::path &value, Container &bytes,
   }
 
   // current byte is the length of the string
-  std::size_t size = 0;
-  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
-                                     error_code);
+  size_t_serialized_type size = 0;
+  detail::from_bytes<O, size_t_serialized_type>(size, bytes, current_index,
+                                                end_index, error_code);
 
   if (size > end_index - current_index) {
     // size is greater than the number of bytes remaining

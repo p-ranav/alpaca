@@ -30,7 +30,7 @@ type_info(
     std::vector<uint8_t> &typeids,
     std::unordered_map<std::string_view, std::size_t> &struct_visitor_map) {
   typeids.push_back(to_byte<field_type::tuple>());
-  constexpr auto tuple_size = std::tuple_size_v<T>;
+  constexpr auto tuple_size = (size_t_serialized_type) std::tuple_size_v<T>;
   type_info_tuple_helper<T, tuple_size, 0>(typeids, struct_visitor_map);
 }
 

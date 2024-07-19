@@ -3,6 +3,7 @@
 #include <alpaca/detail/options.h>
 #include <alpaca/detail/variable_length_encoding.h>
 #include <cstdint>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <system_error>
@@ -11,6 +12,21 @@
 namespace alpaca {
 
 namespace detail {
+
+template <options O, typename T>
+void get_aligned(T& value, const uint8_t* bytes, size_t current_index)
+{
+  if (force_aligned_access<O>() &&
+      reinterpret_cast<uintptr_t>(bytes + current_index) % alignof(T) != 0)
+  {
+    // non-aligned access --> byte-byte copy
+    std::memcpy(&value, bytes + current_index, sizeof(T));
+  } else {
+    // aligned access, directly assign the value
+    value = *(reinterpret_cast<const T *>(bytes + current_index));
+  }
+}
+
 
 template <options O, typename Container>
 typename std::enable_if<!std::is_array_v<Container>, bool>::type
@@ -21,7 +37,9 @@ from_bytes_crc32(uint32_t &value, Container &bytes, std::size_t &current_index,
   if (end_index < num_bytes_to_read) {
     return false;
   }
-  value = *(reinterpret_cast<const uint32_t *>(bytes.data() + current_index));
+
+  get_aligned<O>(value, &bytes[0], current_index);
+
   update_value_based_on_alpaca_endian_rules<O, uint32_t>(value);
   current_index += num_bytes_to_read;
   return true;
@@ -36,7 +54,9 @@ from_bytes_crc32(uint32_t &value, Container &bytes, std::size_t &current_index,
   if (end_index < num_bytes_to_read) {
     return false;
   }
-  value = *(reinterpret_cast<const uint32_t *>(bytes + current_index));
+
+  get_aligned<O>(value, &bytes[0], current_index);
+
   update_value_based_on_alpaca_endian_rules<O, uint32_t>(value);
   current_index += num_bytes_to_read;
   return true;
@@ -87,7 +107,8 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
     /// TODO: report error
     return false;
   }
-  value = *(reinterpret_cast<const T *>(bytes.data() + current_index));
+
+  get_aligned<O>(value, &bytes[0], current_index);
   current_index += num_bytes_to_read;
   update_value_based_on_alpaca_endian_rules<O, T>(value);
   return true;
@@ -139,7 +160,8 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
     /// TODO: report error
     return false;
   }
-  value = *(reinterpret_cast<const T *>(bytes + current_index));
+
+  get_aligned<O>(value, &bytes[0], current_index);
   current_index += num_bytes_to_read;
   update_value_based_on_alpaca_endian_rules<O, T>(value);
   return true;
@@ -194,7 +216,8 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
   char value_bytes[num_bytes_to_read];
   bytes.read(&value_bytes[0], num_bytes_to_read);
   current_index += num_bytes_to_read;
-  value = *(reinterpret_cast<const T *>(value_bytes));
+  get_aligned<O>(value, (uint8_t*) &value_bytes[0], 0);
+
   update_value_based_on_alpaca_endian_rules<O, T>(value);
   return true;
 }
@@ -237,7 +260,7 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
       /// TODO: report error
       return false;
     }
-    value = *(reinterpret_cast<const T *>(bytes.data() + current_index));
+    get_aligned<O>(value, &bytes[0], current_index);
     current_index += num_bytes_to_read;
   } else {
     value = decode_varint<T>(bytes, current_index);
@@ -286,7 +309,7 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
       /// TODO: report error
       return false;
     }
-    value = *(reinterpret_cast<const T *>(bytes + current_index));
+    get_aligned<O>(value, &bytes[0], current_index);
     current_index += num_bytes_to_read;
   } else {
     value = decode_varint<T>(bytes, current_index);
@@ -338,7 +361,7 @@ from_bytes(T &value, Container &bytes, std::size_t &current_index,
     char value_bytes[num_bytes_to_read];
     bytes.read(&value_bytes[0], num_bytes_to_read);
     current_index += num_bytes_to_read;
-    value = *(reinterpret_cast<const T *>(value_bytes));
+    get_aligned<O>(value, (uint8_t*) &value_bytes[0], 0);
   } else {
     value = decode_varint<T>(bytes, current_index);
   }

@@ -26,7 +26,7 @@ template <options O, std::size_t N, typename Container>
 void to_bytes_from_bitset_type(const std::bitset<N> &input, Container &bytes,
                                std::size_t &byte_index) {
   // save bitset size
-  to_bytes_router<O, std::size_t>(input.size(), bytes, byte_index);
+  to_bytes_router<O, size_t_serialized_type>((size_t_serialized_type) input.size(), bytes, byte_index);
 
   // serialize the bitset itself into (bits/8 + 1) bytes
   int num_bytes = input.size() / 8 + 1;
@@ -63,8 +63,8 @@ bool from_bytes_to_bitset(std::bitset<N> &value, Container &bytes,
   }
 
   // current byte is the size of the vector
-  std::size_t size = 0;
-  detail::from_bytes<O, std::size_t>(size, bytes, current_index, end_index,
+  size_t_serialized_type size = 0;
+  detail::from_bytes<O, size_t_serialized_type>(size, bytes, current_index, end_index,
                                      error_code);
 
   if (size != N) {
@@ -90,7 +90,7 @@ bool from_bytes_to_bitset(std::bitset<N> &value, Container &bytes,
   // reset the value to 0
   value.reset();
 
-  for (std::size_t i = 0; i < num_serialized_bytes; ++i) {
+  for (size_t_serialized_type i = 0; i < num_serialized_bytes; ++i) {
     uint8_t byte{};
     from_bytes_router<O>(byte, bytes, current_index, end_index, error_code);
     if (error_code) {
