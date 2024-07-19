@@ -325,43 +325,43 @@ TEST_SUITE("extended test") {
   // Ripeti per altri 95 casi di test...
 }
 
-enum class Status { ACTIVE, INACTIVE, PENDING, DELETED };
-
-struct Detail {
-  int32_t id{0};
-  int64_t value1{0};
-  int64_t value2{0};
-  double ratio{0.0};
-  std::string description;
-  uint32_t count{0};
-  bool flag{false};
-  std::string note;
-  float balance{0.0f};
-  char initial{'A'};
-  uint64_t big_value{0};
-  int16_t short_value{0};
-  Status status{Status::ACTIVE};
-  std::vector<int> numbers;
-  std::string metadata;
-};
-
-struct Complex {
-  int32_t field1{0};
-  int64_t field2{0};
-  std::string field3;
-  double field4{0.0};
-  Status status{Status::ACTIVE};
-  std::vector<Detail> details;
-  bool flag{false};
-  uint32_t field5{0};
-  float field6{0.0f};
-  std::string field7;
-  char field8{'A'};
-  uint64_t field9{0};
-  int16_t field10{0};
-};
-
 TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
+  enum class Status { ACTIVE, INACTIVE, PENDING, DELETED };
+
+  struct Detail {
+    int32_t id{0};
+    int64_t value1{0};
+    int64_t value2{0};
+    double ratio{0.0};
+    std::string description;
+    uint32_t count{0};
+    bool flag{false};
+    std::string note;
+    float balance{0.0f};
+    char initial{'A'};
+    uint64_t big_value{0};
+    int16_t short_value{0};
+    Status status{Status::ACTIVE};
+    std::vector<int> numbers;
+    std::string metadata;
+  };
+
+  struct Complex {
+    int32_t field1{0};
+    int64_t field2{0};
+    std::string field3;
+    double field4{0.0};
+    Status status{Status::ACTIVE};
+    std::vector<Detail> details;
+    bool flag{false};
+    uint32_t field5{0};
+    float field6{0.0f};
+    std::string field7;
+    char field8{'A'};
+    uint64_t field9{0};
+    int16_t field10{0};
+  };
+
   Complex data{
       0x12345678,              // field1
       0x123456789ABCDEF0,      // field2
