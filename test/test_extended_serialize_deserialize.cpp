@@ -320,49 +320,49 @@ TEST_CASE("Complex Nested Structs and Vectors with Extremes") {
   REQUIRE(reconstructed.description == data.description);
 }
 
+enum class Status { ACTIVE, INACTIVE, PENDING, DELETED };
+
+struct Detail {
+  int32_t id{0};
+  int64_t value1{0};
+  int64_t value2{0};
+  double ratio{0.0};
+  std::string description;
+  uint32_t count{0};
+  bool flag{false};
+  std::string note;
+  float balance{0.0f};
+  char initial{'A'};
+  uint64_t big_value{0};
+  int16_t short_value{0};
+  Status status{Status::ACTIVE};
+  std::vector<int> numbers;
+  std::string metadata;
+};
+
+struct Complex {
+  int32_t field1{0};
+  int64_t field2{0};
+  std::string field3;
+  double field4{0.0};
+  Status status{Status::ACTIVE};
+  std::vector<Detail> details;
+  bool flag{false};
+  uint32_t field5{0};
+  float field6{0.0f};
+  std::string field7;
+  char field8{'A'};
+  uint64_t field9{0};
+  int16_t field10{0};
+};
+
 TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
-
-  struct Detail {
-    int32_t id{0};
-    int64_t value1{0};
-    int64_t value2{0};
-    double ratio{0.0};
-    std::string description;
-    uint32_t count{0};
-    bool flag{false};
-    std::string note;
-    float balance{0.0f};
-    char initial{'A'};
-    uint64_t big_value{0};
-    int16_t short_value{0};
-    enum class Status { ACTIVE, INACTIVE, PENDING, DELETED };
-    Status status{Status::ACTIVE};
-    std::vector<int> numbers;
-    std::string metadata;
-  };
-
-  struct Complex {
-    int32_t field1{0};
-    int64_t field2{0};
-    std::string field3;
-    double field4{0.0};
-    Detail::Status status{Detail::Status::ACTIVE};
-    std::vector<Detail> details;
-    bool flag{false};
-    uint32_t field5{0};
-    float field6{0.0f};
-    std::string field7;
-    char field8{'A'};
-    uint64_t field9{0};
-    int16_t field10{0};
-  };
-
   Complex data{
     0x12345678,              // field1
     0x123456789ABCDEF0,      // field2
     "This is a test string", // field3
     1234.5678,               // field4
-    Detail::Status::PENDING,         // status
+    Status::PENDING,         // status
     {                        // details
       {1,
        100,
@@ -376,7 +376,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
        'B',
        0xFFFFFFFF,
        1000,
-       Detail::Status::ACTIVE,
+       Status::ACTIVE,
        {1, 2, 3},
        "Meta 1"},
       {2,
@@ -391,7 +391,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
        'C',
        0xFFFFFFFE,
        2000,
-       Detail::Status::INACTIVE,
+       Status::INACTIVE,
        {4, 5, 6},
        "Meta 2"},
       {3,
@@ -406,7 +406,7 @@ TEST_CASE("Complex Struct with Many Fields and Vector of Detailed Structs") {
        'D',
        0xFFFFFFFD,
        3000,
-       Detail::Status::DELETED,
+       Status::DELETED,
        {7, 8, 9},
        "Meta 3"}},
     true,                  // flag
