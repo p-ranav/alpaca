@@ -1,12 +1,20 @@
 #pragma once
+#include <tuple>
 #include <utility>
 
 namespace alpaca {
 
 namespace detail {
 
+template <typename T> struct is_single_element_tuple : std::false_type {};
+template <typename T>
+struct is_single_element_tuple<std::tuple<T>> : std::true_type {};
+
 struct filler {
-  template <typename type> operator type();
+  template <typename type,
+            typename = std::enable_if_t<
+                !is_single_element_tuple<type>::value>>
+  operator type();
 };
 
 template <typename aggregate, typename index_sequence = std::index_sequence<>,
@@ -30,6 +38,10 @@ struct aggregate_arity<
 #pragma GCC diagnostic pop
 #endif
 
+template <typename... Ts>
+struct aggregate_arity<std::tuple<Ts...>> : std::make_index_sequence<sizeof...(Ts)> {};
+
 } // namespace detail
+
 
 } // namespace alpaca

@@ -117,3 +117,24 @@ TEST_CASE("Deserialize vector<nested_struct>" * test_suite("vector")) {
     REQUIRE(result.nested_values[2].value == 3);
   }
 }
+
+TEST_CASE("Deserialize vector<int> with a non-empty default member "
+          "initializer" *
+          test_suite("vector")) {
+  // regression test: from_bytes used to push_back onto the destination
+  // vector without clearing it first, so a non-empty default member
+  // initializer caused deserialized elements to be appended rather than
+  // replacing the default, duplicating the contents
+  struct my_struct {
+    std::vector<int> values{1, 2, 3};
+  };
+
+  my_struct s{};
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
+
+  std::error_code ec;
+  auto result = deserialize<my_struct>(bytes, ec);
+  REQUIRE((bool)ec == false);
+  REQUIRE((result.values == std::vector<int>{1, 2, 3}));
+}

@@ -83,6 +83,7 @@ bool from_bytes_to_vector(std::vector<T> &value, Container &bytes,
   }
 
   // read `size` bytes and save to value
+  value.clear();
   value.reserve(size * sizeof(T));
   for (std::size_t i = 0; i < size; ++i) {
     T v{};

@@ -75,6 +75,7 @@ bool from_bytes_to_list(std::list<T> &value, Container &bytes,
   }
 
   // read `size` bytes and save to value
+  value.clear();
   for (std::size_t i = 0; i < size; ++i) {
     T v{};
     from_bytes_router<O>(v, bytes, current_index, end_index, error_code);

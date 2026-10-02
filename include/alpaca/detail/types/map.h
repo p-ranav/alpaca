@@ -97,6 +97,7 @@ void from_bytes_to_map(T &map, Container &bytes, std::size_t &current_index,
   }
 
   // read `size` bytes and save to value
+  map.clear();
   for (std::size_t i = 0; i < size; ++i) {
     typename T::key_type key{};
     from_bytes_router<O>(key, bytes, current_index, end_index, error_code);

@@ -75,6 +75,7 @@ bool from_bytes_to_deque(std::deque<T> &value, Container &bytes,
   }
 
   // read `size` bytes and save to value
+  value.clear();
   for (size_t_serialized_type i = 0; i < size; ++i) {
     T v{};
     from_bytes_router<O>(v, bytes, current_index, end_index, error_code);

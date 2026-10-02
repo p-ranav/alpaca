@@ -95,6 +95,7 @@ void from_bytes_to_set(T &set, Container &bytes, std::size_t &current_index,
   }
 
   // read `size` bytes and save to value
+  set.clear();
   for (std::size_t i = 0; i < size; ++i) {
     typename T::value_type value{};
     from_bytes_router<O>(value, bytes, current_index, end_index, error_code);
