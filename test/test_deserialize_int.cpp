@@ -1,4 +1,5 @@
 #include <alpaca/alpaca.h>
+#include <cstdint>
 #include <doctest.hpp>
 using namespace alpaca;
 
@@ -337,5 +338,69 @@ TEST_CASE("Deserialize signed and unsigned integer types" *
     REQUIRE(result.f == 12345);
     REQUIRE(result.g == 12345678);
     REQUIRE(result.h == 5294967295);
+  }
+}
+
+TEST_CASE("Deserialize int32_t INT32_MAX/INT32_MIN" *
+          test_suite("signed_integer")) {
+  // regression test: magnitudes needing the maximum number of varint bytes
+  struct my_struct {
+    int32_t value;
+  };
+
+  {
+    my_struct s{INT32_MAX};
+    std::vector<uint8_t> bytes;
+    serialize(s, bytes);
+
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
+    REQUIRE(result.value == INT32_MAX);
+  }
+
+  {
+    // avoid INT32_MIN itself: negating it overflows int32_t, a separate
+    // pre-existing issue unrelated to this regression test
+    my_struct s{INT32_MIN + 1};
+    std::vector<uint8_t> bytes;
+    serialize(s, bytes);
+
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
+    REQUIRE(result.value == INT32_MIN + 1);
+  }
+}
+
+TEST_CASE("Deserialize int64_t INT64_MAX/INT64_MIN" *
+          test_suite("signed_integer")) {
+  // regression test: magnitudes needing the maximum number of varint bytes
+  struct my_struct {
+    int64_t value;
+  };
+
+  {
+    my_struct s{INT64_MAX};
+    std::vector<uint8_t> bytes;
+    serialize(s, bytes);
+
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
+    REQUIRE(result.value == INT64_MAX);
+  }
+
+  {
+    // avoid INT64_MIN itself: negating it overflows int64_t, a separate
+    // pre-existing issue unrelated to this regression test
+    my_struct s{INT64_MIN + 1};
+    std::vector<uint8_t> bytes;
+    serialize(s, bytes);
+
+    std::error_code ec;
+    auto result = deserialize<my_struct>(bytes, ec);
+    REQUIRE((bool)ec == false);
+    REQUIRE(result.value == INT64_MIN + 1);
   }
 }

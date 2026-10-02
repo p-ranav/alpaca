@@ -1,4 +1,5 @@
 #include <alpaca/alpaca.h>
+#include <cstdint>
 #include <doctest.hpp>
 using namespace alpaca;
 
@@ -267,6 +268,68 @@ TEST_CASE("Deserialize uint64_t" * test_suite("unsigned_integer")) {
     REQUIRE((bool)ec == false);
     REQUIRE(result.value == 5294967295);
   }
+}
+
+TEST_CASE("Deserialize uint32_t UINT32_MAX" * test_suite("unsigned_integer")) {
+  struct my_struct {
+    uint32_t value;
+  };
+
+  // regression test: a 32-bit value needing the maximum number of varint
+  // bytes (5), previously the decoder stopped reading after 4 bytes
+  std::vector<uint8_t> bytes;
+  my_struct s{UINT32_MAX};
+  serialize(s, bytes);
+  REQUIRE(bytes.size() == 5);
+
+  std::error_code ec;
+  auto result = deserialize<my_struct>(bytes, ec);
+  REQUIRE((bool)ec == false);
+  REQUIRE(result.value == UINT32_MAX);
+}
+
+TEST_CASE("Deserialize uint64_t UINT64_MAX" * test_suite("unsigned_integer")) {
+  struct my_struct {
+    uint64_t value;
+  };
+
+  // regression test: a 64-bit value needing the maximum number of varint
+  // bytes (10), previously the decoder stopped reading after 8 bytes
+  std::vector<uint8_t> bytes;
+  my_struct s{UINT64_MAX};
+  serialize(s, bytes);
+  REQUIRE(bytes.size() == 10);
+
+  std::error_code ec;
+  auto result = deserialize<my_struct>(bytes, ec);
+  REQUIRE((bool)ec == false);
+  REQUIRE(result.value == UINT64_MAX);
+}
+
+TEST_CASE("Deserialize uint64_t UINT64_MAX followed by other fields" *
+          test_suite("unsigned_integer")) {
+  // regression test: when decoding a UINT64_MAX field stopped short, the
+  // read cursor desynced and corrupted every field that followed it
+  struct my_struct {
+    char a;
+    int b;
+    uint64_t c;
+    float d;
+    bool e;
+  };
+
+  my_struct s{'a', 5, UINT64_MAX, 3.14f, true};
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
+
+  std::error_code ec;
+  auto result = deserialize<my_struct>(bytes, ec);
+  REQUIRE((bool)ec == false);
+  REQUIRE(result.a == 'a');
+  REQUIRE(result.b == 5);
+  REQUIRE(result.c == UINT64_MAX);
+  REQUIRE(result.d == doctest::Approx(3.14f));
+  REQUIRE(result.e == true);
 }
 
 TEST_CASE("Deserialize unsigned integer types" *

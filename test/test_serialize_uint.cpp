@@ -1,4 +1,5 @@
 #include <alpaca/alpaca.h>
+#include <cstdint>
 #include <doctest.hpp>
 using namespace alpaca;
 
@@ -138,4 +139,32 @@ TEST_CASE("Serialize uint64_t" * test_suite("unsigned_integer")) {
       REQUIRE(bytes[i] == expected[i - 0]);
     }
   }
+
+  {
+    // regression test: a 64-bit value needing the maximum number of varint
+    // bytes (10, since each byte only carries 7 payload bits)
+    my_struct s{UINT64_MAX};
+    std::vector<uint8_t> bytes;
+    serialize(s, bytes);
+    REQUIRE(bytes.size() == 10);
+
+    CONSTRUCT_EXPECTED_VALUE(s.value);
+    REQUIRE(bytes == expected);
+  }
+}
+
+TEST_CASE("Serialize uint32_t UINT32_MAX" * test_suite("unsigned_integer")) {
+  struct my_struct {
+    uint32_t value;
+  };
+
+  // regression test: a 32-bit value needing the maximum number of varint
+  // bytes (5, since each byte only carries 7 payload bits)
+  my_struct s{UINT32_MAX};
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
+  REQUIRE(bytes.size() == 5);
+
+  CONSTRUCT_EXPECTED_VALUE(s.value);
+  REQUIRE(bytes == expected);
 }

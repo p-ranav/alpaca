@@ -106,7 +106,10 @@ template <typename int_t, typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ifstream>, int_t>::type
 decode_varint_6(Container &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  // each byte only carries 6 payload bits, so more bytes than sizeof(int_t)
+  // may be needed to cover the full range of the type
+  constexpr std::size_t max_bytes = (sizeof(int_t) * 8 + 5) / 6;
+  for (std::size_t i = 0; i < max_bytes; ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 63)) << (6 * i);
     // If the next-byte flag is set
     if (!(input[current_index + i] & 64)) {
@@ -122,7 +125,10 @@ template <typename int_t, typename Container>
 typename std::enable_if<std::is_same_v<Container, std::ifstream>, int_t>::type
 decode_varint_6(Container &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  // each byte only carries 6 payload bits, so more bytes than sizeof(int_t)
+  // may be needed to cover the full range of the type
+  constexpr std::size_t max_bytes = (sizeof(int_t) * 8 + 5) / 6;
+  for (std::size_t i = 0; i < max_bytes; ++i) {
 
     // read byte from file stream
     char current_byte;
@@ -159,7 +165,11 @@ template <typename int_t, typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ifstream>, int_t>::type
 decode_varint_7(Container &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  // each byte only carries 7 payload bits, so more bytes than sizeof(int_t)
+  // may be needed to cover the full range of the type (e.g. uint64_t needs
+  // up to 10 bytes, not 8)
+  constexpr std::size_t max_bytes = (sizeof(int_t) * 8 + 6) / 7;
+  for (std::size_t i = 0; i < max_bytes; ++i) {
     ret |= (static_cast<int_t>(input[current_index + i] & 127)) << (7 * i);
     // If the next-byte flag is set
     if (!(input[current_index + i] & 128)) {
@@ -174,7 +184,11 @@ decode_varint_7(Container &input, std::size_t &current_index) {
 template <typename int_t, typename Container>
 int_t decode_varint_7(std::ifstream &input, std::size_t &current_index) {
   int_t ret = 0;
-  for (std::size_t i = 0; i < sizeof(int_t); ++i) {
+  // each byte only carries 7 payload bits, so more bytes than sizeof(int_t)
+  // may be needed to cover the full range of the type (e.g. uint64_t needs
+  // up to 10 bytes, not 8)
+  constexpr std::size_t max_bytes = (sizeof(int_t) * 8 + 6) / 7;
+  for (std::size_t i = 0; i < max_bytes; ++i) {
 
     // read byte from file stream
     char current_byte;
