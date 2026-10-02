@@ -332,6 +332,64 @@ TEST_CASE("Deserialize uint64_t UINT64_MAX followed by other fields" *
   REQUIRE(result.e == true);
 }
 
+TEST_CASE("Deserialize nested struct with a max-length varint followed by a "
+          "string" *
+          test_suite("unsigned_integer")) {
+  // regression test (issue #16): a desynced cursor after a short varint
+  // decode corrupted the following std::string's length, surfacing as a
+  // "value too large" deserialize error
+  struct my_struct_inner {
+    std::string filed1{};
+    unsigned long long filed2{};
+    unsigned long long filed3{};
+    unsigned int filed4{};
+    unsigned int filed5{};
+    unsigned long long filed6{};
+  };
+
+  struct my_struct {
+    unsigned int filed1{};
+    std::string filed2{};
+    unsigned long long filed3{};
+    unsigned long long filed4{};
+    unsigned long long filed5{};
+    unsigned long long filed6{};
+    my_struct_inner filed7{};
+  };
+
+  my_struct s{};
+  s.filed7.filed1 = std::string(128, 'x');
+  s.filed7.filed2 = 0x91e7b3ed1632245c; // needs the maximum varint length
+  s.filed7.filed3 = 2;
+  s.filed7.filed5 = 3;
+  s.filed7.filed6 = 5;
+
+  s.filed2 = std::string(624, 'y');
+  s.filed1 = 1;
+  s.filed3 = 0x91e7b3ed1632245c; // needs the maximum varint length
+  s.filed4 = 3;
+  s.filed6 = 4;
+  s.filed7.filed4 = 2;
+
+  std::vector<uint8_t> bytes;
+  serialize(s, bytes);
+
+  std::error_code ec;
+  auto result = deserialize<my_struct>(bytes, ec);
+  REQUIRE((bool)ec == false);
+  REQUIRE(result.filed1 == s.filed1);
+  REQUIRE(result.filed2 == s.filed2);
+  REQUIRE(result.filed3 == s.filed3);
+  REQUIRE(result.filed4 == s.filed4);
+  REQUIRE(result.filed6 == s.filed6);
+  REQUIRE(result.filed7.filed1 == s.filed7.filed1);
+  REQUIRE(result.filed7.filed2 == s.filed7.filed2);
+  REQUIRE(result.filed7.filed3 == s.filed7.filed3);
+  REQUIRE(result.filed7.filed5 == s.filed7.filed5);
+  REQUIRE(result.filed7.filed6 == s.filed7.filed6);
+  REQUIRE(result.filed7.filed4 == s.filed7.filed4);
+}
+
 TEST_CASE("Deserialize unsigned integer types" *
           test_suite("unsigned_integer")) {
   struct my_struct {
