@@ -41,6 +41,20 @@ namespace alpaca {
 
 namespace detail {
 
+// Computing aggregate_arity<T> for a non-aggregate T (e.g. std::map, which
+// has constructors that can swallow an unbounded number of `filler` args)
+// can recurse until the compiler's template depth limit is hit. SFINAE here
+// so the real probe is only ever instantiated for genuine structs.
+template <typename T, typename = void>
+struct safe_aggregate_arity {
+  static constexpr std::size_t size() { return 0; }
+};
+
+template <typename T>
+struct safe_aggregate_arity<
+    T, std::enable_if_t<std::is_aggregate_v<T> && !is_array_type<T>::value>>
+    : aggregate_arity<T> {};
+
 template <typename T, std::size_t N, std::size_t I>
 void type_info_helper(
     std::vector<uint8_t> &typeids,
@@ -162,12 +176,16 @@ void to_bytes_router(const std::bitset<N> &input, Container &bytes,
 } // namespace detail
 
 template <typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container = std::vector<uint8_t>>
 std::size_t serialize(const T &s, Container &bytes) {
   std::size_t byte_index = 0;
-  detail::serialize_helper<options::none, T, N, Container, 0>(s, bytes,
-                                                              byte_index);
+  if constexpr (std::is_aggregate_v<T> && !detail::is_array_type<T>::value) {
+    detail::serialize_helper<options::none, T, N, Container, 0>(s, bytes,
+                                                                byte_index);
+  } else {
+    detail::to_bytes_router<options::none>(s, bytes, byte_index);
+  }
   return byte_index;
 }
 
@@ -175,24 +193,34 @@ std::size_t serialize(const T &s, Container &bytes) {
 
 // for std::vector and std::array
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ofstream> &&
                             !std::is_array_v<Container>,
                         std::size_t>::type
 serialize(const T &s, Container &bytes, std::size_t &byte_index) {
-  if constexpr (N > 0 && detail::with_version<O>()) {
+  constexpr bool is_struct = std::is_aggregate_v<T> && !detail::is_array_type<T>::value;
+
+  if constexpr (detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
     std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
+    if constexpr (is_struct) {
+      detail::type_info<T, N>(typeids, struct_visitor_map);
+    } else {
+      detail::type_info<T>(typeids, struct_visitor_map);
+    }
     uint32_t version = crc32_fast(typeids.data(), typeids.size());
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
   }
 
-  detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+  if constexpr (is_struct) {
+    detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+  } else {
+    detail::to_bytes_router<O>(s, bytes, byte_index);
+  }
 
-  if constexpr (N > 0 && detail::with_checksum<O>()) {
+  if constexpr (detail::with_checksum<O>()) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(detail::container_data(bytes), byte_index);
@@ -204,7 +232,7 @@ serialize(const T &s, Container &bytes, std::size_t &byte_index) {
 
 // for std::fstream
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<std::is_same_v<Container, std::ofstream>,
                         std::size_t>::type
@@ -213,30 +241,44 @@ serialize(const T &s, Container &bytes, std::size_t &byte_index) {
                 "options::with_version is not supported when writing to file");
   static_assert(!detail::with_checksum<O>(),
                 "options::with_checksum is not supported when writing to file");
-  detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+  if constexpr (std::is_aggregate_v<T> && !detail::is_array_type<T>::value) {
+    detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+  } else {
+    detail::to_bytes_router<O>(s, bytes, byte_index);
+  }
   return byte_index;
 }
 
 // for C-style arrays
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ofstream> &&
                             std::is_array_v<Container>,
                         std::size_t>::type
 serialize(const T &s, Container &bytes, std::size_t &byte_index) {
-  if constexpr (N > 0 && detail::with_version<O>()) {
+  constexpr bool is_struct = std::is_aggregate_v<T> && !detail::is_array_type<T>::value;
+
+  if constexpr (detail::with_version<O>()) {
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
     std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
+    if constexpr (is_struct) {
+      detail::type_info<T, N>(typeids, struct_visitor_map);
+    } else {
+      detail::type_info<T>(typeids, struct_visitor_map);
+    }
     uint32_t version = crc32_fast(typeids.data(), typeids.size());
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, version);
   }
 
-  detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+  if constexpr (is_struct) {
+    detail::serialize_helper<O, T, N, Container, 0>(s, bytes, byte_index);
+  } else {
+    detail::to_bytes_router<O>(s, bytes, byte_index);
+  }
 
-  if constexpr (N > 0 && detail::with_checksum<O>()) {
+  if constexpr (detail::with_checksum<O>()) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
     uint32_t crc = crc32_fast(bytes, byte_index);
@@ -247,7 +289,7 @@ serialize(const T &s, Container &bytes, std::size_t &byte_index) {
 }
 
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container = std::vector<uint8_t>>
 std::size_t serialize(const T &s, Container &bytes) {
   std::size_t byte_index = 0;
@@ -310,16 +352,21 @@ void deserialize_helper(T &s, Container &bytes, std::size_t &byte_index,
 } // namespace detail
 
 template <typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 void deserialize(T &s, Container &bytes, std::size_t &byte_index,
                  std::size_t &end_index, std::error_code &error_code) {
-  detail::deserialize_helper<options::none, T, N, Container, 0>(
-      s, bytes, byte_index, end_index, error_code);
+  if constexpr (std::is_aggregate_v<T> && !detail::is_array_type<T>::value) {
+    detail::deserialize_helper<options::none, T, N, Container, 0>(
+        s, bytes, byte_index, end_index, error_code);
+  } else {
+    detail::from_bytes_router<options::none>(s, bytes, byte_index, end_index,
+                                             error_code);
+  }
 }
 
 template <typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 T deserialize(Container &bytes, std::error_code &error_code) {
   T object{};
@@ -337,7 +384,7 @@ T deserialize(Container &bytes, std::error_code &error_code) {
 }
 
 template <typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 T deserialize(Container &bytes, const std::size_t size,
               std::error_code &error_code) {
@@ -359,20 +406,25 @@ T deserialize(Container &bytes, const std::size_t size,
 
 // For std::vector and std::array
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ifstream> &&
                             !std::is_array_v<Container>,
                         void>::type
 deserialize(T &s, Container &bytes, std::size_t &byte_index,
             std::size_t &end_index, std::error_code &error_code) {
+  constexpr bool is_struct = std::is_aggregate_v<T> && !detail::is_array_type<T>::value;
 
-  if constexpr (N > 0 && detail::with_version<O>()) {
+  if constexpr (detail::with_version<O>()) {
 
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
     std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
+    if constexpr (is_struct) {
+      detail::type_info<T, N>(typeids, struct_visitor_map);
+    } else {
+      detail::type_info<T>(typeids, struct_visitor_map);
+    }
     uint32_t computed_version = crc32_fast(typeids.data(), typeids.size());
 
     // check computed version with version in input
@@ -414,8 +466,13 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
       if (trailing_crc == computed_crc) {
         // message is good!
         end_index -= 4;
-        detail::deserialize_helper<O, T, N, Container, 0>(
-            s, bytes, byte_index, end_index, error_code);
+        if constexpr (is_struct) {
+          detail::deserialize_helper<O, T, N, Container, 0>(
+              s, bytes, byte_index, end_index, error_code);
+        } else {
+          detail::from_bytes_router<O>(s, bytes, byte_index, end_index,
+                                       error_code);
+        }
       } else {
         // message is bad
         error_code = std::make_error_code(std::errc::bad_message);
@@ -425,14 +482,18 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
   } else {
     // bytes does not have any CRC
     // just deserialize everything into type T
-    detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
-                                                      end_index, error_code);
+    if constexpr (is_struct) {
+      detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
+                                                        end_index, error_code);
+    } else {
+      detail::from_bytes_router<O>(s, bytes, byte_index, end_index, error_code);
+    }
   }
 }
 
 // For std::ifstream
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<std::is_same_v<Container, std::ifstream>, void>::type
 deserialize(T &s, Container &bytes, std::size_t &byte_index,
@@ -443,26 +504,35 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
   static_assert(
       !detail::with_checksum<O>(),
       "options::with_checksum is not supported when reading from file");
-  detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
-                                                    end_index, error_code);
+  if constexpr (std::is_aggregate_v<T> && !detail::is_array_type<T>::value) {
+    detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
+                                                      end_index, error_code);
+  } else {
+    detail::from_bytes_router<O>(s, bytes, byte_index, end_index, error_code);
+  }
 }
 
 // For C-style arrays
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 typename std::enable_if<!std::is_same_v<Container, std::ifstream> &&
                             std::is_array_v<Container>,
                         void>::type
 deserialize(T &s, Container &bytes, std::size_t &byte_index,
             std::size_t &end_index, std::error_code &error_code) {
+  constexpr bool is_struct = std::is_aggregate_v<T> && !detail::is_array_type<T>::value;
 
-  if constexpr (N > 0 && detail::with_version<O>()) {
+  if constexpr (detail::with_version<O>()) {
 
     // calculate typeid hash and save it to the bytearray
     std::vector<uint8_t> typeids;
     std::unordered_map<std::string_view, std::size_t> struct_visitor_map;
-    detail::type_info<T, N>(typeids, struct_visitor_map);
+    if constexpr (is_struct) {
+      detail::type_info<T, N>(typeids, struct_visitor_map);
+    } else {
+      detail::type_info<T>(typeids, struct_visitor_map);
+    }
     uint32_t computed_version = crc32_fast(typeids.data(), typeids.size());
 
     // check computed version with version in input
@@ -504,8 +574,13 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
       if (trailing_crc == computed_crc) {
         // message is good!
         end_index -= 4;
-        detail::deserialize_helper<O, T, N, Container, 0>(
-            s, bytes, byte_index, end_index, error_code);
+        if constexpr (is_struct) {
+          detail::deserialize_helper<O, T, N, Container, 0>(
+              s, bytes, byte_index, end_index, error_code);
+        } else {
+          detail::from_bytes_router<O>(s, bytes, byte_index, end_index,
+                                       error_code);
+        }
       } else {
         // message is bad
         error_code = std::make_error_code(std::errc::bad_message);
@@ -515,13 +590,17 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
   } else {
     // bytes does not have any CRC
     // just deserialize everything into type T
-    detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
-                                                      end_index, error_code);
+    if constexpr (is_struct) {
+      detail::deserialize_helper<O, T, N, Container, 0>(s, bytes, byte_index,
+                                                        end_index, error_code);
+    } else {
+      detail::from_bytes_router<O>(s, bytes, byte_index, end_index, error_code);
+    }
   }
 }
 
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 T deserialize(Container &bytes, std::error_code &error_code) {
   T object{};
@@ -539,7 +618,7 @@ T deserialize(Container &bytes, std::error_code &error_code) {
 }
 
 template <options O, typename T,
-          std::size_t N = detail::aggregate_arity<std::remove_cv_t<T>>::size(),
+          std::size_t N = detail::safe_aggregate_arity<std::remove_cv_t<T>>::size(),
           typename Container>
 T deserialize(Container &bytes, std::size_t size, std::error_code &error_code) {
   T object{};
