@@ -195,7 +195,7 @@ serialize(const T &s, Container &bytes, std::size_t &byte_index) {
   if constexpr (N > 0 && detail::with_checksum<O>()) {
     // calculate crc32 for byte array and
     // pack uint32_t to the end
-    uint32_t crc = crc32_fast(bytes.data(), byte_index);
+    uint32_t crc = crc32_fast(detail::container_data(bytes), byte_index);
     detail::to_bytes_crc32<O, Container>(bytes, byte_index, crc);
   }
 
@@ -409,7 +409,7 @@ deserialize(T &s, Container &bytes, std::size_t &byte_index,
       detail::from_bytes_crc32<O>(trailing_crc, bytes, index, end_index,
                                   error_code); // last 4 bytes
 
-      auto computed_crc = crc32_fast(bytes.data(), end_index - 4);
+      auto computed_crc = crc32_fast(detail::container_data(bytes), end_index - 4);
 
       if (trailing_crc == computed_crc) {
         // message is good!
