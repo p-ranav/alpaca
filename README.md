@@ -1174,7 +1174,14 @@ When this option is enabled, the library will not perform unaligned accesses and
 
 ## Python Interoperability
 
-alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)-based Python wrapper called `pyalpaca`. To build this wrapper, include the option `-DALPACA_BUILD_PYTHON_LIB=on` with `cmake`. 
+alpaca comes with an experimental [pybind11](https://github.com/pybind/pybind11)-based Python wrapper called `pyalpaca`. To build this wrapper, include the option `-DALPACA_BUILD_PYTHON_LIB=on` with `cmake`. An installed pybind11 is used when found (`pip install pybind11`, then `-Dpybind11_DIR=$(python -m pybind11 --cmakedir)` if it is not on CMake's prefix path); otherwise the vendored submodule is used (`git submodule update --init python/pybind11`).
+
+```bash
+cmake -S . -B build -DALPACA_BUILD_PYTHON_LIB=on -DCMAKE_BUILD_TYPE=Release
+cmake --build build --target pyalpaca
+PYTHONPATH=build/python python3 -m unittest discover -s python/test -v
+```
+
 
 Instead of providing a `struct` type, the user will provide a string specification of the fields. This is inspired by the standard Python [struct](https://docs.python.org/3/library/struct.html) module.
 
@@ -1182,10 +1189,34 @@ Instead of providing a `struct` type, the user will provide a string specificati
 
 ```python
 # Serialize
-def serialize(format_string, list_of_values) -> bytes
+def serialize(format_string, list_of_values, options=0) -> bytes
 
 # Deserialize
-def deserialize(format_string, bytes) -> list_of_values
+def deserialize(format_string, bytes, options=0) -> list_of_values
+```
+
+`options` selects the same `alpaca::options` the C++ side uses, as an int or a
+combination of `pyalpaca.options` values:
+
+| Option                            | Effect in Python                                                         |
+|-----------------------------------|--------------------------------------------------------------------------|
+| `options.big_endian`              | Multi-byte values are written / read big-endian                          |
+| `options.fixed_length_encoding`   | Integers and container sizes use their full width instead of varints     |
+| `options.with_checksum`           | A CRC32 of the payload is appended on serialize and verified on deserialize |
+| `options.strict`                  | Deserialize raises `RuntimeError` when the input ends before the format does (without it the missing trailing fields are simply not returned, alpaca's forward-compatibility rule) |
+| `options.force_aligned_access`    | Accepted, no effect on the bytes                                         |
+| `options.with_version`            | Raises `ValueError`: the version hash is computed from the C++ type (it includes `sizeof(struct)` and the field count), which a format string cannot reproduce |
+
+The bytes are identical to `alpaca::serialize<O>()` for the same options (the
+test suite checks this against vectors produced by the C++ library). Errors in
+the format string or in the values raise `ValueError`; truncated input and a
+bad checksum raise `RuntimeError`.
+
+```python
+import pyalpaca
+opts = pyalpaca.options.fixed_length_encoding | pyalpaca.options.with_checksum
+data = pyalpaca.serialize("is[f]", [42, "name", [0.5, 1.0]], opts)
+print(pyalpaca.deserialize("is[f]", data, opts))   # [42, 'name', [0.5, 1.0]]
 ```
 
 ### Format String Specification

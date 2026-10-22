@@ -91,3 +91,39 @@ jobs:
       if: ${{ startsWith(matrix.os, 'windows') }}
       working-directory: test/build
       run: ./Debug/tests.exe
+
+  python:
+
+    name: pyalpaca (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install pybind11
+      run: python -m pip install pybind11
+
+    - name: Configure
+      shell: bash
+      run: cmake -S . -B build -DALPACA_BUILD_PYTHON_LIB=on -DCMAKE_BUILD_TYPE=Release -Dpybind11_DIR="$(python -m pybind11 --cmakedir)" -DPython_EXECUTABLE="$(python -c "import sys; print(sys.executable)")"
+
+    - name: Build
+      run: cmake --build build --config Release --target pyalpaca
+
+    - name: Test
+      shell: bash
+      run: |
+        # the module lands in build/python (single-config) or build/python/Release (MSVC)
+        export PYTHONPATH="$PWD/build/python:$PWD/build/python/Release"
+        python -m unittest discover -s python/test -v
