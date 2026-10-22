@@ -89,9 +89,9 @@ type_info(
     uint16_t num_fields = N;
     to_bytes<options::none>(typeids, current_index, num_fields);
 
-    // save size of struct
-    uint16_t size = sizeof(T);
-    to_bytes<options::none>(typeids, current_index, size);
+    // NOTE: sizeof(T) is deliberately not part of the hash: it depends on the
+    // platform (pointer width, alignment, padding) while the serialized bytes
+    // do not, and the hash must verify on every platform that exchanges them.
 
     struct_visitor_map[name] = struct_visitor_map.size() + 1;
     type_info_helper<T, N, 0>(typeids, struct_visitor_map);

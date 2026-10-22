@@ -1040,7 +1040,7 @@ int main() {
 
 ### Data Structure Versioning
 
-alpaca provides a type-hashing mechanism to encode the version the aggregate class type as a `uint32_t`. This hash can be added to the output using `alpaca::options::with_version`.  The type hash includes the number of fields in the struct, the `sizeof(T)` for the struct, an ordered list of the type of each field. This information is encoded into a bytearray and then a checksum is generated for those bytes. 
+alpaca provides a type-hashing mechanism to encode the version the aggregate class type as a `uint32_t`. This hash can be added to the output using `alpaca::options::with_version`.  The type hash includes the number of fields in the struct and an ordered list of the type of each field (recursively for nested aggregates and containers). This information is encoded into a bytearray and then a checksum is generated for those bytes. The hash depends only on the serialized layout, not on `sizeof(T)`, alignment or padding, so bytes written on one platform (for example a 32-bit microcontroller) verify on another (a 64-bit host). 
 
 During deserialization, the same type hash is calculated and compared against the input. In case of a mismatch, the error code is set. 
 
