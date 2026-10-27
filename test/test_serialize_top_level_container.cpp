@@ -27,31 +27,40 @@ TEST_CASE("Serialize top-level special types with checksum and version" *
           test_suite("top_level_container")) {
   constexpr auto OPTIONS =
       alpaca::options::with_checksum | alpaca::options::with_version;
+  // NOTE: call serialize() outside REQUIRE(): doctest wraps the asserted
+  // expression in a lambda, and MSVC cannot use a function-local constexpr
+  // (OPTIONS) as a template argument inside a lambda ("expression did not
+  // evaluate to a constant"). Same pattern as the other test cases here.
 
   {
     std::map<int, bool> m{{1, true}, {2, false}};
     std::vector<uint8_t> bytes;
-    REQUIRE(serialize<OPTIONS>(m, bytes) > 0);
+    auto bytes_written = serialize<OPTIONS>(m, bytes);
+    REQUIRE(bytes_written > 0);
   }
   {
     std::vector<int> v{1, 2, 3};
     std::vector<uint8_t> bytes;
-    REQUIRE(serialize<OPTIONS>(v, bytes) > 0);
+    auto bytes_written = serialize<OPTIONS>(v, bytes);
+    REQUIRE(bytes_written > 0);
   }
   {
     std::set<int> s{1, 2, 3};
     std::vector<uint8_t> bytes;
-    REQUIRE(serialize<OPTIONS>(s, bytes) > 0);
+    auto bytes_written = serialize<OPTIONS>(s, bytes);
+    REQUIRE(bytes_written > 0);
   }
   {
     std::optional<int> o{42};
     std::vector<uint8_t> bytes;
-    REQUIRE(serialize<OPTIONS>(o, bytes) > 0);
+    auto bytes_written = serialize<OPTIONS>(o, bytes);
+    REQUIRE(bytes_written > 0);
   }
   {
     std::string s{"hello"};
     std::vector<uint8_t> bytes;
-    REQUIRE(serialize<OPTIONS>(s, bytes) > 0);
+    auto bytes_written = serialize<OPTIONS>(s, bytes);
+    REQUIRE(bytes_written > 0);
   }
 }
 
