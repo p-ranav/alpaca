@@ -19,7 +19,7 @@ jobs:
           - macos-12-clang
           - ubuntu-latest-clang
           - ubuntu-latest-gcc
-          - windows-2019-msvc
+          - windows-2022-msvc
           - windows-latest-msvc
           - windows-latest-clang
 
@@ -48,8 +48,8 @@ jobs:
             cxx_compiler: g++
             cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
 
-          - toolchain: windows-2019-msvc
-            os: windows-2019
+          - toolchain: windows-2022-msvc
+            os: windows-2022
             c_compiler: msvc
             cxx_compiler: msvc
             cmake_opts: -DALPACA_BUILD_TESTS=on -DALPACA_BUILD_BENCHMARKS=on -DALPACA_BUILD_SAMPLES=on -DCMAKE_BUILD_TYPE=Release
